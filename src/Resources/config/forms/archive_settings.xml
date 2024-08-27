@@ -1,0 +1,156 @@
+<?xml version="1.0" ?>
+<form xmlns="http://schemas.sulu.io/template/template"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/form-1.0.xsd"
+>
+    <key>archive_settings</key>
+
+    <schema>
+        <allOf>
+            <schema>
+                <anyOf>
+                    <schema>
+                        <properties>
+                            <property name="shadowOn" value="true" />
+                            <property name="shadowBaseLanguage" mandatory="true" />
+                        </properties>
+                    </schema>
+                    <schema>
+                        <properties>
+                            <property name="shadowOn" value="false" />
+                        </properties>
+                    </schema>
+                </anyOf>
+            </schema>
+        </allOf>
+    </schema>
+
+    <properties>
+        <property name="customizeWebspaceSettings" type="checkbox" visibleCondition="shadowOn == false">
+            <meta>
+                <title>sulu_archive.webspace_settings</title>
+            </meta>
+
+            <params>
+                <param name="label">
+                    <meta>
+                        <title>sulu_archive.customize_webspace_settings</title>
+                    </meta>
+                </param>
+                <param name="type" value="toggler"/>
+            </params>
+        </property>
+
+        <property name="mainWebspace" type="single_select" colspan="6" spaceAfter="6" disabledCondition="!customizeWebspaceSettings" visibleCondition="shadowOn == false">
+            <meta>
+                <title>sulu_archive.main_webspace</title>
+            </meta>
+
+            <params>
+                <param
+                        name="values"
+                        type="expression"
+                        value="service('sulu_archive.webspace_selector').getValues()"
+                />
+            </params>
+        </property>
+
+        <property name="additionalWebspaces" type="select" colspan="6" spaceAfter="6" disabledCondition="!customizeWebspaceSettings" visibleCondition="shadowOn == false">
+            <meta>
+                <title>sulu_archive.additional_webspace</title>
+            </meta>
+
+            <params>
+                <param
+                        name="values"
+                        type="expression"
+                        value="service('sulu_archive.webspace_selector').getValues()"
+                />
+            </params>
+        </property>
+
+<!--        <section name="shadowArchive">-->
+<!--            <meta>-->
+<!--                <title>sulu_archive.shadow_archive</title>-->
+<!--            </meta>-->
+<!--            <properties>-->
+<!--                <property name="shadowOn" type="checkbox" disabledCondition="__locale in shadowLocales|values">-->
+<!--                    <meta>-->
+<!--                        <title>sulu_archive.shadow_archive</title>-->
+<!--                        <info_text>sulu_page.enable_shadow_page_info_text</info_text>-->
+<!--                    </meta>-->
+<!--                    <params>-->
+<!--                        <param name="type" value="toggler" />-->
+<!--                        <param name="label">-->
+<!--                            <meta>-->
+<!--                                <title>sulu_archive.enable_shadow_archive</title>-->
+<!--                            </meta>-->
+<!--                        </param>-->
+<!--                    </params>-->
+<!--                </property>-->
+<!--                <property-->
+<!--                        name="shadowBaseLanguage"-->
+<!--                        type="page_settings_shadow_locale_select"-->
+<!--                        visibleCondition="shadowOn == true"-->
+<!--                        colspan="6"-->
+<!--                >-->
+<!--                    <meta>-->
+<!--                        <title>sulu_page.shadow_locale</title>-->
+<!--                    </meta>-->
+<!--                </property>-->
+<!--            </properties>-->
+<!--        </section>-->
+
+        <section name="editInfo">
+            <meta>
+                <title>sulu_archive.header.change_author</title>
+            </meta>
+            <properties>
+                <property name="authored" type="datetime" colspan="6">
+                    <meta>
+                        <title>sulu_archive.displayed_authored</title>
+                    </meta>
+                </property>
+                <property name="author" type="single_contact_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.displayed_author</title>
+                    </meta>
+                </property>
+            </properties>
+        </section>
+        <section name="changelog">
+            <meta>
+                <title>sulu_archive.header.created_changed</title>
+            </meta>
+            <properties>
+                <property name="created" type="datetime" disabledCondition="true" colspan="6">
+                    <meta>
+                        <title>sulu_archive.created_date</title>
+                    </meta>
+                </property>
+                <property name="creator" type="single_contact_selection" disabledCondition="true" colspan="6">
+                    <meta>
+                        <title>sulu_archive.creator</title>
+                    </meta>
+                </property>
+
+                <property name="changed" type="datetime" disabledCondition="true" colspan="6">
+                    <meta>
+                        <title>sulu_archive.changed_date</title>
+                    </meta>
+                </property>
+                <property name="changer" type="single_contact_selection" disabledCondition="true" colspan="6">
+                    <meta>
+                        <title>sulu_archive.changer</title>
+                    </meta>
+                </property>
+
+                <!--
+                <property name="changelog" type="changelog_line">
+                </property>
+                -->
+
+            </properties>
+        </section>
+    </properties>
+</form>

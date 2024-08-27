@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="sulu_archive.admin.archive" class="Manuxi\SuluArchiveBundle\Admin\ArchiveAdmin">
+            <argument type="service" id="sulu_admin.view_builder_factory"/>
+            <argument type="service" id="sulu_security.security_checker"/>
+            <argument type="service" id="sulu_core.webspace.webspace_manager"/>
+            <argument type="service" id="sulu_archive.type_selection"/>
+            <argument type="service" id="sulu_automation.automation_view_builder_factory"/>
+
+            <tag name="sulu.admin"/>
+            <tag name="sulu.context" context="admin"/>
+        </service>
+
+        <service id="sulu_archive.admin.settings" class="Manuxi\SuluArchiveBundle\Admin\SettingsAdmin">
+            <argument type="service" id="sulu_admin.view_builder_factory"/>
+            <argument type="service" id="sulu_security.security_checker"/>
+
+            <tag name="sulu.admin"/>
+            <tag name="sulu.context" context="admin"/>
+        </service>
+
+        <service id="sulu_archive.doctrine_list_representation_factory" class="Manuxi\SuluArchiveBundle\Common\DoctrineListRepresentationFactory">
+            <argument type="service" id="sulu_core.rest_helper"/>
+            <argument type="service" id="sulu_core.list_rest_helper"/>
+            <argument type="service" id="sulu_core.doctrine_list_builder_factory"/>
+            <argument type="service" id="sulu_core.list_builder.field_descriptor_factory"/>
+            <argument type="service" id="sulu_core.webspace.webspace_manager"/>
+            <argument type="service" id="sulu_archive.repository.archive_translation"/>
+            <argument type="service" id="sulu_media.media_manager"/>
+
+            <tag name="sulu.context" context="admin"/>
+        </service>
+
+        <service id="sulu_archive.type_selection" class="Manuxi\SuluArchiveBundle\Service\ArchiveTypeSelect" public="true">
+            <argument type="service" id="translator.default"/>
+        </service>
+
+        <!-- Repositories -->
+        <service id="sulu_archive.repository.archive" class="Manuxi\SuluArchiveBundle\Repository\ArchiveRepository" public="true" lazy="true">
+            <argument type="service" id="doctrine"/>
+            <tag name="doctrine.repository_service"/>
+        </service>
+
+        <service id="sulu_archive.repository.archive_translation" class="Manuxi\SuluArchiveBundle\Repository\ArchiveTranslationRepository" lazy="true">
+            <argument type="service" id="doctrine"/>
+        </service>
+
+        <service id="sulu_archive.repository.archive_seo" class="Manuxi\SuluArchiveBundle\Repository\ArchiveSeoRepository" public="true" lazy="true">
+            <argument type="service" id="doctrine"/>
+        </service>
+
+        <service id="sulu_archive.repository.archive_seo_translation" class="Manuxi\SuluArchiveBundle\Repository\ArchiveSeoTranslationRepository" public="true" lazy="true">
+            <argument type="service" id="doctrine"/>
+        </service>
+
+        <service id="sulu_archive.repository.archive_excerpt" class="Manuxi\SuluArchiveBundle\Repository\ArchiveExcerptRepository" public="true" lazy="true">
+            <argument type="service" id="doctrine"/>
+        </service>
+
+        <service id="sulu_archive.repository.archive_excerpt_translation" class="Manuxi\SuluArchiveBundle\Repository\ArchiveExcerptTranslationRepository" public="true" lazy="true">
+            <argument type="service" id="doctrine"/>
+        </service>
+
+
+        <!-- needed for massive search/automation bundle? -->
+        <!-- Otherwise: "Make sure the service exists and is tagged with 'doctrine.repository_service'" -->
+        <service id="Manuxi\SuluArchiveBundle\Repository\ArchiveRepository" public="true" lazy="true">
+            <argument type="service" id="doctrine"/>
+            <tag name="doctrine.repository_service"/>
+        </service>
+
+        <service id="sulu_archive.single_archive_selection" class="Manuxi\SuluArchiveBundle\Content\Type\SingleArchiveSelection">
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
+
+            <tag name="sulu.content.type" alias="single_archive_selection" />
+        </service>
+
+        <service id="sulu_archive.archive_selection" class="Manuxi\SuluArchiveBundle\Content\Type\ArchiveSelection">
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
+
+            <tag name="sulu.content.type" alias="archive_selection"/>
+        </service>
+
+        <service id="Manuxi\SuluArchiveBundle\Content\ArchiveSelectionContentType">
+            <argument type="service" id="sulu_archive.repository.archive"/>
+
+            <tag name="sulu.content.type" alias="archive_selection"/>
+        </service>
+
+        <service id="Manuxi\SuluArchiveBundle\Routing\ArchiveRouteDefaultsProvider">
+            <argument type="service" id="sulu_archive.repository.archive"/>
+
+            <tag name="sulu_route.defaults_provider"/>
+        </service>
+
+        <service id="sulu_archive.archive_data_provider" class="Manuxi\SuluArchiveBundle\Content\ArchiveDataProvider">
+            <argument type="service" id="sulu_archive.repository.archive"/>
+            <argument type="service" id="sulu_core.array_serializer"/>
+            <argument type="service" id="request_stack"/>
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="sulu_archive.type_selection"/>
+
+            <tag name="sulu.smart_content.data_provider" alias="archive"/>
+        </service>
+
+        <service id="sulu_archive.webspace_selector"
+                 class="Manuxi\SuluArchiveBundle\Admin\Helper\WebspaceSelector"
+                 public="true">
+            <argument type="service" id="sulu_core.webspace.webspace_manager"/>
+        </service>
+
+        <service id="sulu_archive.persistence.event_listener.doctrine.author" class="Manuxi\SuluArchiveBundle\EventListener\Doctrine\AuthorListener">
+            <argument>%sulu.model.contact.class%</argument>
+            <argument type="service" id="security.token_storage" on-invalid="null"/>
+            <tag name="doctrine.event_listener" event="loadClassMetadata"/>
+            <tag name="doctrine.event_listener" event="onFlush"/>
+        </service>
+        <service id="sulu_archive.persistence.event_listener.doctrine.authored" class="Manuxi\SuluArchiveBundle\EventListener\Doctrine\AuthoredListener">
+            <tag name="doctrine.event_listener" event="loadClassMetadata"/>
+            <tag name="doctrine.event_listener" event="preUpdate"/>
+            <tag name="doctrine.event_listener" event="prePersist"/>
+        </service>
+
+        <service id="sulu_archive.model.archive" class="Manuxi\SuluArchiveBundle\Entity\Models\ArchiveModel">
+            <argument type="service" id="sulu_archive.repository.archive"/>
+            <argument type="service" id="sulu.repository.media"/>
+            <argument type="service" id="sulu.repository.contact"/>
+            <argument type="service" id="sulu_activity.domain_event_collector"/>
+        </service>
+
+        <service id="sulu_archive.model.archive_seo" class="Manuxi\SuluArchiveBundle\Entity\Models\ArchiveSeoModel">
+            <argument type="service" id="sulu_archive.repository.archive_seo"/>
+        </service>
+
+        <service id="sulu_archive.model.archive_excerpt" class="Manuxi\SuluArchiveBundle\Entity\Models\ArchiveExcerptModel">
+            <argument type="service" id="sulu_archive.repository.archive_excerpt"/>
+            <argument type="service" id="sulu_category.category_manager"/>
+            <argument type="service" id="sulu_tag.tag_manager"/>
+            <argument type="service" id="sulu.repository.media"/>
+        </service>
+
+        <service id="sulu_archive.object_provider" public="true" class="Manuxi\SuluArchiveBundle\Preview\ArchiveObjectProvider">
+            <argument type="service" id="sulu_archive.repository.archive"/>
+            <tag name="sulu_preview.object_provider" provider-key="archive"/>
+        </service>
+
+        <service id="sulu_archive.routing_provider" public="true" class="Manuxi\SuluArchiveBundle\Routing\ArchiveRouteDefaultsProvider">
+            <argument type="service" id="sulu_archive.repository.archive"/>
+            <tag name="sulu_route.defaults_provider"/>
+        </service>
+
+        <!--Link-->
+        <service id="sulu_archive.archive_link_provider" class="Manuxi\SuluArchiveBundle\Link\ArchiveLinkProvider">
+            <argument type="service" id="sulu_archive.repository.archive"/>
+            <argument type="service" id="translator.default"/>
+            <tag name="sulu.link.provider" alias="archive"/>
+        </service>
+
+        <!--Sitemap-->
+        <service id="sulu_archive.sitemap_provider" public="true" class="Manuxi\SuluArchiveBundle\Sitemap\ArchiveSitemapProvider">
+            <argument type="service" id="sulu_archive.repository.archive"/>
+            <argument type="service" id="sulu_core.webspace.webspace_manager"/>
+            <tag name="sulu.sitemap.provider"/>
+        </service>
+
+        <!--Trash-->
+        <service id="sulu_archive.archive_trash_item_handler" class="Manuxi\SuluArchiveBundle\Trash\ArchiveTrashItemHandler">
+            <argument type="service" id="sulu_trash.trash_item_repository"/>
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
+            <argument type="service" id="sulu_trash.doctrine_restore_helper"/>
+            <argument type="service" id="sulu_activity.domain_event_collector"/>
+
+            <tag name="sulu_trash.store_trash_item_handler"/>
+            <tag name="sulu_trash.restore_trash_item_handler"/>
+            <tag name="sulu_trash.restore_configuration_provider"/>
+        </service>
+
+        <!--Twig-->
+        <service id="sulu_archive.default.twig_extension" class="Manuxi\SuluArchiveBundle\Twig\ArchiveTwigExtension">
+            <argument type="service" id="sulu_archive.repository.archive"/>
+            <tag name="twig.extension"/>
+        </service>
+        <service id="sulu_archive.settings.twig_extension" class="Manuxi\SuluArchiveBundle\Twig\ArchiveSettingsTwigExtension">
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
+            <tag name="twig.extension"/>
+        </service>
+
+    </services>
+</container>

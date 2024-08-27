@@ -1,0 +1,39 @@
+{% extends "body.html.twig" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row archive-{{ archive.type }}">
+            <div class="col-12 pb-3">
+                <div class="title">
+                    {% if archive.showDate %}
+                        <div class="overline mb-1">
+                            {{ archive.publishedAt | format_datetime('full', 'none', locale=app.request.locale) }}
+                            {% if archive.showAuthor %}
+                                {% set contact = sulu_resolve_contact(archive.author) %}
+                                {{ "by"|trans }} {{ contact.fullName }}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    <h1 class="mb-2">{{ archive.title }}</h1>
+                    {% if archive.subtitle %}
+                        <h2 class="h3 mb-4">{{ archive.subtitle }}</h2>
+                    {% endif %}
+                    {% if archive.summary %}
+                        <p class="mb-4">{{ archive.summary }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="content pb-3">
+                    {{ archive.text|raw }}
+                </div>
+            </div>
+            {% if archive.footer %}
+                <div class="col-12 py-3 bg-light text-dark">
+                    <div class="footer mb-5">
+                        {{ archive.footer|raw }}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

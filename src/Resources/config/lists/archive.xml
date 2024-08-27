@@ -1,0 +1,180 @@
+<?xml version="1.0" ?>
+<list xmlns="http://schemas.sulu.io/list-builder/list">
+    <key>archive</key>
+
+    <joins name="translation">
+        <join>
+            <entity-name>%sulu.model.archive_translation.class%</entity-name>
+            <field-name>%sulu.model.archive.class%.translations</field-name>
+            <condition>%sulu.model.archive_translation.class%.locale = :locale</condition>
+        </join>
+    </joins>
+
+    <joins name="changer" ref="translation">
+        <join>
+            <entity-name>%sulu.model.user.class%_changer</entity-name>
+            <field-name>%sulu.model.archive_translation.class%.changer</field-name>
+        </join>
+        <join>
+            <entity-name>%sulu.model.contact.class%_changer</entity-name>
+            <field-name>%sulu.model.user.class%_changer.contact</field-name>
+        </join>
+    </joins>
+
+    <joins name="creator" ref="translation">
+        <join>
+            <entity-name>%sulu.model.user.class%_creator</entity-name>
+            <field-name>%sulu.model.archive_translation.class%.creator</field-name>
+        </join>
+        <join>
+            <entity-name>%sulu.model.contact.class%_creator</entity-name>
+            <field-name>%sulu.model.user.class%_creator.contact</field-name>
+        </join>
+    </joins>
+
+    <joins name="author" ref="translation">
+        <join>
+            <entity-name>%sulu.model.contact.class%</entity-name>
+            <field-name>%sulu.model.archive_translation.class%.author</field-name>
+        </join>
+    </joins>
+
+    <properties>
+        <property name="id" visibility="no" translation="sulu_admin.id">
+            <field-name>id</field-name>
+            <entity-name>%sulu.model.archive.class%</entity-name>
+        </property>
+
+        <property name="type" visibility="always" translation="sulu_archive.archive_type">
+            <field-name>type</field-name>
+            <entity-name>%sulu.model.archive.class%</entity-name>
+            <filter type="select">
+                <params>
+                    <param name="options" type="collection">
+                        <param name="default" value="sulu_archive.types.default" />
+                        <param name="article" value="sulu_archive.types.article" />
+                        <param name="blog" value="sulu_archive.types.blog" />
+                        <param name="faq" value="sulu_archive.types.faq" />
+                        <param name="notice" value="sulu_archive.types.notice" />
+                        <param name="announcement" value="sulu_archive.types.announcement" />
+                        <param name="rating" value="sulu_archive.types.rating" />
+                    </param>
+                </params>
+            </filter>
+        </property>
+
+        <property name="title" visibility="always" searchability="yes" translation="sulu_archive.title">
+            <field-name>title</field-name>
+            <entity-name>%sulu.model.archive_translation.class%</entity-name>
+
+            <joins ref="translation"/>
+        </property>
+
+        <property name="image" visibility="always" translation="sulu_archive.image" sortable="false">
+            <field-name>id</field-name>
+            <entity-name>SuluMediaBundle:Media</entity-name>
+            <joins>
+                <join>
+                    <entity-name>SuluMediaBundle:Media</entity-name>
+                    <field-name>%sulu.model.archive_translation.class%.image</field-name>
+                </join>
+            </joins>
+
+            <transformer type="thumbnails"/>
+        </property>
+
+        <property name="summary" visibility="no" searchability="yes" translation="sulu_archive.summary">
+            <field-name>summary</field-name>
+            <entity-name>%sulu.model.archive_translation.class%</entity-name>
+
+            <joins ref="translation"/>
+        </property>
+
+        <property name="text" visibility="no" searchability="yes" translation="sulu_archive.text">
+            <field-name>text</field-name>
+            <entity-name>%sulu.model.archive_translation.class%</entity-name>
+
+            <joins ref="translation"/>
+        </property>
+
+        <property name="publishedState" visibility="yes" translation="sulu_archive.published" type="bool">
+            <field-name>published</field-name>
+            <entity-name>%sulu.model.archive_translation.class%</entity-name>
+
+            <joins ref="translation"/>
+        </property>
+
+        <property name="published" visibility="yes" translation="sulu_archive.published_date" type="datetime">
+            <field-name>publishedAt</field-name>
+            <entity-name>%sulu.model.archive_translation.class%</entity-name>
+
+            <joins ref="translation"/>
+        </property>
+
+        <property name="authored" translation="sulu_archive.displayed_authored" type="datetime" visibility="yes">
+            <field-name>authored</field-name>
+            <entity-name>%sulu.model.archive_translation.class%</entity-name>
+
+            <joins ref="translation"/>
+        </property>
+
+        <concatenation-property name="author" translation="sulu_archive.displayed_author" visibility="yes" searchability="yes">
+            <field>
+                <field-name>firstName</field-name>
+                <entity-name>%sulu.model.contact.class%</entity-name>
+
+                <joins ref="author"/>
+            </field>
+            <field>
+                <field-name>lastName</field-name>
+                <entity-name>%sulu.model.contact.class%</entity-name>
+
+                <joins ref="author"/>
+            </field>
+        </concatenation-property>
+
+        <property name="created" translation="sulu_admin.created" type="datetime" visibility="no">
+            <field-name>created</field-name>
+            <entity-name>%sulu.model.archive_translation.class%</entity-name>
+
+            <joins ref="translation"/>
+        </property>
+
+        <concatenation-property name="creator" translation="sulu_admin.creator" visibility="no" searchability="yes">
+            <field>
+                <field-name>firstName</field-name>
+                <entity-name>%sulu.model.contact.class%_creator</entity-name>
+
+                <joins ref="creator"/>
+            </field>
+            <field>
+                <field-name>lastName</field-name>
+                <entity-name>%sulu.model.contact.class%_creator</entity-name>
+
+                <joins ref="creator"/>
+            </field>
+        </concatenation-property>
+
+        <property name="changed" translation="sulu_admin.changed" type="datetime" visibility="no">
+            <field-name>changed</field-name>
+            <entity-name>%sulu.model.archive_translation.class%</entity-name>
+
+            <joins ref="translation"/>
+        </property>
+
+        <concatenation-property name="changer" translation="sulu_admin.changer" visibility="no" searchability="yes">
+            <field>
+                <field-name>firstName</field-name>
+                <entity-name>%sulu.model.contact.class%_changer</entity-name>
+
+                <joins ref="changer"/>
+            </field>
+            <field>
+                <field-name>lastName</field-name>
+                <entity-name>%sulu.model.contact.class%_changer</entity-name>
+
+                <joins ref="changer"/>
+            </field>
+        </concatenation-property>
+    </properties>
+</list>

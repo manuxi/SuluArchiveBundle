@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<massive-search-mapping xmlns="http://massiveart.com/schema/dic/massive-search-mapping">
+    <mapping class="Manuxi\SuluArchiveBundle\Entity\Archive">
+        <index value="archive"/>
+        <id property="id"/>
+        <title expr="object.getTitle()"/>
+        <description expr="object.getSubtitle()"/>
+        <url expr="object.getRoutePath()" />
+        <locale property="locale"/>
+        <fields>
+            <field name="title" expr="object.getTitle()" type="string"/>
+            <field name="subtitle" expr="object.getSubtitle()" type="string"/>
+            <field name="summary" expr="object.getSummary()" type="string"/>
+            <field name="text" expr="object.getText()" type="string"/>
+            <field name="footer" expr="object.getFooter()" type="string"/>
+        </fields>
+    </mapping>
+</massive-search-mapping>
