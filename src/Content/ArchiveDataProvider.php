@@ -48,8 +48,8 @@ class ArchiveDataProvider extends BaseDataProvider
     private function getSorting(): array
     {
         return [
-            ['column' => 'translation.authored', 'title' => 'sulu_archive.authored'],
             ['column' => 'translation.title', 'title' => 'sulu_archive.title'],
+            ['column' => 'translation.authored', 'title' => 'sulu_archive.authored'],
             ['column' => 'translation.published', 'title' => 'sulu_archive.published'],
             ['column' => 'translation.publishedAt', 'title' => 'sulu_archive.published_at'],
         ];

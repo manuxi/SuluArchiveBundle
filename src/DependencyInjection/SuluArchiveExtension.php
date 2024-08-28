@@ -7,7 +7,6 @@ namespace Manuxi\SuluArchiveBundle\DependencyInjection;
 use Exception;
 use Manuxi\SuluArchiveBundle\Admin\ArchiveAdmin;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
-use Manuxi\SuluArchiveBundle\Entity\Location;
 use Sulu\Bundle\PersistenceBundle\DependencyInjection\PersistenceExtensionTrait;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

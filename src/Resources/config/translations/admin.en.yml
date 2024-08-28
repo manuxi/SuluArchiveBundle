@@ -30,7 +30,7 @@ sulu_archive:
         default: "Default"
         streets: "Streets and Places"
         attractions: "Attractions"
-        buildings: "Buildings"
+        buildings: "Buildings and Architecture"
         mining: "Mining"
         surrounding_area: "Surrounding Area"
 
@@ -99,7 +99,7 @@ sulu_archive:
             page_archive_default: "Overview Default"
             page_archive_streets: "Overview Streets and Places"
             page_archive_attractions: "Overview Attractions"
-            page_archive_buildings: "Overview Buildings"
+            page_archive_buildings: "Overview Buildings and Architecture"
             page_archive_mining: "Overview Mining"
             page_archive_historical_recordings: "Overview Historical Recordings"
             page_archive_aerial_shots: "Overview Aerial Shots"

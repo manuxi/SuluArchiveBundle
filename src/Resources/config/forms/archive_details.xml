@@ -34,6 +34,7 @@
                     <!--https://github.com/sulu/sulu/pull/5933-->
                     <params>
                         <param name="mode" value="leaf"/>
+                        <param name="entity_class" value="Manuxi\SuluArchiveBundle\Entity\Archive"/>
                     </params>
                 </property>
 

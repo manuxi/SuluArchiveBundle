@@ -12,10 +12,8 @@ use Sulu\Bundle\RouteBundle\Routing\Defaults\RouteDefaultsProviderInterface;
 class ArchiveRouteDefaultsProvider implements RouteDefaultsProviderInterface
 {
 
-    private ArchiveRepository $repository;
-
-    public function __construct(ArchiveRepository $repository) {
-        $this->repository = $repository;
+    public function __construct(private ArchiveRepository $repository)
+    {
     }
 
     /**

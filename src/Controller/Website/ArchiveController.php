@@ -72,7 +72,7 @@ class ArchiveController extends AbstractController
 
     /**
      * With the help of this method the corresponding localisations for the
-     * current archive are found e.g. to be linked in the language switcher.
+     * current archive is found e.g. to be linked in the language switcher.
      * @param Archive $archive
      * @return array<string, array>
      */
@@ -105,14 +105,21 @@ class ArchiveController extends AbstractController
      */
     public static function getSubscribedServices(): array
     {
-        return array_merge(
+/*        return array_merge(
             parent::getSubscribedServices(),
             [
                 WebspaceManagerInterface::class,
                 RouteRepositoryInterface::class,
                 TemplateAttributeResolverInterface::class,
             ]
-        );
+        );*/
+        $subscribedServices = parent::getSubscribedServices();
+
+        $subscribedServices['sulu_core.webspace.webspace_manager'] = WebspaceManagerInterface::class;
+        $subscribedServices['sulu.repository.route'] = RouteRepositoryInterface::class;
+        $subscribedServices['sulu_website.resolver.template_attribute'] = TemplateAttributeResolverInterface::class;
+
+        return $subscribedServices;
     }
 
 }

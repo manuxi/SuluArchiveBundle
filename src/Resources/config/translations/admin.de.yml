@@ -30,7 +30,7 @@ sulu_archive:
         default: "Standard"
         streets: "Straßen und Plätze"
         attractions: "Sehenswürdigkeiten"
-        buildings: "Gebäude"
+        buildings: "Gebäude und Architektur"
         mining:	"Bergbau (Gruben)"
         surrounding_area: "Umgebung"
 
@@ -99,7 +99,7 @@ sulu_archive:
             page_archive_default: "Übersichtsseite Typ Standard"
             page_archive_streets: "Übersichtsseite Typ Straßen und Plätze"
             page_archive_attractions: "Übersichtsseite Typ Sehenswürdigkeiten"
-            page_archive_buildings: "Übersichtsseite Typ Gebäude"
+            page_archive_buildings: "Übersichtsseite Typ Gebäude und Architektur"
             page_archive_mining: "Übersichtsseite Typ Bergbau (Gruben)"
             page_archive_historical_recordings: "Übersichtsseite Typ Historische Aufnahmen"
             page_archive_aerial_shots: "Übersichtsseite Typ Luftaufnahmen"

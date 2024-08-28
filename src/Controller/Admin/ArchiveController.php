@@ -9,8 +9,6 @@ use Manuxi\SuluArchiveBundle\Entity\Archive;
 use Manuxi\SuluArchiveBundle\Entity\Models\ArchiveExcerptModel;
 use Manuxi\SuluArchiveBundle\Entity\Models\ArchiveModel;
 use Manuxi\SuluArchiveBundle\Entity\Models\ArchiveSeoModel;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\RouteResource;
 use FOS\RestBundle\Routing\ClassResourceInterface;
@@ -61,14 +59,14 @@ class ArchiveController extends AbstractRestController implements ClassResourceI
         ?TokenStorageInterface $tokenStorage = null
     ) {
         parent::__construct($viewHandler, $tokenStorage);
-        $this->archiveModel                        = $archiveModel;
-        $this->archiveSeoModel                     = $archiveSeoModel;
-        $this->archiveExcerptModel                 = $archiveExcerptModel;
-        $this->doctrineListRepresentationFactory = $doctrineListRepresentationFactory;
-        $this->routeManager                      = $routeManager;
-        $this->routeRepository                   = $routeRepository;
-        $this->securityChecker                   = $securityChecker;
-        $this->trashManager = $trashManager;
+        $this->archiveModel                         = $archiveModel;
+        $this->archiveSeoModel                      = $archiveSeoModel;
+        $this->archiveExcerptModel                  = $archiveExcerptModel;
+        $this->doctrineListRepresentationFactory    = $doctrineListRepresentationFactory;
+        $this->routeManager                         = $routeManager;
+        $this->routeRepository                      = $routeRepository;
+        $this->securityChecker                      = $securityChecker;
+        $this->trashManager                         = $trashManager;
     }
 
     public function cgetAction(Request $request): Response
@@ -111,6 +109,7 @@ class ArchiveController extends AbstractRestController implements ClassResourceI
 
     /**
      * @Rest\Post("/archive/{id}")
+     * @Rest\Post("/archives/{id}")
      *
      * @param int $id
      * @param Request $request
