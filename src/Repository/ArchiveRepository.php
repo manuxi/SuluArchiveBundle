@@ -292,7 +292,6 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
                     $orWhere .= " OR archive.type = :type" . $i;
                 }
                 $queryBuilder->setParameter("type" . $i, $filters['types'][$i]);
-                $i++;
             }
             $queryBuilder->andWhere($orWhere);
         }
