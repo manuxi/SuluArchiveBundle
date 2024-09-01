@@ -11,6 +11,7 @@ sulu_archive:
     publish: "veröffentlichen"
     unpublish: "Veröffentlichen beenden"
     published: "veröffentlicht"
+    unpublished: "nicht veröffentlicht"
     published_date: "Veröffentlichungsdatum"
     published_at: "Veröffentlicht am"
     show_author: "Autor anzeigen"

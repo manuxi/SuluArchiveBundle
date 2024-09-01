@@ -52,12 +52,31 @@
                 <params>
                     <param name="options" type="collection">
                         <param name="default" value="sulu_archive.types.default" />
-                        <param name="article" value="sulu_archive.types.article" />
-                        <param name="blog" value="sulu_archive.types.blog" />
-                        <param name="faq" value="sulu_archive.types.faq" />
-                        <param name="notice" value="sulu_archive.types.notice" />
-                        <param name="announcement" value="sulu_archive.types.announcement" />
-                        <param name="rating" value="sulu_archive.types.rating" />
+                        <param name="streets" value="sulu_archive.types.streets" />
+                        <param name="attractions" value="sulu_archive.types.attractions" />
+                        <param name="buildings" value="sulu_archive.types.buildings" />
+                        <param name="mining" value="sulu_archive.types.mining" />
+                        <param name="surrounding_area" value="sulu_archive.types.surrounding_area" />
+                        <param name="maps_plans" value="sulu_archive.types.maps_plans" />
+                        <param name="aerial_shots" value="sulu_archive.types.aerial_shots" />
+                        <param name="development_plans" value="sulu_archive.types.development_plans" />
+                        <param name="expert_opinions_reports" value="sulu_archive.types.expert_opinions_reports" />
+                        <param name="place_name_studies" value="sulu_archive.types.place_name_studies" />
+                        <param name="local_chronicles" value="sulu_archive.types.local_chronicles" />
+                        <param name="newspaper_articles" value="sulu_archive.types.newspaper_articles" />
+                        <param name="advertisements" value="sulu_archive.types.advertisements" />
+                        <param name="genealogical_research" value="sulu_archive.types.genealogical_research" />
+                        <param name="biographies" value="sulu_archive.types.biographies" />
+                        <param name="correspondences" value="sulu_archive.types.correspondences" />
+                        <param name="historical_documents" value="sulu_archive.types.historical_documents" />
+                        <param name="historical_recordings" value="sulu_archive.types.historical_recordings" />
+                        <param name="visual_material" value="sulu_archive.types.visual_material" />
+                        <param name="audio_video_recordings" value="sulu_archive.types.audio_video_recordings" />
+                        <param name="membership_directories" value="sulu_archive.types.membership_directories" />
+                        <param name="club_journals" value="sulu_archive.types.club_journals" />
+                        <param name="posters_flyers" value="sulu_archive.types.posters_flyers" />
+                        <param name="objects_artifacts" value="sulu_archive.types.objects_artifacts" />
+                        <param name="collections_exhibitions" value="sulu_archive.types.collections_exhibitions" />
                     </param>
                 </params>
             </filter>
@@ -102,6 +121,14 @@
             <entity-name>%sulu.model.archive_translation.class%</entity-name>
 
             <joins ref="translation"/>
+            <filter type="select">
+                <params>
+                    <param name="options" type="collection">
+                        <param name="1" value="sulu_archive.published" />
+                        <param name="0" value="sulu_archive.unpublished" />
+                    </param>
+                </params>
+            </filter>
         </property>
 
         <property name="published" visibility="yes" translation="sulu_archive.published_date" type="datetime">
@@ -109,6 +136,7 @@
             <entity-name>%sulu.model.archive_translation.class%</entity-name>
 
             <joins ref="translation"/>
+            <filter type="date" />
         </property>
 
         <property name="authored" translation="sulu_archive.displayed_authored" type="datetime" visibility="yes">
@@ -116,6 +144,7 @@
             <entity-name>%sulu.model.archive_translation.class%</entity-name>
 
             <joins ref="translation"/>
+            <filter type="date" />
         </property>
 
         <concatenation-property name="author" translation="sulu_archive.displayed_author" visibility="yes" searchability="yes">
@@ -131,6 +160,12 @@
 
                 <joins ref="author"/>
             </field>
+<!--            <filter type="selection">
+                <params>
+                    <param name="displayProperty" value="fullName" />
+                    <param name="resourceKey" value="contacts" />
+                </params>
+            </filter>-->
         </concatenation-property>
 
         <property name="created" translation="sulu_admin.created" type="datetime" visibility="no">
@@ -138,6 +173,7 @@
             <entity-name>%sulu.model.archive_translation.class%</entity-name>
 
             <joins ref="translation"/>
+            <filter type="date" />
         </property>
 
         <concatenation-property name="creator" translation="sulu_admin.creator" visibility="no" searchability="yes">
@@ -160,6 +196,7 @@
             <entity-name>%sulu.model.archive_translation.class%</entity-name>
 
             <joins ref="translation"/>
+            <filter type="date" />
         </property>
 
         <concatenation-property name="changer" translation="sulu_admin.changer" visibility="no" searchability="yes">
