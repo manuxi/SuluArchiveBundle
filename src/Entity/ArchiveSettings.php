@@ -40,9 +40,20 @@ class ArchiveSettings implements AuditableInterface
     #[ORM\Column(type: Types::STRING, nullable: true)]
     private ?string $pageArchiveStreets = null;
 
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    private ?string $pageArchiveTraffic = null;
+
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    private ?string $pageArchiveTrains = null;
+
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    private ?string $pageArchiveSigns = null;
 
     #[ORM\Column(type: Types::STRING, nullable: true)]
     private ?string $pageArchiveAttractions = null;
+
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    private ?string $pageArchiveMemorials = null;
 
     #[ORM\Column(type: Types::STRING, nullable: true)]
     private ?string $pageArchiveBuildings = null;
@@ -178,6 +189,36 @@ class ArchiveSettings implements AuditableInterface
         $this->pageArchiveStreets = $pageArchiveStreets;
     }
 
+    public function getPageArchiveTraffic(): ?string
+    {
+        return $this->pageArchiveTraffic;
+    }
+
+    public function setPageArchiveTraffic(?string $pageArchiveTraffic): void
+    {
+        $this->pageArchiveTraffic = $pageArchiveTraffic;
+    }
+
+    public function getPageArchiveTrains(): ?string
+    {
+        return $this->pageArchiveTrains;
+    }
+
+    public function setPageArchiveTrains(?string $pageArchiveTrains): void
+    {
+        $this->pageArchiveTrains = $pageArchiveTrains;
+    }
+
+    public function getPageArchiveSigns(): ?string
+    {
+        return $this->pageArchiveSigns;
+    }
+
+    public function setPageArchiveSigns(?string $pageArchiveSigns): void
+    {
+        $this->pageArchiveSigns = $pageArchiveSigns;
+    }
+
     public function getPageArchiveAttractions(): ?string
     {
         return $this->pageArchiveAttractions;
@@ -186,6 +227,16 @@ class ArchiveSettings implements AuditableInterface
     public function setPageArchiveAttractions(?string $pageArchiveAttractions): void
     {
         $this->pageArchiveAttractions = $pageArchiveAttractions;
+    }
+
+    public function getPageArchiveMemorials(): ?string
+    {
+        return $this->pageArchiveMemorials;
+    }
+
+    public function setPageArchiveMemorials(?string $pageArchiveMemorials): void
+    {
+        $this->pageArchiveMemorials = $pageArchiveMemorials;
     }
 
     public function getPageArchiveBuildings(): ?string

@@ -14,7 +14,11 @@ class ArchiveTypeSelect
     private array $typesMap = [
         'default'                   => 'sulu_archive.types.default',
         'streets'                   => 'sulu_archive.types.streets',
+        'traffic'                   => 'sulu_archive.types.traffic',
+        'trains'                    => 'sulu_archive.types.trains',
+        'signs'                     => 'sulu_archive.types.signs',
         'attractions'               => 'sulu_archive.types.attractions',
+        'memorials'                 => 'sulu_archive.types.memorials',
         'buildings'                 => 'sulu_archive.types.buildings',
         'mining'                    => 'sulu_archive.types.mining',
         'surrounding_area'          => 'sulu_archive.types.surrounding_area',

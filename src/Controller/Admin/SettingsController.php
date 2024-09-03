@@ -72,7 +72,11 @@ class SettingsController extends AbstractRestController implements ClassResource
             'pageArchive' => $entity->getPageArchive(),
             'pageArchiveDefault' => $entity->getPageArchiveDefault(),
             'pageArchiveStreets' => $entity->getPageArchiveStreets(),
+            'pageArchiveTraffic' => $entity->getPageArchiveTraffic(),
+            'pageArchiveTrains' => $entity->getPageArchiveTrains(),
+            'pageArchiveSigns' => $entity->getPageArchiveSigns(),
             'pageArchiveAttractions' => $entity->getPageArchiveAttractions(),
+            'pageArchiveMemorials' => $entity->getPageArchiveMemorials(),
             'pageArchiveBuildings' => $entity->getPageArchiveBuildings(),
             'pageArchiveMining' => $entity->getPageArchiveMining(),
             'pageArchiveSurroundingArea' => $entity->getPageArchiveSurroundingArea(),
@@ -108,7 +112,11 @@ class SettingsController extends AbstractRestController implements ClassResource
         $entity->setPageArchive($data['pageArchive']);
         $entity->setPageArchiveDefault($data['pageArchiveDefault']);
         $entity->setPageArchiveStreets($data['pageArchiveStreets']);
+        $entity->setPageArchiveTraffic($data['pageArchiveTraffic']);
+        $entity->setPageArchiveTrains($data['pageArchiveTrains']);
+        $entity->setPageArchiveSigns($data['pageArchiveSigns']);
         $entity->setPageArchiveAttractions($data['pageArchiveAttractions']);
+        $entity->setPageArchiveMemorials($data['pageArchiveMemorials']);
         $entity->setPageArchiveBuildings($data['pageArchiveBuildings']);
         $entity->setPageArchiveMining($data['pageArchiveMining']);
         $entity->setPageArchiveSurroundingArea($data['pageArchiveSurroundingArea']);
