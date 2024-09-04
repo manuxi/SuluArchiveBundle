@@ -88,13 +88,15 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
     {
         $queryBuilder = $this->createQueryBuilder('archive')
             ->leftJoin('archive.translations', 'translation')
-            ->where('translation.published = 1')
-            ->andWhere('translation.locale = :locale')->setParameter('locale', $locale)
+            ->where('translation.published = :published')
+            ->setParameter('published', 1)
+            ->andWhere('translation.locale = :locale')
+            ->setParameter('locale', $locale)
             ->orderBy('translation.authored', 'DESC')
             ->setMaxResults($limit)
             ->setFirstResult($offset);
 
-        $this->prepareFilter($queryBuilder, []);
+        $this->prepareFilters($queryBuilder, []);
 
         $archive = $queryBuilder->getQuery()->getResult();
         if (!$archive) {
@@ -108,8 +110,36 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
         $query = $this->createQueryBuilder('archive')
             ->select('count(archive)')
             ->leftJoin('archive.translations', 'translation')
-            ->andWhere('translation.locale = :locale')->setParameter('locale', $locale);
+            ->where('translation.published = :published')
+            ->andWhere('translation.locale = :locale')
+            ->setParameter('published', 1)
+            ->setParameter('locale', $locale);
         return $query->getQuery()->getSingleScalarResult();
+    }
+
+    public function hasNextPage(array $filters, ?int $page, ?int $pageSize, ?int $limit, string $locale, array $options = []): bool
+    {
+        //$pageCurrent = (key_exists('page', $options)) ? (int)$options['page'] : 1;
+
+        $queryBuilder = $this->createQueryBuilder('archive')
+            ->select('count(archive.id)')
+            ->leftJoin('archive.translations', 'translation')
+            ->where('translation.published = :published')
+            ->setParameter('published', 1)
+            ->andWhere('translation.locale = :locale')
+            ->setParameter('locale', $locale);
+
+        $this->prepareFilters($queryBuilder, $filters);
+
+        $archive = $queryBuilder->getQuery()->getSingleScalarResult();
+
+        $limit = $limit ?: $pageSize;
+
+        if ((int)($limit * $page) < (int)$archive) {
+            return true;
+        }
+
+        return false;
     }
 
     protected function appendJoins(QueryBuilder $queryBuilder, $alias, $locale): void
@@ -146,7 +176,7 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
 
     public function findByFilters($filters, $page, $pageSize, $limit, $locale, $options = []): array
     {
-        $entities = $this->getPublishedArchive($filters, $locale, $page, $pageSize, $limit, $options);
+        $entities = $this->getPublishedArchives($filters, $locale, $page, $pageSize, $limit, $options);
 
         return \array_map(
             function (Archive $entity) use ($locale) {
@@ -156,47 +186,52 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
         );
     }
 
-    public function hasNextPage(array $filters, ?int $page, ?int $pageSize, ?int $limit, string $locale, array $options = []): bool
+    public function getPublishedArchives(array $filters, string $locale, ?int $page, $pageSize, $limit = null, array $options): array
     {
-        $pageCurrent = (key_exists('page', $options)) ? (int)$options['page'] : 0;
-        $archiveCount = $this->createQueryBuilder('archive')
-            ->select('count(archive.id)')
-            ->leftJoin('archive.translations', 'translation')
-            ->where('translation.published = 1')
-            ->andWhere('translation.locale = :locale')
-            ->setParameter('locale', $locale)
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        if ((int)($limit * $pageCurrent) + $limit < (int)$archiveCount) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public function getPublishedArchive(array $filters, string $locale, ?int $page, $pageSize, $limit = null, array $options): array
-    {
-        $pageCurrent = (key_exists('page', $options)) ? (int)$options['page'] : 0;
+        //$pageCurrent = (key_exists('page', $options)) ? (int)$options['page'] : 1;
 
         $queryBuilder = $this->createQueryBuilder('archive')
             ->leftJoin('archive.translations', 'translation')
-            ->where('translation.published = 1')
+            ->where('translation.published = :published')
             ->andWhere('translation.locale = :locale')->setParameter('locale', $locale)
             ->orderBy('translation.authored', 'DESC')
-            ->setMaxResults($limit)
-            ->setFirstResult($pageCurrent * $limit);
+            ->setParameter('published', 1);
 
-        $this->prepareFilter($queryBuilder, $filters);
+        $this->prepareFilters($queryBuilder, $filters);
+
+        if (!$this->setOffsetResults($queryBuilder, $page, $pageSize, $limit)) {
+            return [];
+        }
 
         $archive = $queryBuilder->getQuery()->getResult();
+
         if (!$archive) {
             return [];
         }
         return $archive;
     }
 
-    private function prepareFilter(QueryBuilder $queryBuilder, array $filters): void
+    private function setOffsetResults(QueryBuilder $queryBuilder, $page, $pageSize, $limit = null): bool {
+        if (null !== $page && $pageSize > 0) {
+
+            $pageOffset = ($page - 1) * $pageSize;
+            $restLimit = $limit - $pageOffset;
+
+            $maxResults = (null !== $limit && $pageSize > $restLimit ? $restLimit : $pageSize);
+
+            if ($maxResults <= 0) {
+                return false;
+            }
+
+            $queryBuilder->setMaxResults($maxResults);
+            $queryBuilder->setFirstResult($pageOffset);
+        } elseif (null !== $limit) {
+            $queryBuilder->setMaxResults($limit);
+        }
+        return true;
+    }
+
+    private function prepareFilters(QueryBuilder $queryBuilder, array $filters): void
     {
         if (isset($filters['sortBy'])) {
             $queryBuilder->orderBy($filters['sortBy'], $filters['sortMethod']);
@@ -284,6 +319,9 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
     private function prepareTypesFilter(QueryBuilder $queryBuilder, array $filters): void
     {
         if(!empty($filters['types'])) {
+            $queryBuilder->andWhere("archive.type IN (:typeList)");
+            $queryBuilder->setParameter("typeList", $filters['types']);
+/*
             $orWhere = '';
             for ($i = 0; $i < count($filters['types']); $i++) {
                 if ($i === 0) {
@@ -294,6 +332,7 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
                 $queryBuilder->setParameter("type" . $i, $filters['types'][$i]);
             }
             $queryBuilder->andWhere($orWhere);
+*/
         }
     }
 
