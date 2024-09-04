@@ -131,11 +131,12 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
 
         $this->prepareFilters($queryBuilder, $filters);
 
-        $archive = $queryBuilder->getQuery()->getSingleScalarResult();
+        $archiveCount = $queryBuilder->getQuery()->getSingleScalarResult();
 
-        $limit = $limit ?: $pageSize;
-
-        if ((int)($limit * $page) < (int)$archive) {
+        $pos = (int)($pageSize * $page);
+        if (null !== $limit && $limit <= $pos) {
+            return false;
+        } elseif ($pos < (int)$archiveCount) {
             return true;
         }
 
@@ -193,7 +194,8 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
         $queryBuilder = $this->createQueryBuilder('archive')
             ->leftJoin('archive.translations', 'translation')
             ->where('translation.published = :published')
-            ->andWhere('translation.locale = :locale')->setParameter('locale', $locale)
+            ->andWhere('translation.locale = :locale')
+            ->setParameter('locale', $locale)
             ->orderBy('translation.authored', 'DESC')
             ->setParameter('published', 1);
 
