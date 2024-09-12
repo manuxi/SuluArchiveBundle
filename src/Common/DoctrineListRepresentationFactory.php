@@ -74,7 +74,7 @@ class DoctrineListRepresentationFactory
         if (null !== $requestedIds) {
             $idPositions = array_flip($requestedIds);
 
-            usort($items, function ($a, $b) use ($idPositions) {
+            usort($list, function ($a, $b) use ($idPositions) {
                 return $idPositions[$a['id']] - $idPositions[$b['id']];
             });
         }

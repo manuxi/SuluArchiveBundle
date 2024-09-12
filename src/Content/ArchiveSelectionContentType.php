@@ -39,11 +39,7 @@ class ArchiveSelectionContentType extends SimpleContentType
         return $archivelist;
     }
 
-    /**
-     * @param PropertyInterface $property
-     * @return mixed[]
-     */
-    public function getViewData(PropertyInterface $property): array
+    public function getViewData(PropertyInterface $property): mixed
     {
         return $property->getValue();
     }

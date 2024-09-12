@@ -189,8 +189,6 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
 
     public function getPublishedArchives(array $filters, string $locale, ?int $page, $pageSize, $limit = null, array $options): array
     {
-        //$pageCurrent = (key_exists('page', $options)) ? (int)$options['page'] : 1;
-
         $queryBuilder = $this->createQueryBuilder('archive')
             ->leftJoin('archive.translations', 'translation')
             ->where('translation.published = :published')
@@ -323,18 +321,6 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
         if(!empty($filters['types'])) {
             $queryBuilder->andWhere("archive.type IN (:typeList)");
             $queryBuilder->setParameter("typeList", $filters['types']);
-/*
-            $orWhere = '';
-            for ($i = 0; $i < count($filters['types']); $i++) {
-                if ($i === 0) {
-                    $orWhere .= "archive.type = :type" . $i;
-                } else {
-                    $orWhere .= " OR archive.type = :type" . $i;
-                }
-                $queryBuilder->setParameter("type" . $i, $filters['types'][$i]);
-            }
-            $queryBuilder->andWhere($orWhere);
-*/
         }
     }
 
