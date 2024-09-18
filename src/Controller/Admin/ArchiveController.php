@@ -28,47 +28,32 @@ use Sulu\Component\Security\SecuredControllerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * @RouteResource("archive")
+ * RRouteResource("archive")
  */
 class ArchiveController extends AbstractRestController implements ClassResourceInterface, SecuredControllerInterface
 {
     use RequestParametersTrait;
 
-    private ArchiveModel $archiveModel;
-    private ArchiveSeoModel $archiveSeoModel;
-    private ArchiveExcerptModel $archiveExcerptModel;
-    private DoctrineListRepresentationFactory $doctrineListRepresentationFactory;
-    private RouteManagerInterface $routeManager;
-    private RouteRepositoryInterface $routeRepository;
-    private SecurityCheckerInterface $securityChecker;
-    private TrashManagerInterface $trashManager;
-
     public function __construct(
-        ArchiveModel $archiveModel,
-        ArchiveSeoModel $archiveSeoModel,
-        ArchiveExcerptModel $archiveExcerptModel,
-        RouteManagerInterface $routeManager,
-        RouteRepositoryInterface $routeRepository,
-        DoctrineListRepresentationFactory $doctrineListRepresentationFactory,
-        SecurityCheckerInterface $securityChecker,
+        private ArchiveModel $archiveModel,
+        private ArchiveSeoModel $archiveSeoModel,
+        private ArchiveExcerptModel $archiveExcerptModel,
+        private RouteManagerInterface $routeManager,
+        private RouteRepositoryInterface $routeRepository,
+        private DoctrineListRepresentationFactory $doctrineListRepresentationFactory,
+        private SecurityCheckerInterface $securityChecker,
+        private TrashManagerInterface $trashManager,
         ViewHandlerInterface $viewHandler,
-        TrashManagerInterface $trashManager,
         ?TokenStorageInterface $tokenStorage = null
     ) {
         parent::__construct($viewHandler, $tokenStorage);
-        $this->archiveModel                         = $archiveModel;
-        $this->archiveSeoModel                      = $archiveSeoModel;
-        $this->archiveExcerptModel                  = $archiveExcerptModel;
-        $this->doctrineListRepresentationFactory    = $doctrineListRepresentationFactory;
-        $this->routeManager                         = $routeManager;
-        $this->routeRepository                      = $routeRepository;
-        $this->securityChecker                      = $securityChecker;
-        $this->trashManager                         = $trashManager;
     }
 
+    #[Route('/archives', name: 'get_archives', methods: 'GET')]
     public function cgetAction(Request $request): Response
     {
         $locale             = $request->query->get('locale');
@@ -79,7 +64,6 @@ class ArchiveController extends AbstractRestController implements ClassResourceI
         );
 
         return $this->handleView($this->view($listRepresentation));
-
     }
 
     /**
@@ -88,6 +72,7 @@ class ArchiveController extends AbstractRestController implements ClassResourceI
      * @return Response
      * @throws EntityNotFoundException
      */
+    #[Route('/archive/{id}', name: 'get_archive', methods: 'GET')]
     public function getAction(int $id, Request $request): Response
     {
         $entity = $this->archiveModel->getArchive($id, $request);
@@ -99,6 +84,7 @@ class ArchiveController extends AbstractRestController implements ClassResourceI
      * @return Response
      * @throws EntityNotFoundException
      */
+    #[Route('/archive', name: 'post_archive', methods: 'POST')]
     public function postAction(Request $request): Response
     {
         $entity = $this->archiveModel->createArchive($request);
@@ -108,14 +94,12 @@ class ArchiveController extends AbstractRestController implements ClassResourceI
     }
 
     /**
-     * @Rest\Post("/archive/{id}")
-     * @Rest\Post("/archives/{id}")
-     *
      * @param int $id
      * @param Request $request
      * @return Response
      * @throws MissingParameterException
      */
+    #[Route('/archives/{id}', name: 'post_archive_trigger', methods: 'POST')]
     public function postTriggerAction(int $id, Request $request): Response
     {
         $action = $this->getRequestParameter($request, 'action', true);
@@ -154,10 +138,11 @@ class ArchiveController extends AbstractRestController implements ClassResourceI
             $view = $this->view($exc->toArray(), 400);
             return $this->handleView($view);
         }
-
+        $this->updateRoutesForEntity($entity);
         return $this->handleView($this->view($entity));
     }
 
+    #[Route('/archive/{id}', name: 'put_archive', methods: 'PUT')]
     public function putAction(int $id, Request $request): Response
     {
         try {
@@ -188,6 +173,7 @@ class ArchiveController extends AbstractRestController implements ClassResourceI
      * @return Response
      * @throws EntityNotFoundException
      */
+    #[Route('/archive/{id}', name: 'delete_archive', methods: 'DELETE')]
     public function deleteAction(int $id): Response
     {
         $entity = $this->archiveModel->getArchive($id);

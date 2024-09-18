@@ -87,7 +87,7 @@ sulu_archive:
     shadow_archive: "Schatten-Archiv"
     enable_shadow_archive: "Schatten-Archiv aktivieren"
     search_name: "Archive"
-    empty_archivelist: "Keine Archiv ausgewählt"
+    empty_archivelist: "Kein Archiv-Element ausgewählt"
     archive: "Archiv"
 
     config:
