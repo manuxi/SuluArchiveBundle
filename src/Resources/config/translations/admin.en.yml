@@ -135,6 +135,7 @@ sulu_archive:
 sulu_activity:
     resource:
         archive: "Archive"
+        archives: "Archives"
     description:
         archive:
             created: "{userFullName} created the archive \"{resourceTitle}\"."
