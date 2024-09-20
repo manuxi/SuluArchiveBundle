@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Manuxi\SuluArchiveBundle\Entity\Models;
 
 use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Manuxi\SuluArchiveBundle\Domain\Event\ArchiveCopiedLanguageEvent;
 use Manuxi\SuluArchiveBundle\Domain\Event\ArchiveCreatedEvent;
@@ -19,6 +20,8 @@ use Manuxi\SuluArchiveBundle\Repository\ArchiveRepository;
 use Sulu\Bundle\ActivityBundle\Application\Collector\DomainEventCollectorInterface;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepository;
 use Sulu\Bundle\MediaBundle\Entity\MediaRepositoryInterface;
+use Sulu\Bundle\RouteBundle\Entity\RouteRepositoryInterface;
+use Sulu\Bundle\RouteBundle\Manager\RouteManagerInterface;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -26,22 +29,15 @@ class ArchiveModel implements ArchiveModelInterface
 {
     use ArrayPropertyTrait;
 
-    private ArchiveRepository $archiveRepository;
-    private MediaRepositoryInterface $mediaRepository;
-    private ContactRepository $contactRepository;
-    private DomainEventCollectorInterface $domainEventCollector;
-
     public function __construct(
-        ArchiveRepository $archiveRepository,
-        MediaRepositoryInterface $mediaRepository,
-        ContactRepository $contactRepository,
-        DomainEventCollectorInterface $domainEventCollector
-    ) {
-        $this->mediaRepository = $mediaRepository;
-        $this->archiveRepository = $archiveRepository;
-        $this->contactRepository = $contactRepository;
-        $this->domainEventCollector = $domainEventCollector;
-    }
+        private ArchiveRepository $archiveRepository,
+        private MediaRepositoryInterface $mediaRepository,
+        private ContactRepository $contactRepository,
+        private RouteManagerInterface $routeManager,
+        private RouteRepositoryInterface $routeRepository,
+        private EntityManagerInterface $entityManager,
+        private DomainEventCollectorInterface $domainEventCollector
+    ) {}
 
     /**
      * @param int $id
@@ -57,12 +53,13 @@ class ArchiveModel implements ArchiveModelInterface
         return $this->findArchiveByIdAndLocale($id, $request);
     }
 
-    public function deleteArchive(int $id, string $title): void
+    public function deleteArchive(Archive $entity): void
     {
         $this->domainEventCollector->collect(
-            new ArchiveRemovedEvent($id, $title)
+            new ArchiveRemovedEvent($entity->getId(), $entity->getTitle() ?? '')
         );
-        $this->archiveRepository->remove($id);
+        $this->removeRoutesForEntity($entity);
+        $this->archiveRepository->remove($entity->getId());
     }
 
     /**
@@ -79,7 +76,15 @@ class ArchiveModel implements ArchiveModelInterface
             new ArchiveCreatedEvent($entity, $request->request->all())
         );
 
-        return $this->archiveRepository->save($entity);
+        //need the id for updateRoutesForEntity(), so we have to persist and flush here
+        $entity = $this->archiveRepository->save($entity);
+
+        $this->updateRoutesForEntity($entity);
+
+        //explicit flush to save routes persisted by updateRoutesForEntity()
+        $this->entityManager->flush();
+
+        return $entity;
     }
 
     /**
@@ -93,6 +98,7 @@ class ArchiveModel implements ArchiveModelInterface
         $entity = $this->findArchiveByIdAndLocale($id, $request);
         $entity = $this->mapDataToArchive($entity, $request->request->all());
         $entity = $this->mapSettingsToArchive($entity, $request->request->all());
+        $this->updateRoutesForEntity($entity);
 
         $this->domainEventCollector->collect(
             new ArchiveModifiedEvent($entity, $request->request->all())
@@ -305,5 +311,28 @@ class ArchiveModel implements ArchiveModelInterface
             $entity->setAuthored(null);
         }
         return $entity;
+    }
+
+    private function updateRoutesForEntity(Archive $entity): void
+    {
+        $this->routeManager->createOrUpdateByAttributes(
+            Archive::class,
+            (string) $entity->getId(),
+            $entity->getLocale(),
+            $entity->getRoutePath()
+        );
+    }
+
+    private function removeRoutesForEntity(Archive $entity): void
+    {
+        $routes = $this->routeRepository->findAllByEntity(
+            Archive::class,
+            (string) $entity->getId(),
+            $entity->getLocale()
+        );
+
+        foreach ($routes as $route) {
+            $this->routeRepository->remove($route);
+        }
     }
 }

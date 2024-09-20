@@ -20,16 +20,14 @@ class ArchiveDataProvider extends BaseDataProvider
 {
     private int $defaultLimit = 12;
 
-    private RequestStack $requestStack;
-    private EntityManagerInterface $entityManager;
-    private ArchiveTypeSelect $archiveTypeSelect;
-
-    public function __construct(DataProviderRepositoryInterface $repository, ArraySerializerInterface $serializer, RequestStack $requestStack, EntityManagerInterface $entityManager, ArchiveTypeSelect $archiveTypeSelect)
-    {
+    public function __construct(
+        DataProviderRepositoryInterface $repository,
+        ArraySerializerInterface $serializer,
+        private RequestStack $requestStack,
+        private EntityManagerInterface $entityManager,
+        private ArchiveTypeSelect $archiveTypeSelect
+    ) {
         parent::__construct($repository, $serializer);
-        $this->entityManager = $entityManager;
-        $this->requestStack = $requestStack;
-        $this->archiveTypeSelect = $archiveTypeSelect;
     }
 
     private function getTypes(): array

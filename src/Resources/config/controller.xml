@@ -9,8 +9,6 @@
             <argument type="service" id="sulu_archive.model.archive"/>
             <argument type="service" id="sulu_archive.model.archive_seo"/>
             <argument type="service" id="sulu_archive.model.archive_excerpt"/>
-            <argument type="service" id="sulu_route.manager.route_manager"/>
-            <argument type="service" id="sulu.repository.route"/>
             <argument type="service" id="sulu_archive.doctrine_list_representation_factory"/>
             <argument type="service" id="sulu_security.security_checker"/>
             <argument type="service" id="sulu_trash.trash_manager"/>
