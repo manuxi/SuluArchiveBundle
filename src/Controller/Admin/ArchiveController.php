@@ -10,6 +10,8 @@ use Manuxi\SuluArchiveBundle\Entity\Archive;
 use Manuxi\SuluArchiveBundle\Entity\Models\ArchiveExcerptModel;
 use Manuxi\SuluArchiveBundle\Entity\Models\ArchiveModel;
 use Manuxi\SuluArchiveBundle\Entity\Models\ArchiveSeoModel;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\Annotations\RouteResource;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use Sulu\Bundle\TrashBundle\Application\TrashManager\TrashManagerInterface;
@@ -27,6 +29,9 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
+/**
+ * @RouteResource("archive")
+ */
 class ArchiveController extends AbstractRestController implements ClassResourceInterface, SecuredControllerInterface
 {
     use RequestParametersTrait;
@@ -71,6 +76,14 @@ class ArchiveController extends AbstractRestController implements ClassResourceI
         return $this->handleView($this->view($entity, 201));
     }
 
+    /**
+     * @Rest\Post("/archives/{id}")
+     *
+     * @param int $id
+     * @param Request $request
+     * @return Response
+     * @throws MissingParameterException
+     */
     #[Route('/archives/{id}', name: 'post_archive_trigger', methods: 'POST')]
     public function postTriggerAction(int $id, Request $request): Response
     {
