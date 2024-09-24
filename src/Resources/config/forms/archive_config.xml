@@ -60,19 +60,10 @@
                         <title>sulu_archive.config.properties.page_archive_default</title>
                     </meta>
                 </property>
-                <property name="pageArchiveStreets" type="single_page_selection" colspan="6">
+
+                <property name="pageArchiveDevelopmentPlans" type="single_page_selection" colspan="6">
                     <meta>
-                        <title>sulu_archive.config.properties.page_archive_streets</title>
-                    </meta>
-                </property>
-                <property name="pageArchiveAttractions" type="single_page_selection" colspan="6">
-                    <meta>
-                        <title>sulu_archive.config.properties.page_archive_attractions</title>
-                    </meta>
-                </property>
-                <property name="pageArchiveBuildings" type="single_page_selection" colspan="6">
-                    <meta>
-                        <title>sulu_archive.config.properties.page_archive_buildings</title>
+                        <title>sulu_archive.config.properties.page_archive_development_plans</title>
                     </meta>
                 </property>
                 <property name="pageArchiveMining" type="single_page_selection" colspan="6">
@@ -80,12 +71,51 @@
                         <title>sulu_archive.config.properties.page_archive_mining</title>
                     </meta>
                 </property>
-                <property name="pageArchiveSurroundingArea" type="single_page_selection" colspan="6">
+                <property name="pageArchiveBiographies" type="single_page_selection" colspan="6">
                     <meta>
-                        <title>sulu_archive.config.properties.page_archive_surrounding_area</title>
+                        <title>sulu_archive.config.properties.page_archive_biographies</title>
                     </meta>
                 </property>
-
+                <property name="pageArchiveMemorials" type="single_page_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.config.properties.page_archive_memorials</title>
+                    </meta>
+                </property>
+                <property name="pageArchiveGenealogicalResearch" type="single_page_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.config.properties.page_archive_genealogical_research</title>
+                    </meta>
+                </property>
+                <property name="pageArchiveVisualMaterial" type="single_page_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.config.properties.page_archive_visual_material</title>
+                    </meta>
+                </property>
+                <property name="pageArchiveBuildings" type="single_page_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.config.properties.page_archive_buildings</title>
+                    </meta>
+                </property>
+                <property name="pageArchiveExpertOpinionsReports" type="single_page_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.config.properties.page_archive_expert_opinions_reports</title>
+                    </meta>
+                </property>
+                <property name="pageArchiveHistoricalRecordings" type="single_page_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.config.properties.page_archive_historical_recordings</title>
+                    </meta>
+                </property>
+                <property name="pageArchiveHistoricalDocuments" type="single_page_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.config.properties.page_archive_historical_documents</title>
+                    </meta>
+                </property>
+                <property name="pageArchiveCorrespondences" type="single_page_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.config.properties.page_archive_correspondences</title>
+                    </meta>
+                </property>
                 <property name="pageArchiveMapsPlans" type="single_page_selection" colspan="6">
                     <meta>
                         <title>sulu_archive.config.properties.page_archive_maps_plans</title>
@@ -96,40 +126,9 @@
                         <title>sulu_archive.config.properties.page_archive_aerial_shots</title>
                     </meta>
                 </property>
-                <property name="pageArchiveDevelopmentPlans" type="single_page_selection" colspan="6">
+                <property name="pageArchiveMembershipDirectories" type="single_page_selection" colspan="6">
                     <meta>
-                        <title>sulu_archive.config.properties.page_archive_development_plans</title>
-                    </meta>
-                </property>
-                <property name="pageArchiveExpertOpinionsReports" type="single_page_selection" colspan="6">
-                    <meta>
-                        <title>sulu_archive.config.properties.page_archive_expert_opinions_reports</title>
-                    </meta>
-                </property>
-
-                <property name="pageArchivePlaceNameStudies" type="single_page_selection" colspan="6">
-                    <meta>
-                        <title>sulu_archive.config.properties.page_archive_place_name_studies</title>
-                    </meta>
-                </property>
-                <property name="pageArchiveLocalChronicles" type="single_page_selection" colspan="6">
-                    <meta>
-                        <title>sulu_archive.config.properties.page_archive_local_chronicles</title>
-                    </meta>
-                </property>
-                <property name="pageArchiveNewspaperArticles" type="single_page_selection" colspan="6">
-                    <meta>
-                        <title>sulu_archive.config.properties.page_archive_newspaper_articles</title>
-                    </meta>
-                </property>
-                <property name="pageArchiveAdvertisements" type="single_page_selection" colspan="6">
-                    <meta>
-                        <title>sulu_archive.config.properties.page_archive_advertisements</title>
-                    </meta>
-                </property>
-                <property name="pageArchivePostersFlyers" type="single_page_selection" colspan="6">
-                    <meta>
-                        <title>sulu_archive.config.properties.page_archive_posters_flyers</title>
+                        <title>sulu_archive.config.properties.page_archive_membership_directories</title>
                     </meta>
                 </property>
                 <property name="pageArchiveObjectsArtifacts" type="single_page_selection" colspan="6">
@@ -137,41 +136,39 @@
                         <title>sulu_archive.config.properties.page_archive_objects_artifacts</title>
                     </meta>
                 </property>
+                <property name="pageArchiveLocalChronicles" type="single_page_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.config.properties.page_archive_local_chronicles</title>
+                    </meta>
+                </property>
+                <property name="pageArchivePlaceNameStudies" type="single_page_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.config.properties.page_archive_place_name_studies</title>
+                    </meta>
+                </property>
+                <property name="pageArchivePostersFlyers" type="single_page_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.config.properties.page_archive_posters_flyers</title>
+                    </meta>
+                </property>
                 <property name="pageArchiveCollectionsExhibitions" type="single_page_selection" colspan="6">
                     <meta>
                         <title>sulu_archive.config.properties.page_archive_collections_exhibitions</title>
                     </meta>
                 </property>
-
-                <property name="pageArchiveGenealogicalResearch" type="single_page_selection" colspan="6">
+                <property name="pageArchiveSigns" type="single_page_selection" colspan="6">
                     <meta>
-                        <title>sulu_archive.config.properties.page_archive_genealogical_research</title>
+                        <title>sulu_archive.config.properties.page_archive_signs</title>
                     </meta>
                 </property>
-                <property name="pageArchiveBiographies" type="single_page_selection" colspan="6">
+                <property name="pageArchiveAttractions" type="single_page_selection" colspan="6">
                     <meta>
-                        <title>sulu_archive.config.properties.page_archive_biographies</title>
+                        <title>sulu_archive.config.properties.page_archive_attractions</title>
                     </meta>
                 </property>
-                <property name="pageArchiveCorrespondences" type="single_page_selection" colspan="6">
+                <property name="pageArchiveStreets" type="single_page_selection" colspan="6">
                     <meta>
-                        <title>sulu_archive.config.properties.page_archive_correspondences</title>
-                    </meta>
-                </property>
-
-                <property name="pageArchiveHistoricalDocuments" type="single_page_selection" colspan="6">
-                    <meta>
-                        <title>sulu_archive.config.properties.page_archive_historical_documents</title>
-                    </meta>
-                </property>
-                <property name="pageArchiveHistoricalRecordings" type="single_page_selection" colspan="6">
-                    <meta>
-                        <title>sulu_archive.config.properties.page_archive_historical_recordings</title>
-                    </meta>
-                </property>
-                <property name="pageArchiveVisualMaterial" type="single_page_selection" colspan="6">
-                    <meta>
-                        <title>sulu_archive.config.properties.page_archive_visual_material</title>
+                        <title>sulu_archive.config.properties.page_archive_streets</title>
                     </meta>
                 </property>
                 <property name="pageArchiveAudioVideoRecordings" type="single_page_selection" colspan="6">
@@ -179,15 +176,34 @@
                         <title>sulu_archive.config.properties.page_archive_audio_video_recordings</title>
                     </meta>
                 </property>
-
-                <property name="pageArchiveMembershipDirectories" type="single_page_selection" colspan="6">
+                <property name="pageArchiveSurroundingArea" type="single_page_selection" colspan="6">
                     <meta>
-                        <title>sulu_archive.config.properties.page_archive_membership_directories</title>
+                        <title>sulu_archive.config.properties.page_archive_surrounding_area</title>
                     </meta>
                 </property>
                 <property name="pageArchiveAssociationMagazinesDocuments" type="single_page_selection" colspan="6">
                     <meta>
                         <title>sulu_archive.config.properties.page_archive_club_journals</title>
+                    </meta>
+                </property>
+                <property name="pageArchiveTraffic" type="single_page_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.config.properties.page_archive_traffic</title>
+                    </meta>
+                </property>
+                <property name="pageArchiveAdvertisements" type="single_page_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.config.properties.page_archive_advertisements</title>
+                    </meta>
+                </property>
+                <property name="pageArchiveNewspaperArticles" type="single_page_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.config.properties.page_archive_newspaper_articles</title>
+                    </meta>
+                </property>
+                <property name="pageArchiveTrains" type="single_page_selection" colspan="6">
+                    <meta>
+                        <title>sulu_archive.config.properties.page_archive_trains</title>
                     </meta>
                 </property>
 
