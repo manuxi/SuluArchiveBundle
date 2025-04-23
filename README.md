@@ -28,6 +28,8 @@ It contains an example twig template.
 Please feel comfortable submitting feature requests. 
 This bundle is still in development. Use at own risk 🤞🏻
 
+![image](https://github.com/user-attachments/assets/9fdefdb3-26c6-41ab-97e8-d1841beec008)
+
 ## 👩🏻‍🏭 Installation
 Install the package with:
 ```console
