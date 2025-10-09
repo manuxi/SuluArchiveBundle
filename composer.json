@@ -1,6 +1,5 @@
 {
     "name": "manuxi/sulu-archive-bundle",
-    "version": "1.0.0",
     "description": "Say hello to Sulu archive!",
     "type": "symfony-bundle",
     "keywords": [
