@@ -19,6 +19,9 @@ This bundle contains
 - Possibility to assign a contact as author
 - Twig Extension for resolving archive elements / get a list of archive elements
 - Events for displaying Activities
+- Search indexes
+    - refresh whenever entity is changed
+    - distinct between normal and draft
 and more...
 
 The archive elements and their meta information is translatable. 
@@ -49,6 +52,18 @@ Please add the following to your `routes_admin.yaml`:
 SuluArchiveBundle:
     resource: '@SuluArchiveBundle/Resources/config/routes_admin.yml'
 ```
+Don't forget fo add the index to your sulu_search.yaml:
+
+add "archives"!
+
+"archives" is the index of published, "archives_draft" the index of unpublished elements.
+```yaml
+sulu_search:
+    website:
+        indexes:
+            - archives
+            - ...
+``` 
 Last but not least the schema of the database needs to be updated.  
 
 Some tables will be created (prefixed with app_):  

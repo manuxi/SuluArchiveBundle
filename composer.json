@@ -1,5 +1,6 @@
 {
     "name": "manuxi/sulu-archive-bundle",
+    "version": "1.0.0",
     "description": "Say hello to Sulu archive!",
     "type": "symfony-bundle",
     "keywords": [
@@ -18,8 +19,9 @@
     "require": {
         "php": "^8.1",
         "phpcr/phpcr-migrations-bundle": "^1.6",
-        "sulu/sulu": "^2.5",
+        "massive/search-bundle": "^2.9",
         "sulu/automation-bundle": "^2.1",
+        "sulu/sulu": "^2.5",
         "symfony/config": "^6.2 | ^7.0",
         "symfony/dependency-injection": "^6.2 | ^7.0",
         "symfony/framework-bundle": "^6.2 | ^7.0",

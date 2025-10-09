@@ -34,15 +34,12 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
         $loader->load('controller.xml');
 
         if ($container->hasParameter('kernel.bundles')) {
-            // TODO FIXME add test here
-            // @codeCoverageIgnoreStart
             /** @var string[] $bundles */
             $bundles = $container->getParameter('kernel.bundles');
 
             if (\array_key_exists('SuluAutomationBundle', $bundles)) {
                 $loader->load('automation.xml');
             }
-            // @codeCoverageIgnoreEnd
         }
 
         $this->configurePersistence($config['objects'], $container);
@@ -55,7 +52,7 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
                 'sulu_search',
                 [
                     'indexes' => [
-                        'archive' => [
+                        'archives' => [
                             'name' => 'sulu_archive.search_name',
                             'icon' => 'su-archive',
                             'view' => [
