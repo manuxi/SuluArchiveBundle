@@ -17,6 +17,10 @@ use Manuxi\SuluArchiveBundle\Entity\Archive;
 use Manuxi\SuluArchiveBundle\Entity\Interfaces\ArchiveModelInterface;
 use Manuxi\SuluArchiveBundle\Entity\Traits\ArrayPropertyTrait;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveRepository;
+use Manuxi\SuluArchiveBundle\Search\Event\ArchivePublishedEvent as SearchPublishedEvent;
+use Manuxi\SuluArchiveBundle\Search\Event\ArchiveRemovedEvent as SearchRemovedEvent;
+use Manuxi\SuluArchiveBundle\Search\Event\ArchiveSavedEvent;
+use Manuxi\SuluArchiveBundle\Search\Event\ArchiveUnpublishedEvent as SearchUnpublishedEvent;
 use Sulu\Bundle\ActivityBundle\Application\Collector\DomainEventCollectorInterface;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepository;
 use Sulu\Bundle\MediaBundle\Entity\MediaRepositoryInterface;
@@ -24,19 +28,21 @@ use Sulu\Bundle\RouteBundle\Entity\RouteRepositoryInterface;
 use Sulu\Bundle\RouteBundle\Manager\RouteManagerInterface;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ArchiveModel implements ArchiveModelInterface
 {
     use ArrayPropertyTrait;
 
     public function __construct(
-        private ArchiveRepository $archiveRepository,
-        private MediaRepositoryInterface $mediaRepository,
-        private ContactRepository $contactRepository,
-        private RouteManagerInterface $routeManager,
-        private RouteRepositoryInterface $routeRepository,
-        private EntityManagerInterface $entityManager,
-        private DomainEventCollectorInterface $domainEventCollector
+        private readonly ArchiveRepository $archiveRepository,
+        private readonly MediaRepositoryInterface $mediaRepository,
+        private readonly ContactRepository $contactRepository,
+        private readonly RouteManagerInterface $routeManager,
+        private readonly RouteRepositoryInterface $routeRepository,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly DomainEventCollectorInterface $domainEventCollector,
+        private readonly EventDispatcherInterface $dispatcher,
     ) {}
 
     /**
@@ -58,6 +64,8 @@ class ArchiveModel implements ArchiveModelInterface
         $this->domainEventCollector->collect(
             new ArchiveRemovedEvent($entity->getId(), $entity->getTitle() ?? '')
         );
+
+        $this->dispatcher->dispatch(new SearchRemovedEvent($entity));
         $this->removeRoutesForEntity($entity);
         $this->archiveRepository->remove($entity->getId());
     }
@@ -84,6 +92,8 @@ class ArchiveModel implements ArchiveModelInterface
         //explicit flush to save routes persisted by updateRoutesForEntity()
         $this->entityManager->flush();
 
+        $this->dispatcher->dispatch(new ArchiveSavedEvent($entity));
+
         return $entity;
     }
 
@@ -96,6 +106,8 @@ class ArchiveModel implements ArchiveModelInterface
     public function updateArchive(int $id, Request $request): Archive
     {
         $entity = $this->findArchiveByIdAndLocale($id, $request);
+        $this->dispatcher->dispatch(new SearchUnpublishedEvent($entity));
+
         $entity = $this->mapDataToArchive($entity, $request->request->all());
         $entity = $this->mapSettingsToArchive($entity, $request->request->all());
         $this->updateRoutesForEntity($entity);
@@ -104,7 +116,9 @@ class ArchiveModel implements ArchiveModelInterface
             new ArchiveModifiedEvent($entity, $request->request->all())
         );
 
-        return $this->archiveRepository->save($entity);
+        $entity = $this->archiveRepository->save($entity);
+        $this->dispatcher->dispatch(new SearchPublishedEvent($entity));
+        return $entity;
     }
 
     /**
@@ -116,12 +130,15 @@ class ArchiveModel implements ArchiveModelInterface
     public function publishArchive(int $id, Request $request): Archive
     {
         $entity = $this->findArchiveByIdAndLocale($id, $request);
+        $this->dispatcher->dispatch(new SearchUnpublishedEvent($entity));
 
         $this->domainEventCollector->collect(
             new ArchivePublishedEvent($entity, $request->request->all())
         );
 
-        return $this->archiveRepository->publish($entity);
+        $entity = $this->archiveRepository->publish($entity);
+        $this->dispatcher->dispatch(new SearchPublishedEvent($entity));
+        return $entity;
     }
 
     /**
@@ -133,13 +150,15 @@ class ArchiveModel implements ArchiveModelInterface
     public function unpublishArchive(int $id, Request $request): Archive
     {
         $entity = $this->findArchiveByIdAndLocale($id, $request);
-        $entity->setPublished(false);
+        $this->dispatcher->dispatch(new SearchUnpublishedEvent($entity));
+        $entity = $this->archiveRepository->unpublish($entity);
 
         $this->domainEventCollector->collect(
             new ArchiveUnpublishedEvent($entity, $request->request->all())
         );
 
-        return $this->archiveRepository->unpublish($entity);
+        $this->dispatcher->dispatch(new SearchPublishedEvent($entity));
+        return $entity;
     }
 
     public function copy(int $id, Request $request): Archive
@@ -150,9 +169,12 @@ class ArchiveModel implements ArchiveModelInterface
         $entity->setLocale($locale);
 
         $copy = $this->archiveRepository->create($locale);
-
         $copy = $entity->copy($copy);
-        return $this->archiveRepository->save($copy);
+
+        $copy = $this->archiveRepository->save($copy);
+        $this->dispatcher->dispatch(new ArchiveSavedEvent($copy));
+
+        return $copy;
     }
 
     public function copyLanguage(int $id, Request $request, string $srcLocale, array $destLocales): Archive
@@ -171,7 +193,10 @@ class ArchiveModel implements ArchiveModelInterface
             new ArchiveCopiedLanguageEvent($entity, $request->request->all())
         );
 
-        return $this->archiveRepository->save($entity);
+        $entity = $this->archiveRepository->save($entity);
+        $this->dispatcher->dispatch(new ArchiveSavedEvent($entity));
+
+        return $entity;
     }
 
     /**

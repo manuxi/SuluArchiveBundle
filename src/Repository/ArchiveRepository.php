@@ -89,7 +89,7 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
         $queryBuilder = $this->createQueryBuilder('archive')
             ->leftJoin('archive.translations', 'translation')
             ->where('translation.published = :published')
-            ->setParameter('published', 1)
+            ->setParameter('published', true)
             ->andWhere('translation.locale = :locale')
             ->setParameter('locale', $locale)
             ->orderBy('translation.authored', 'DESC')
@@ -112,7 +112,7 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
             ->leftJoin('archive.translations', 'translation')
             ->where('translation.published = :published')
             ->andWhere('translation.locale = :locale')
-            ->setParameter('published', 1)
+            ->setParameter('published', true)
             ->setParameter('locale', $locale);
         return $query->getQuery()->getSingleScalarResult();
     }
@@ -125,7 +125,7 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
             ->select('count(archive.id)')
             ->leftJoin('archive.translations', 'translation')
             ->where('translation.published = :published')
-            ->setParameter('published', 1)
+            ->setParameter('published', true)
             ->andWhere('translation.locale = :locale')
             ->setParameter('locale', $locale);
 
@@ -159,7 +159,10 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
     protected function append(QueryBuilder $queryBuilder, string $alias, string $locale, $options = []): array
     {
         //$queryBuilder->andWhere($alias . '.published = true');
-
+        $queryBuilder->innerJoin($alias . '.translations', 'translation', Join::WITH, 'translation.locale = :locale');
+        $queryBuilder->setParameter('locale', $locale);
+        $queryBuilder->andWhere('translation.published = :published');
+        $queryBuilder->setParameter('published', true);
         return [];
     }
 

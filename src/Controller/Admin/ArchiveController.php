@@ -13,10 +13,6 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\RouteResource;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
-use Manuxi\SuluArchiveBundle\Search\Event\ArchivePublishedEvent;
-use Manuxi\SuluArchiveBundle\Search\Event\ArchiveRemovedEvent;
-use Manuxi\SuluArchiveBundle\Search\Event\ArchiveSavedEvent;
-use Manuxi\SuluArchiveBundle\Search\Event\ArchiveUnpublishedEvent;
 use Sulu\Bundle\TrashBundle\Application\TrashManager\TrashManagerInterface;
 use Sulu\Component\Rest\AbstractRestController;
 use Sulu\Component\Rest\Exception\MissingParameterException;
@@ -31,7 +27,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @RouteResource("archive")
@@ -47,7 +42,6 @@ class ArchiveController extends AbstractRestController implements ClassResourceI
         private readonly DoctrineListRepresentationFactory $doctrineListRepresentationFactory,
         private readonly SecurityCheckerInterface          $securityChecker,
         private readonly TrashManagerInterface             $trashManager,
-        private readonly EventDispatcherInterface $dispatcher,
         ViewHandlerInterface                               $viewHandler,
         ?TokenStorageInterface                             $tokenStorage = null
     ) {
@@ -78,7 +72,6 @@ class ArchiveController extends AbstractRestController implements ClassResourceI
     public function postAction(Request $request): Response
     {
         $entity = $this->archiveModel->createArchive($request);
-        $this->dispatcher->dispatch(new ArchiveSavedEvent($entity));
         return $this->handleView($this->view($entity, 201));
     }
 
@@ -99,16 +92,13 @@ class ArchiveController extends AbstractRestController implements ClassResourceI
             switch ($action) {
                 case 'publish':
                     $entity = $this->archiveModel->publishArchive($id, $request);
-                    $this->dispatcher->dispatch(new ArchivePublishedEvent($entity));
                     break;
                 case 'draft':
                 case 'unpublish':
                     $entity = $this->archiveModel->unpublishArchive($id, $request);
-                    $this->dispatcher->dispatch(new ArchiveUnpublishedEvent($entity));
                     break;
                 case 'copy':
                     $entity = $this->archiveModel->copy($id, $request);
-                    $this->dispatcher->dispatch(new ArchiveSavedEvent($entity));
                     break;
                 case 'copy-locale':
                     $locale = $this->getRequestParameter($request, 'locale', true);
@@ -124,7 +114,6 @@ class ArchiveController extends AbstractRestController implements ClassResourceI
                     }
 
                     $entity = $this->archiveModel->copyLanguage($id, $request, $srcLocale, $destLocales);
-                    $this->dispatcher->dispatch(new ArchiveSavedEvent($entity));
                     break;
                 default:
                     throw new BadRequestHttpException(sprintf('Unknown action "%s".', $action));
@@ -154,8 +143,6 @@ class ArchiveController extends AbstractRestController implements ClassResourceI
         } catch(MissingParameterException $e) {
             $entity = $this->archiveModel->updateArchive($id, $request);
 
-            $this->dispatcher->dispatch(new ArchiveSavedEvent($entity));
-
             $this->archiveSeoModel->updateArchiveSeo($entity->getArchiveSeo(), $request);
             $this->archiveExcerptModel->updateArchiveExcerpt($entity->getArchiveExcerpt(), $request);
         }
@@ -171,8 +158,6 @@ class ArchiveController extends AbstractRestController implements ClassResourceI
         $this->trashManager->store(Archive::RESOURCE_KEY, $entity);
 
         $this->archiveModel->deleteArchive($entity);
-
-        $this->dispatcher->dispatch(new ArchiveRemovedEvent($entity));
 
         return $this->handleView($this->view(null, 204));
     }

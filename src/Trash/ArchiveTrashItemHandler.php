@@ -20,59 +20,54 @@ use Sulu\Bundle\TrashBundle\Application\TrashItemHandler\RestoreTrashItemHandler
 use Sulu\Bundle\TrashBundle\Application\TrashItemHandler\StoreTrashItemHandlerInterface;
 use Sulu\Bundle\TrashBundle\Domain\Model\TrashItemInterface;
 use Sulu\Bundle\TrashBundle\Domain\Repository\TrashItemRepositoryInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ArchiveTrashItemHandler implements StoreTrashItemHandlerInterface, RestoreTrashItemHandlerInterface, RestoreConfigurationProviderInterface
 {
-    private TrashItemRepositoryInterface $trashItemRepository;
-    private EntityManagerInterface $entityManager;
-    private DoctrineRestoreHelperInterface $doctrineRestoreHelper;
-    private DomainEventCollectorInterface $domainEventCollector;
-
     public function __construct(
-        TrashItemRepositoryInterface   $trashItemRepository,
-        EntityManagerInterface         $entityManager,
-        DoctrineRestoreHelperInterface $doctrineRestoreHelper,
-        DomainEventCollectorInterface  $domainEventCollector
-    )
-    {
-        $this->trashItemRepository = $trashItemRepository;
-        $this->entityManager = $entityManager;
-        $this->doctrineRestoreHelper = $doctrineRestoreHelper;
-        $this->domainEventCollector = $domainEventCollector;
-    }
+        private readonly TrashItemRepositoryInterface   $trashItemRepository,
+        private readonly EntityManagerInterface         $entityManager,
+        private readonly DoctrineRestoreHelperInterface $doctrineRestoreHelper,
+        private readonly DomainEventCollectorInterface $domainEventCollector,
+        private readonly EventDispatcherInterface $dispatcher,
+    ) {}
 
     public static function getResourceKey(): string
     {
         return Archive::RESOURCE_KEY;
     }
 
-    public function store(object $resource, array $options = []): TrashItemInterface
+    public function store(object $entity, array $options = []): TrashItemInterface
     {
-        $image = $resource->getImage();
+        /* @var Archive $entity */
+
+        $image = $entity->getImage();
+        $document = $entity->getDocument();
 
         $data = [
-            "locale" => $resource->getLocale(),
-            "type" => $resource->getType(),
-            "title" => $resource->getTitle(),
-            "subtitle" => $resource->getSubtitle(),
-            "summary" => $resource->getSummary(),
-            "text" => $resource->getText(),
-            "footer" => $resource->getFooter(),
-            "slug" => $resource->getRoutePath(),
-            "ext" => $resource->getExt(),
-            "link" => $resource->getLink(),
-            "imageId" => $image ? $image->getId() : null,
-            "published" => $resource->isPublished(),
-            "publishedAt" => $resource->getPublishedAt(),
-            "showAuthor" => $resource->getShowAuthor(),
-            "showDate" => $resource->getShowDate(),
-            "authored" => $resource->getAuthored(),
-            "author" => $resource->getAuthor(),
+            "locale" => $entity->getLocale(),
+            "type" => $entity->getType(),
+            "title" => $entity->getTitle(),
+            "subtitle" => $entity->getSubtitle(),
+            "summary" => $entity->getSummary(),
+            "text" => $entity->getText(),
+            "footer" => $entity->getFooter(),
+            "slug" => $entity->getRoutePath(),
+            "ext" => $entity->getExt(),
+            "link" => $entity->getLink(),
+            "imageId" => $image?->getId(),
+            "documentId" => $document?->getId(),
+            "published" => $entity->isPublished(),
+            "publishedAt" => $entity->getPublishedAt(),
+            "showAuthor" => $entity->getShowAuthor(),
+            "showDate" => $entity->getShowDate(),
+            "authored" => $entity->getAuthored(),
+            "author" => $entity->getAuthor(),
         ];
         return $this->trashItemRepository->create(
             Archive::RESOURCE_KEY,
-            (string)$resource->getId(),
-            $resource->getTitle(),
+            (string)$entity->getId(),
+            $entity->getTitle(),
             $data,
             null,
             $options,
@@ -96,6 +91,7 @@ class ArchiveTrashItemHandler implements StoreTrashItemHandlerInterface, Restore
         $archive->setText($data['text']);
         $archive->setFooter($data['footer']);
         $archive->setPublished($data['published']);
+        $archive->setPublishedAt($data['publishedAt'] ? new \DateTime($data['publishedAt']['date']) : null);
         $archive->setShowAuthor($data['showAuthor']);
         $archive->setShowDate($data['showDate']);
         $archive->setRoutePath($data['slug']);
@@ -117,8 +113,9 @@ class ArchiveTrashItemHandler implements StoreTrashItemHandlerInterface, Restore
             $archive->setImage($image);
         }
 
-        if(isset($data['publishedAt'])) {
-            $archive->setPublishedAt(new DateTime($data['publishedAt']['date']));
+        if($data['documentId']) {
+            $document = $this->entityManager->find(MediaInterface::class, $data['documentId']);
+            $archive->setDocument($document);
         }
 
         $this->domainEventCollector->collect(

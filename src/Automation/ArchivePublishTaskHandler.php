@@ -7,24 +7,24 @@ namespace Manuxi\SuluArchiveBundle\Automation;
 use Doctrine\ORM\EntityManagerInterface;
 use Manuxi\SuluArchiveBundle\Domain\Event\ArchivePublishedEvent;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
+use Manuxi\SuluArchiveBundle\Search\Event\ArchivePublishedEvent as SearchPublishedEvent;
+use Manuxi\SuluArchiveBundle\Search\Event\ArchiveUnpublishedEvent as SearchUnpublishedEvent;
 use Sulu\Bundle\ActivityBundle\Application\Collector\DomainEventCollectorInterface;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\TaskHandler\TaskHandlerConfiguration;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ArchivePublishTaskHandler implements AutomationTaskHandlerInterface
 {
-    private EntityManagerInterface $entityManager;
-    private TranslatorInterface $translator;
-    private DomainEventCollectorInterface $domainEventCollector;
 
-    public function __construct(EntityManagerInterface $entityManager, TranslatorInterface $translator, DomainEventCollectorInterface $domainEventCollector)
-    {
-        $this->entityManager = $entityManager;
-        $this->translator = $translator;
-        $this->domainEventCollector = $domainEventCollector;
-    }
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator,
+        private readonly DomainEventCollectorInterface $domainEventCollector,
+        private readonly EventDispatcherInterface $dispatcher
+    ) {}
 
     public function handle($workload): void
     {
@@ -37,6 +37,7 @@ class ArchivePublishTaskHandler implements AutomationTaskHandlerInterface
         if ($entity === null) {
             return;
         }
+        $this->dispatcher->dispatch(new SearchUnpublishedEvent($entity));
 
         $entity->setPublished(true);
 
@@ -45,6 +46,7 @@ class ArchivePublishTaskHandler implements AutomationTaskHandlerInterface
         );
 
         $repository->save($entity);
+        $this->dispatcher->dispatch(new SearchPublishedEvent($entity));
 
     }
 

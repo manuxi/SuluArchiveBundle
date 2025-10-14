@@ -50,18 +50,18 @@ return [
 Please add the following to your `routes_admin.yaml`:
 ```yaml
 SuluArchiveBundle:
-    resource: '@SuluArchiveBundle/Resources/config/routes_admin.yml'
+    resource: '@SuluArchiveBundle/Resources/config/routes_admin.yaml'
 ```
 Don't forget fo add the index to your sulu_search.yaml:
 
-add "archives"!
+add "archives_published"!
 
-"archives" is the index of published, "archives_draft" the index of unpublished elements.
+"archives_published" is the index of published, "archives" the index of unpublished elements. Both indexes are searchable in admin.
 ```yaml
 sulu_search:
     website:
         indexes:
-            - archives
+            - archives_published
             - ...
 ``` 
 Last but not least the schema of the database needs to be updated.  
@@ -126,6 +126,11 @@ Example of the corresponding twig template for the Archive list:
 
 Since the seo and excerpt tabs are available in the archive editor, 
 meta information can be provided like it's done as usual when rendering your pages. 
+
+## 🧶 Configuration
+This bundle contains settings for controlling the following tasks:
+- Settings for single view - Toggle for header, default hero snippet and breadcrumbs
+- Landing pages for breadcrumbs: this can be used to configure the intermediate pages for the breadcrumbs
 
 ## 👩‍🍳 Contributing
 For the sake of simplicity this extension was kept small.

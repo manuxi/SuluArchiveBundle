@@ -14,7 +14,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class ArchiveSearchSubscriber implements EventSubscriberInterface
 {
 
-    public function __construct(private SearchManagerInterface $searchManager) {}
+    public function __construct(private readonly SearchManagerInterface $searchManager) {}
 
     public static function getSubscribedEvents(): array
     {
@@ -29,9 +29,7 @@ class ArchiveSearchSubscriber implements EventSubscriberInterface
     public function onPublished(ArchivePublishedEvent $event): void
     {
         $entity = $event->getEntity();
-        if($entity->isPublished()) {
-            $this->searchManager->index($entity);
-        }
+        $this->searchManager->index($entity);
     }
 
     public function onUnpublished(ArchiveUnpublishedEvent $event): void
@@ -42,11 +40,7 @@ class ArchiveSearchSubscriber implements EventSubscriberInterface
     public function onSaved(ArchiveSavedEvent $event): void
     {
         $entity = $event->getEntity();
-        if($entity->isPublished()) {
-            $this->searchManager->index($entity);
-        } else {
-            $this->searchManager->deindex($entity);
-        }
+        $this->searchManager->index($entity);
     }
 
     public function onRemoved(ArchiveRemovedEvent $event): void
