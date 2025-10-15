@@ -53,7 +53,7 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
                 [
                     'indexes' => [
                         'archives' => [
-                            'name' => 'sulu_news.search.index.archive',
+                            'name' => 'sulu_archive.search.index.archive',
                             'icon' => 'su-archive',
                             'view' => [
                                 'name' => ArchiveAdmin::EDIT_FORM_VIEW,
@@ -65,7 +65,7 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
                             'security_context' => Archive::SECURITY_CONTEXT,
                         ],
                         'archives_published' => [
-                            'name' => 'sulu_news.search.index.archive_published',
+                            'name' => 'sulu_archive.search.index.archive_published',
                             'icon' => 'su-archive',
                             'view' => [
                                 'name' => ArchiveAdmin::EDIT_FORM_VIEW,

@@ -12,17 +12,12 @@ use Sulu\Component\Webspace\Manager\WebspaceManagerInterface;
 
 class ArchiveSitemapProvider implements SitemapProviderInterface
 {
-    private ArchiveRepository $repository;
-    private WebspaceManagerInterface $webspaceManager;
     private array $locales = [];
 
     public function __construct(
-        ArchiveRepository $repository,
-        WebspaceManagerInterface $webspaceManager
-    ) {
-        $this->repository = $repository;
-        $this->webspaceManager = $webspaceManager;
-    }
+        private readonly ArchiveRepository $repository,
+        private readonly WebspaceManagerInterface $webspaceManager
+    ) {}
 
     public function build($page, $scheme, $host): array
     {

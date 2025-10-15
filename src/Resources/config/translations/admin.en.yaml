@@ -133,8 +133,8 @@ sulu_archive:
             page_archive_collections_exhibitions: "Overview Collections and Exhibitions"
     search:
         index:
-            archive: "Archive (Draft)"
-            archive_published: "Archive"
+            archive: "Archives (Draft)"
+            archive_published: "Archives"
 
 sulu_activity:
     resource:

@@ -249,42 +249,68 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
         $this->prepareCategoriesFilter($queryBuilder, $filters);
     }
 
+    private function prepareTypesFilter(QueryBuilder $queryBuilder, array $filters): void
+    {
+        if(!empty($filters['types'])) {
+            $queryBuilder->andWhere("archive.type IN (:typeList)");
+            $queryBuilder->setParameter("typeList", $filters['types']);
+        }
+    }
+
     private function prepareTagsFilter(QueryBuilder $queryBuilder, array $filters): void
     {
-        if (!empty($filters['tags'])) {
+        if (empty($filters['tags'])) {
+            return;
+        }
 
-            $queryBuilder->leftJoin('excerpt_translation.tags', 'tags');
+        $operator = $filters['tagOperator'] ?? 'or';
 
-            $i = 0;
-            if ($filters['tagOperator'] === "and") {
-                $andWhere = "";
-                foreach ($filters['tags'] as $tag) {
-                    if ($i === 0) {
-                        $andWhere .= "tags = :tag" . $i;
-                    } else {
-                        $andWhere .= " AND tags = :tag" . $i;
-                    }
-                    $queryBuilder->setParameter("tag" . $i, $tag);
-                    $i++;
-                }
-                $queryBuilder->andWhere($andWhere);
-            } else if ($filters['tagOperator'] === "or") {
-                $orWhere = "";
-                foreach ($filters['tags'] as $tag) {
-                    if ($i === 0) {
-                        $orWhere .= "tags = :tag" . $i;
-                    } else {
-                        $orWhere .= " OR tags = :tag" . $i;
-                    }
-                    $queryBuilder->setParameter("tag" . $i, $tag);
-                    $i++;
-                }
-                $queryBuilder->andWhere($orWhere);
+        if ($operator === 'and') {
+            // AND: Entity must have ALL tags (multiple JOINs necessary)
+            foreach ($filters['tags'] as $i => $tag) {
+                $alias = 'tag' . $i;
+                $queryBuilder
+                    ->innerJoin('excerpt_translation.tags', $alias)
+                    ->andWhere($queryBuilder->expr()->eq($alias . '.id', ':tag' . $i))
+                    ->setParameter('tag' . $i, $tag);
             }
+        } else {
+            // OR: Entity must at least have one of the tags
+            $queryBuilder
+                ->leftJoin('excerpt_translation.tags', 'tags')
+                ->andWhere($queryBuilder->expr()->in('tags.id', ':tags'))
+                ->setParameter('tags', $filters['tags']);
         }
     }
 
     private function prepareCategoriesFilter(QueryBuilder $queryBuilder, array $filters): void
+    {
+        if (empty($filters['categories'])) {
+            return;
+        }
+
+        $queryBuilder->leftJoin('excerpt_translation.categories', 'categories');
+
+        $operator = $filters['categoryOperator'] ?? 'or';
+
+        if ($operator === 'and') {
+            // AND: Entity must have ALL categories (multiple JOINs necessary)
+            foreach ($filters['categories'] as $i => $category) {
+                $alias = 'category' . $i;
+                $queryBuilder
+                    ->leftJoin('excerpt_translation.categories', $alias)
+                    ->andWhere($alias . '.id = :category' . $i)
+                    ->setParameter('category' . $i, $category);
+            }
+        } else {
+            // OR: Entity must at least have one of the categories
+            $queryBuilder
+                ->andWhere('categories.id IN (:categories)')
+                ->setParameter('categories', $filters['categories']);
+        }
+    }
+
+    private function prepareCategoriesFilterX(QueryBuilder $queryBuilder, array $filters): void
     {
         if (!empty($filters['categories'])) {
 
@@ -316,14 +342,6 @@ class ArchiveRepository extends ServiceEntityRepository implements DataProviderR
                 }
                 $queryBuilder->andWhere($orWhere);
             }
-        }
-    }
-
-    private function prepareTypesFilter(QueryBuilder $queryBuilder, array $filters): void
-    {
-        if(!empty($filters['types'])) {
-            $queryBuilder->andWhere("archive.type IN (:typeList)");
-            $queryBuilder->setParameter("typeList", $filters['types']);
         }
     }
 

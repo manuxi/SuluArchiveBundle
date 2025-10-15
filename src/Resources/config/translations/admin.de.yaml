@@ -133,8 +133,8 @@ sulu_archive:
             page_archive_collections_exhibitions: "Übersichtsseite Typ Sammlungen und Ausstellungen"
     search:
         index:
-            archive: "Archiv (Entwurf)"
-            archive_published: "Archiv"
+            archive: "Archive (Entwurf)"
+            archive_published: "Archive"
 sulu_activity:
     resource:
         archive: "Archiv"
