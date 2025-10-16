@@ -123,6 +123,7 @@
             <joins ref="translation"/>
         </property>
 
+        <!--
         <property name="published" visibility="yes" translation="sulu_archive.published" type="bool">
             <field-name>published</field-name>
             <entity-name>%sulu.model.archive_translation.class%</entity-name>
@@ -136,6 +137,12 @@
                     </param>
                 </params>
             </filter>
+        </property>
+        -->
+        <property name="publishedState" translation="sulu_archive.published" visibility="yes" type="bool">
+            <field-name>publishedState</field-name>
+            <entity-name>%sulu.model.archive_translation.class%</entity-name>
+            <joins ref="translation"/>
         </property>
 
         <property name="publishedAt" visibility="yes" translation="sulu_archive.published_date" type="datetime">

@@ -1,2 +1,9 @@
 sulu_archive:
-    archive: "Archiv"
+    archive: "Archive"
+search:
+    index:
+        archives: "Archives"
+        archives_published: "Archives"
+    icon:
+        archives: "archive"
+        archives_published: "archive"

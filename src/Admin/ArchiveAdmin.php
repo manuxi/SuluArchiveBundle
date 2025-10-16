@@ -67,7 +67,7 @@ class ArchiveAdmin extends Admin
         if ($this->securityChecker->hasPermission(Archive::SECURITY_CONTEXT, PermissionTypes::EDIT)) {
             $rootNavigationItem = new NavigationItem(static::NAV_ITEM);
             $rootNavigationItem->setIcon('su-archive');
-            $rootNavigationItem->setPosition(31);
+            $rootNavigationItem->setPosition(33);
             $rootNavigationItem->setView(static::LIST_VIEW);
 
             // Configure a NavigationItem with a View
