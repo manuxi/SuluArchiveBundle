@@ -8,7 +8,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Manuxi\SuluArchiveBundle\Entity\ArchiveExcerpt;
 use Manuxi\SuluArchiveBundle\Entity\Interfaces\ArchiveExcerptModelInterface;
-use Manuxi\SuluArchiveBundle\Entity\Traits\ArrayPropertyTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\ArrayPropertyTrait;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveExcerptRepository;
 use Sulu\Bundle\CategoryBundle\Category\CategoryManagerInterface;
 use Sulu\Bundle\MediaBundle\Entity\MediaRepositoryInterface;

@@ -6,7 +6,7 @@ namespace Manuxi\SuluArchiveBundle\EventListener\Doctrine;
 
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\Persistence\Event\LoadClassMetadataEventArgs;
-use Manuxi\SuluArchiveBundle\Entity\Interfaces\AuthorInterface;
+use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\AuthorInterface;
 use Sulu\Bundle\ContactBundle\Entity\ContactInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Symfony\Component\Security\Core\Authentication\Token\NullToken;

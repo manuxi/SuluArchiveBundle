@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Manuxi\SuluArchiveBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Manuxi\SuluArchiveBundle\Entity\Interfaces\SeoTranslationInterface;
-use Manuxi\SuluArchiveBundle\Entity\Traits\SeoTranslationTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\SeoTranslationInterface;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\SeoTranslationTrait;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveSeoTranslationRepository;
 
 #[ORM\Entity(repositoryClass: ArchiveSeoTranslationRepository::class)]

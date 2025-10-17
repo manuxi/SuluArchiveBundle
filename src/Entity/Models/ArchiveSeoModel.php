@@ -6,7 +6,7 @@ namespace Manuxi\SuluArchiveBundle\Entity\Models;
 
 use Manuxi\SuluArchiveBundle\Entity\ArchiveSeo;
 use Manuxi\SuluArchiveBundle\Entity\Interfaces\ArchiveSeoModelInterface;
-use Manuxi\SuluArchiveBundle\Entity\Traits\ArrayPropertyTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\ArrayPropertyTrait;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveSeoRepository;
 use Symfony\Component\HttpFoundation\Request;
 

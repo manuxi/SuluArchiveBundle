@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Manuxi\SuluArchiveBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Manuxi\SuluArchiveBundle\Entity\Interfaces\ExcerptTranslationInterface;
+use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\ExcerptTranslationInterface;
 use Manuxi\SuluArchiveBundle\Entity\Traits\ExcerptTranslationTrait;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveExcerptTranslationRepository;
 

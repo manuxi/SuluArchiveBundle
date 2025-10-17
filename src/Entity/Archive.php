@@ -9,27 +9,22 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
-use Manuxi\SuluArchiveBundle\Entity\Traits\LinkTranslatableTrait;
-use Manuxi\SuluArchiveBundle\Entity\Interfaces\AuditableTranslatableInterface;
-use Manuxi\SuluArchiveBundle\Entity\Traits\AuditableTranslatableTrait;
-use Manuxi\SuluArchiveBundle\Entity\Traits\ImageTranslatableTrait;
-use Manuxi\SuluArchiveBundle\Entity\Traits\DocumentTranslatableTrait;
-use Manuxi\SuluArchiveBundle\Entity\Traits\PublishedTranslatableTrait;
-use Manuxi\SuluArchiveBundle\Entity\Traits\RoutePathTranslatableTrait;
-use Manuxi\SuluArchiveBundle\Entity\Traits\ShowAuthorTranslatableTrait;
-use Manuxi\SuluArchiveBundle\Entity\Traits\ShowDateTranslatableTrait;
-use Manuxi\SuluArchiveBundle\Entity\Traits\TypeTrait;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveRepository;
+use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\AuditableTranslatableInterface;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\AuditableTranslatableTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\DocumentTranslatableTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\ImageTranslatableTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\LinkTranslatableTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\PublishedTranslatableTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\RoutePathTranslatableTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\ShowAuthorTranslatableTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\ShowDateTranslatableTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\TypeTrait;
 
 #[ORM\Entity(repositoryClass: ArchiveRepository::class)]
 #[ORM\Table(name: 'app_archive')]
 class Archive implements AuditableTranslatableInterface
 {
-    public const RESOURCE_KEY = 'archive';
-    public const FORM_KEY = 'archive_details';
-    public const LIST_KEY = 'archive';
-    public const SECURITY_CONTEXT = 'sulu.archive.archive';
-
     use AuditableTranslatableTrait;
     use PublishedTranslatableTrait;
     use RoutePathTranslatableTrait;
@@ -39,6 +34,10 @@ class Archive implements AuditableTranslatableInterface
     use LinkTranslatableTrait;
     use ImageTranslatableTrait;
     use TypeTrait;
+    public const RESOURCE_KEY = 'archive';
+    public const FORM_KEY = 'archive_details';
+    public const LIST_KEY = 'archive';
+    public const SECURITY_CONTEXT = 'sulu.archive.archive';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -70,7 +69,8 @@ class Archive implements AuditableTranslatableInterface
         $this->initExt();
     }
 
-    public function __clone(){
+    public function __clone()
+    {
         $this->id = null;
     }
 
@@ -79,7 +79,7 @@ class Archive implements AuditableTranslatableInterface
         return $this->id;
     }
 
-    #[Serializer\VirtualProperty(name: "title")]
+    #[Serializer\VirtualProperty(name: 'title')]
     public function getTitle(): ?string
     {
         $translation = $this->getTranslation($this->locale);
@@ -98,10 +98,11 @@ class Archive implements AuditableTranslatableInterface
         }
 
         $translation->setTitle($title);
+
         return $this;
     }
 
-    #[Serializer\VirtualProperty(name: "subtitle")]
+    #[Serializer\VirtualProperty(name: 'subtitle')]
     public function getSubtitle(): ?string
     {
         $translation = $this->getTranslation($this->locale);
@@ -120,10 +121,11 @@ class Archive implements AuditableTranslatableInterface
         }
 
         $translation->setSubtitle($subtitle);
+
         return $this;
     }
 
-    #[Serializer\VirtualProperty(name: "summary")]
+    #[Serializer\VirtualProperty(name: 'summary')]
     public function getSummary(): ?string
     {
         $translation = $this->getTranslation($this->locale);
@@ -142,10 +144,11 @@ class Archive implements AuditableTranslatableInterface
         }
 
         $translation->setSummary($summary);
+
         return $this;
     }
 
-    #[Serializer\VirtualProperty(name: "text")]
+    #[Serializer\VirtualProperty(name: 'text')]
     public function getText(): ?string
     {
         $translation = $this->getTranslation($this->locale);
@@ -164,10 +167,11 @@ class Archive implements AuditableTranslatableInterface
         }
 
         $translation->setText($text);
+
         return $this;
     }
 
-    #[Serializer\VirtualProperty(name: "footer")]
+    #[Serializer\VirtualProperty(name: 'footer')]
     public function getFooter(): ?string
     {
         $translation = $this->getTranslation($this->locale);
@@ -186,6 +190,7 @@ class Archive implements AuditableTranslatableInterface
         }
 
         $translation->setFooter($footer);
+
         return $this;
     }
 
@@ -202,6 +207,7 @@ class Archive implements AuditableTranslatableInterface
     public function setArchiveSeo(?ArchiveSeo $archiveSeo): self
     {
         $this->archiveSeo = $archiveSeo;
+
         return $this;
     }
 
@@ -218,10 +224,11 @@ class Archive implements AuditableTranslatableInterface
     public function setArchiveExcerpt(?ArchiveExcerpt $archiveExcerpt): self
     {
         $this->archiveExcerpt = $archiveExcerpt;
+
         return $this;
     }
 
-    #[Serializer\VirtualProperty(name: "ext")]
+    #[Serializer\VirtualProperty(name: 'ext')]
     public function getExt(): array
     {
         return $this->ext;
@@ -230,12 +237,14 @@ class Archive implements AuditableTranslatableInterface
     public function setExt(array $ext): self
     {
         $this->ext = $ext;
+
         return $this;
     }
 
     public function addExt(string $key, $value): self
     {
         $this->ext[$key] = $value;
+
         return $this;
     }
 
@@ -253,6 +262,7 @@ class Archive implements AuditableTranslatableInterface
     {
         $this->locale = $locale;
         $this->propagateLocale($locale);
+
         return $this;
     }
 
@@ -267,6 +277,7 @@ class Archive implements AuditableTranslatableInterface
     public function setTranslation(ArchiveTranslation $translation, string $locale): self
     {
         $this->translations->set($locale, $translation);
+
         return $this;
     }
 
@@ -283,6 +294,7 @@ class Archive implements AuditableTranslatableInterface
     {
         $translation = new ArchiveTranslation($this, $locale);
         $this->translations->set($locale, $translation);
+
         return $translation;
     }
 
@@ -293,6 +305,7 @@ class Archive implements AuditableTranslatableInterface
         $archiveExcerpt = $this->getArchiveExcerpt();
         $archiveExcerpt->setLocale($locale);
         $this->initExt();
+
         return $this;
     }
 
@@ -308,7 +321,7 @@ class Archive implements AuditableTranslatableInterface
         return $this;
     }
 
-    #[Serializer\VirtualProperty(name: "availableLocales")]
+    #[Serializer\VirtualProperty(name: 'availableLocales')]
     public function getAvailableLocales(): array
     {
         return \array_values($this->translations->getKeys());
@@ -316,36 +329,36 @@ class Archive implements AuditableTranslatableInterface
 
     public function copy(Archive $copy): Archive
     {
-
         $copy->setType($this->getType());
 
         if ($currentTranslation = $this->getTranslation($this->getLocale())) {
             $newTranslation = clone $currentTranslation;
             $copy->setTranslation($newTranslation);
 
-            //copy ext also...
-            foreach($this->ext as $key => $translatable) {
+            // copy ext also...
+            foreach ($this->ext as $key => $translatable) {
                 $copy->addExt($key, clone $translatable);
             }
         }
-        return $copy;
 
+        return $copy;
     }
 
     public function copyToLocale(string $locale): self
     {
         if ($currentTranslation = $this->getTranslation($this->getLocale())) {
-           $newTranslation = clone $currentTranslation;
-           $newTranslation->setLocale($locale);
-           $this->translations->set($locale, $newTranslation);
+            $newTranslation = clone $currentTranslation;
+            $newTranslation->setLocale($locale);
+            $this->translations->set($locale, $newTranslation);
 
-           //copy ext also...
-           foreach($this->ext as $translatable) {
-               $translatable->copyToLocale($locale);
-           }
+            // copy ext also...
+            foreach ($this->ext as $translatable) {
+                $translatable->copyToLocale($locale);
+            }
 
-           $this->setLocale($locale);
+            $this->setLocale($locale);
         }
+
         return $this;
     }
 
@@ -357,7 +370,7 @@ class Archive implements AuditableTranslatableInterface
     public function setImages(?array $images): self
     {
         $this->images = $images;
+
         return $this;
     }
-
 }

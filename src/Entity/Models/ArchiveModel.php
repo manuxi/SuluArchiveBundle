@@ -15,7 +15,7 @@ use Manuxi\SuluArchiveBundle\Domain\Event\ArchiveRemovedEvent;
 use Manuxi\SuluArchiveBundle\Domain\Event\ArchiveUnpublishedEvent;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
 use Manuxi\SuluArchiveBundle\Entity\Interfaces\ArchiveModelInterface;
-use Manuxi\SuluArchiveBundle\Entity\Traits\ArrayPropertyTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\ArrayPropertyTrait;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveRepository;
 use Manuxi\SuluArchiveBundle\Search\Event\ArchivePublishedEvent as SearchPublishedEvent;
 use Manuxi\SuluArchiveBundle\Search\Event\ArchiveRemovedEvent as SearchRemovedEvent;

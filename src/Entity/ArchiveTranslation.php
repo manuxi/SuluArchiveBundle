@@ -6,15 +6,15 @@ namespace Manuxi\SuluArchiveBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Manuxi\SuluArchiveBundle\Entity\Traits\LinkTrait;
-use Manuxi\SuluArchiveBundle\Entity\Interfaces\AuditableInterface;
-use Manuxi\SuluArchiveBundle\Entity\Traits\AuditableTrait;
-use Manuxi\SuluArchiveBundle\Entity\Traits\ImageTrait;
-use Manuxi\SuluArchiveBundle\Entity\Traits\DocumentTrait;
-use Manuxi\SuluArchiveBundle\Entity\Traits\PublishedTrait;
-use Manuxi\SuluArchiveBundle\Entity\Traits\RoutePathTrait;
-use Manuxi\SuluArchiveBundle\Entity\Traits\ShowAuthorTrait;
-use Manuxi\SuluArchiveBundle\Entity\Traits\ShowDateTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\LinkTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\AuditableInterface;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\AuditableTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\ImageTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\DocumentTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\PublishedTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\RoutePathTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\ShowAuthorTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\ShowDateTrait;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveTranslationRepository;
 
 #[ORM\Entity(repositoryClass: ArchiveTranslationRepository::class)]

@@ -9,10 +9,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use JMS\Serializer\Annotation as Serializer;
-use Manuxi\SuluArchiveBundle\Entity\Interfaces\SeoInterface;
-use Manuxi\SuluArchiveBundle\Entity\Interfaces\SeoTranslatableInterface;
-use Manuxi\SuluArchiveBundle\Entity\Traits\SeoTrait;
-use Manuxi\SuluArchiveBundle\Entity\Traits\SeoTranslatableTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\SeoInterface;
+use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\SeoTranslatableInterface;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\SeoTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\SeoTranslatableTrait;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveSeoRepository;
 
 #[ORM\Entity(repositoryClass: ArchiveSeoRepository::class)]

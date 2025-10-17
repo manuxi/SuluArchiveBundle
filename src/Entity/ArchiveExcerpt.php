@@ -9,10 +9,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use JMS\Serializer\Annotation as Serializer;
-use Manuxi\SuluArchiveBundle\Entity\Interfaces\ExcerptInterface;
-use Manuxi\SuluArchiveBundle\Entity\Interfaces\ExcerptTranslatableInterface;
-use Manuxi\SuluArchiveBundle\Entity\Traits\ExcerptTrait;
-use Manuxi\SuluArchiveBundle\Entity\Traits\ExcerptTranslatableTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\ExcerptInterface;
+use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\ExcerptTranslatableInterface;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\ExcerptTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\ExcerptTranslatableTrait;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveExcerptRepository;
 
 #[ORM\Entity(repositoryClass: ArchiveExcerptRepository::class)]
