@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Manuxi\SuluArchiveBundle\DependencyInjection;
 
-use Exception;
 use Manuxi\SuluArchiveBundle\Admin\ArchiveAdmin;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
 use Sulu\Bundle\PersistenceBundle\DependencyInjection\PersistenceExtensionTrait;
@@ -19,17 +18,14 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
     use PersistenceExtensionTrait;
 
     /**
-     * @param array $configs
-     * @param ContainerBuilder $container
-     * @throws Exception
+     * @throws \Exception
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
         $loader->load('controller.xml');
 
@@ -89,9 +85,9 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
                         Archive::class => [
                             'generator' => 'schema',
                             'options' => [
-                                //@TODO: works not yet as expected, does not translate correctly
-                                //see https://github.com/sulu/sulu/pull/5920
-                                'route_schema' => '/{translator.trans("sulu_archive.archive")}/{implode("-", object)}'
+                                // @TODO: works not yet as expected, does not translate correctly
+                                // see https://github.com/sulu/sulu/pull/5920
+                                'route_schema' => '/{translator.trans("sulu_archive.archive")}/{implode("-", object)}',
                             ],
                             'resource_key' => Archive::RESOURCE_KEY,
                         ],
@@ -106,12 +102,12 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
                 [
                     'lists' => [
                         'directories' => [
-                            __DIR__ . '/../Resources/config/lists',
+                            __DIR__.'/../Resources/config/lists',
                         ],
                     ],
                     'forms' => [
                         'directories' => [
-                            __DIR__ . '/../Resources/config/forms',
+                            __DIR__.'/../Resources/config/forms',
                         ],
                     ],
                     'resources' => [
@@ -135,22 +131,22 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
                                 'view' => [
                                     'name' => ArchiveAdmin::EDIT_FORM_VIEW,
                                     'result_to_view' => [
-                                        'id' => 'id'
-                                    ]
+                                        'id' => 'id',
+                                    ],
                                 ],
                                 'types' => [
                                     'list_overlay' => [
                                         'adapter' => 'table',
                                         'list_key' => Archive::LIST_KEY,
                                         'display_properties' => [
-                                            'title'
+                                            'title',
                                         ],
                                         'icon' => 'su-archive',
                                         'label' => 'sulu_archive.archive_selection_label',
-                                        'overlay_title' => 'sulu_archive.select_archive'
-                                    ]
-                                ]
-                            ]
+                                        'overlay_title' => 'sulu_archive.select_archive',
+                                    ],
+                                ],
+                            ],
                         ],
                         'single_selection' => [
                             'single_archive_selection' => [
@@ -159,29 +155,29 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
                                 'view' => [
                                     'name' => ArchiveAdmin::EDIT_FORM_VIEW,
                                     'result_to_view' => [
-                                        'id' => 'id'
-                                    ]
+                                        'id' => 'id',
+                                    ],
                                 ],
                                 'types' => [
                                     'list_overlay' => [
                                         'adapter' => 'table',
                                         'list_key' => Archive::LIST_KEY,
                                         'display_properties' => [
-                                            'title'
+                                            'title',
                                         ],
                                         'icon' => 'su-archive',
                                         'empty_text' => 'sulu_archive.no_archive_selected',
-                                        'overlay_title' => 'sulu_archive.select_archive'
+                                        'overlay_title' => 'sulu_archive.select_archive',
                                     ],
                                     'auto_complete' => [
                                         'display_property' => 'title',
                                         'search_properties' => [
-                                            'title'
-                                        ]
-                                    ]
-                                ]
+                                            'title',
+                                        ],
+                                    ],
+                                ],
                             ],
-                        ]
+                        ],
                     ],
                 ]
             );
@@ -189,7 +185,7 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
 
         $container->loadFromExtension('framework', [
             'default_locale' => 'en',
-            'translator' => ['paths' => [__DIR__ . '/../Resources/config/translations/']],
+            'translator' => ['paths' => [__DIR__.'/../Resources/config/translations/']],
         ]);
     }
 }

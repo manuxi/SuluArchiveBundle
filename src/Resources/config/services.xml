@@ -113,20 +113,6 @@
             <argument type="service" id="sulu_core.webspace.webspace_manager"/>
         </service>
 
-        <!-- outsource -->
-        <service id="sulu_archive.persistence.event_listener.doctrine.author" class="Manuxi\SuluArchiveBundle\EventListener\Doctrine\AuthorListener">
-            <argument>%sulu.model.contact.class%</argument>
-            <argument type="service" id="security.token_storage" on-invalid="null"/>
-            <tag name="doctrine.event_listener" event="loadClassMetadata"/>
-            <tag name="doctrine.event_listener" event="onFlush"/>
-        </service>
-        <service id="sulu_archive.persistence.event_listener.doctrine.authored" class="Manuxi\SuluArchiveBundle\EventListener\Doctrine\AuthoredListener">
-            <tag name="doctrine.event_listener" event="loadClassMetadata"/>
-            <tag name="doctrine.event_listener" event="preUpdate"/>
-            <tag name="doctrine.event_listener" event="prePersist"/>
-        </service>
-
-
         <service id="sulu_archive.model.archive" class="Manuxi\SuluArchiveBundle\Entity\Models\ArchiveModel">
             <argument type="service" id="sulu_archive.repository.archive"/>
             <argument type="service" id="sulu.repository.media"/>
