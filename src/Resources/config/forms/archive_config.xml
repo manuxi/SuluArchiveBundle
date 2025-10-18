@@ -32,13 +32,164 @@
                     </params>
                 </property>
 
-                <property name="toggleBreadcrumbs" type="checkbox" colspan="3">
+                <property name="toggleBreadcrumbs" type="checkbox" colspan="3" spaceAfter="3">
                     <meta>
                         <title>sulu_archive.config.properties.toggle_breadcrumbs</title>
                     </meta>
                     <params>
                         <param name="type" value="toggler"/>
                         <param name="default_value" value="true"/>
+                    </params>
+                </property>
+
+                <property name="toggleTags" type="checkbox" colspan="3">
+                    <meta>
+                        <title>sulu_archive.config.properties.toggle_tags</title>
+                    </meta>
+                    <params>
+                        <param name="type" value="toggler"/>
+                        <param name="default_value" value="false"/>
+                    </params>
+                </property>
+
+                <property name="colorTags" type="color" colspan="9" visibleCondition="__parent.toggleTags == true">
+                    <meta>
+                        <title lang="en">Tag Color</title>
+                        <title lang="de">Farbe Tag</title>
+                    </meta>
+                </property>
+
+                <property name="colorTags" type="single_select" colspan="3" visibleCondition="__parent.toggleTags == true">
+                    <meta>
+                        <title lang="en">Tags Color</title>
+                        <title lang="de">Farbe Tags</title>
+                    </meta>
+                    <params>
+                        <param name="default_value" value="light"/>
+
+                        <param name="values" type="collection">
+                            <param name="primary">
+                                <meta>
+                                    <title lang="en">primary</title>
+                                    <title lang="de">primary</title>
+                                </meta>
+                            </param>
+                            <param name="secondary">
+                                <meta>
+                                    <title lang="en">secondary</title>
+                                    <title lang="de">secondary</title>
+                                </meta>
+                            </param>
+                            <param name="success">
+                                <meta>
+                                    <title lang="en">success</title>
+                                    <title lang="de">success</title>
+                                </meta>
+                            </param>
+                            <param name="danger">
+                                <meta>
+                                    <title lang="en">danger</title>
+                                    <title lang="de">danger</title>
+                                </meta>
+                            </param>
+                            <param name="warning">
+                                <meta>
+                                    <title lang="en">warning</title>
+                                    <title lang="de">warning</title>
+                                </meta>
+                            </param>
+                            <param name="info">
+                                <meta>
+                                    <title lang="en">info</title>
+                                    <title lang="de">info</title>
+                                </meta>
+                            </param>
+                            <param name="dark">
+                                <meta>
+                                    <title lang="en">dark</title>
+                                    <title lang="de">dark</title>
+                                </meta>
+                            </param>
+                            <param name="light">
+                                <meta>
+                                    <title lang="en">light</title>
+                                    <title lang="de">light</title>
+                                </meta>
+                            </param>
+
+                        </param>
+                    </params>
+                </property>
+
+                <property name="toggleCategories" type="checkbox" colspan="3">
+                    <meta>
+                        <title>sulu_archive.config.properties.toggle_categories</title>
+                    </meta>
+                    <params>
+                        <param name="type" value="toggler"/>
+                        <param name="default_value" value="false"/>
+                    </params>
+                </property>
+
+                <property name="colorCategories" type="single_select" colspan="3" visibleCondition="__parent.toggleCategories == true">
+                    <meta>
+                        <title lang="en">Categories Color</title>
+                        <title lang="de">Farbe Kategorien</title>
+                    </meta>
+                    <params>
+                        <param name="default_value" value="light"/>
+
+                        <param name="values" type="collection">
+                            <param name="primary">
+                                <meta>
+                                    <title lang="en">primary</title>
+                                    <title lang="de">primary</title>
+                                </meta>
+                            </param>
+                            <param name="secondary">
+                                <meta>
+                                    <title lang="en">secondary</title>
+                                    <title lang="de">secondary</title>
+                                </meta>
+                            </param>
+                            <param name="success">
+                                <meta>
+                                    <title lang="en">success</title>
+                                    <title lang="de">success</title>
+                                </meta>
+                            </param>
+                            <param name="danger">
+                                <meta>
+                                    <title lang="en">danger</title>
+                                    <title lang="de">danger</title>
+                                </meta>
+                            </param>
+                            <param name="warning">
+                                <meta>
+                                    <title lang="en">warning</title>
+                                    <title lang="de">warning</title>
+                                </meta>
+                            </param>
+                            <param name="info">
+                                <meta>
+                                    <title lang="en">info</title>
+                                    <title lang="de">info</title>
+                                </meta>
+                            </param>
+                            <param name="dark">
+                                <meta>
+                                    <title lang="en">dark</title>
+                                    <title lang="de">dark</title>
+                                </meta>
+                            </param>
+                            <param name="light">
+                                <meta>
+                                    <title lang="en">light</title>
+                                    <title lang="de">light</title>
+                                </meta>
+                            </param>
+
+                        </param>
                     </params>
                 </property>
 

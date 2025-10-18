@@ -6,16 +6,16 @@ namespace Manuxi\SuluArchiveBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Manuxi\SuluSharedToolsBundle\Entity\Traits\LinkTrait;
+use Manuxi\SuluArchiveBundle\Repository\ArchiveTranslationRepository;
 use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\AuditableInterface;
 use Manuxi\SuluSharedToolsBundle\Entity\Traits\AuditableTrait;
-use Manuxi\SuluSharedToolsBundle\Entity\Traits\ImageTrait;
 use Manuxi\SuluSharedToolsBundle\Entity\Traits\DocumentTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\ImageTrait;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\LinkTrait;
 use Manuxi\SuluSharedToolsBundle\Entity\Traits\PublishedTrait;
 use Manuxi\SuluSharedToolsBundle\Entity\Traits\RoutePathTrait;
 use Manuxi\SuluSharedToolsBundle\Entity\Traits\ShowAuthorTrait;
 use Manuxi\SuluSharedToolsBundle\Entity\Traits\ShowDateTrait;
-use Manuxi\SuluArchiveBundle\Repository\ArchiveTranslationRepository;
 
 #[ORM\Entity(repositoryClass: ArchiveTranslationRepository::class)]
 #[ORM\Table(name: 'app_archive_translation')]
@@ -59,11 +59,12 @@ class ArchiveTranslation implements AuditableInterface
 
     public function __construct(Archive $archive, string $locale)
     {
-        $this->archive  = $archive;
+        $this->archive = $archive;
         $this->locale = $locale;
     }
 
-    public function __clone(){
+    public function __clone()
+    {
         $this->id = null;
     }
 
@@ -80,6 +81,7 @@ class ArchiveTranslation implements AuditableInterface
     public function setArchive(Archive $archive): self
     {
         $this->archive = $archive;
+
         return $this;
     }
 
@@ -91,6 +93,7 @@ class ArchiveTranslation implements AuditableInterface
     public function setLocale(string $locale): self
     {
         $this->locale = $locale;
+
         return $this;
     }
 
@@ -102,6 +105,7 @@ class ArchiveTranslation implements AuditableInterface
     public function setTitle(?string $title): self
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -113,6 +117,7 @@ class ArchiveTranslation implements AuditableInterface
     public function setSubtitle(?string $subtitle): self
     {
         $this->subtitle = $subtitle;
+
         return $this;
     }
 
@@ -124,6 +129,7 @@ class ArchiveTranslation implements AuditableInterface
     public function setSummary(?string $summary): self
     {
         $this->summary = $summary;
+
         return $this;
     }
 
@@ -135,6 +141,7 @@ class ArchiveTranslation implements AuditableInterface
     public function setText(?string $text): self
     {
         $this->text = $text;
+
         return $this;
     }
 
@@ -146,8 +153,7 @@ class ArchiveTranslation implements AuditableInterface
     public function setFooter(?string $footer): self
     {
         $this->footer = $footer;
+
         return $this;
     }
-
-
 }

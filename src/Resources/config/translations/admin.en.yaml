@@ -100,6 +100,8 @@ sulu_archive:
             toggle_header: "Display Header"
             toggle_hero: "Display Default Hero"
             toggle_breadcrumbs: "Display Breadcrumbs"
+            toggle_categories: "Show Categories"
+            toggle_tags: "Show Tags"
             page_archive: "Overview All Archive"
             page_archive_default: "Overview Default"
             page_archive_streets: "Overview Streets and Places"

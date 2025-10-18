@@ -100,6 +100,8 @@ sulu_archive:
             toggle_header: "Header anzeigen"
             toggle_hero: "Standard Hero anzeigen"
             toggle_breadcrumbs: "Breadcrumbs anzeigen"
+            toggle_categories: "Kategorien anzeigen"
+            toggle_tags: "Tags anzeigen"
             page_archive: "Übersichtsseite Alle Archive"
             page_archive_default: "Übersichtsseite Typ Standard"
             page_archive_streets: "Übersichtsseite Typ Straßen und Plätze"

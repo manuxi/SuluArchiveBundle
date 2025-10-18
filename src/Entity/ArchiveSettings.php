@@ -31,6 +31,18 @@ class ArchiveSettings implements AuditableInterface
     #[ORM\Column(type: Types::BOOLEAN, nullable: true)]
     private ?bool $toggleBreadcrumbs = null;
 
+    #[ORM\Column(type: Types::BOOLEAN, nullable: true)]
+    private ?bool $toggleTags = null;
+
+    #[ORM\Column(type: Types::BOOLEAN, nullable: true)]
+    private ?bool $toggleCategories = null;
+
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    private ?string $colorTags = null;
+
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    private ?string $colorCategories = null;
+
     #[ORM\Column(type: Types::STRING, nullable: true)]
     private ?string $pageArchive = null;
 
@@ -157,6 +169,46 @@ class ArchiveSettings implements AuditableInterface
     public function setToggleBreadcrumbs(?bool $toggleBreadcrumbs): void
     {
         $this->toggleBreadcrumbs = $toggleBreadcrumbs;
+    }
+
+    public function getToggleTags(): ?bool
+    {
+        return $this->toggleTags;
+    }
+
+    public function setToggleTags(?bool $toggleTags): void
+    {
+        $this->toggleTags = $toggleTags;
+    }
+
+    public function getToggleCategories(): ?bool
+    {
+        return $this->toggleCategories;
+    }
+
+    public function setToggleCategories(?bool $toggleCategories): void
+    {
+        $this->toggleCategories = $toggleCategories;
+    }
+
+    public function getColorTags(): ?string
+    {
+        return $this->colorTags;
+    }
+
+    public function setColorTags(?string $colorTags): void
+    {
+        $this->colorTags = $colorTags;
+    }
+
+    public function getColorCategories(): ?string
+    {
+        return $this->colorCategories;
+    }
+
+    public function setColorCategories(?string $colorCategories): void
+    {
+        $this->colorCategories = $colorCategories;
     }
 
     public function getPageArchive(): ?string
@@ -468,5 +520,6 @@ class ArchiveSettings implements AuditableInterface
     {
         $this->pageArchiveAssociationMagazinesDocuments = $pageArchiveAssociationMagazinesDocuments;
     }
+
 
 }

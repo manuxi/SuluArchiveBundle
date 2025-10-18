@@ -9,11 +9,11 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use JMS\Serializer\Annotation as Serializer;
+use Manuxi\SuluArchiveBundle\Repository\ArchiveExcerptRepository;
 use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\ExcerptInterface;
 use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\ExcerptTranslatableInterface;
 use Manuxi\SuluSharedToolsBundle\Entity\Traits\ExcerptTrait;
 use Manuxi\SuluSharedToolsBundle\Entity\Traits\ExcerptTranslatableTrait;
-use Manuxi\SuluArchiveBundle\Repository\ArchiveExcerptRepository;
 
 #[ORM\Entity(repositoryClass: ArchiveExcerptRepository::class)]
 #[ORM\Table(name: 'app_archive_excerpt')]
@@ -24,7 +24,7 @@ class ArchiveExcerpt implements ExcerptInterface, ExcerptTranslatableInterface
 
     #[Serializer\Exclude]
     #[ORM\OneToOne(inversedBy: 'archiveExcerpt', targetEntity: Archive::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: 'archive_id', referencedColumnName: "id", nullable: false)]
+    #[JoinColumn(name: 'archive_id', referencedColumnName: 'id', nullable: false)]
     private ?Archive $archive = null;
 
     #[Serializer\Exclude]
@@ -36,7 +36,8 @@ class ArchiveExcerpt implements ExcerptInterface, ExcerptTranslatableInterface
         $this->translations = new ArrayCollection();
     }
 
-    public function __clone(){
+    public function __clone()
+    {
         $this->id = null;
     }
 
@@ -48,6 +49,7 @@ class ArchiveExcerpt implements ExcerptInterface, ExcerptTranslatableInterface
     public function setArchive(Archive $archive): self
     {
         $this->archive = $archive;
+
         return $this;
     }
 
@@ -75,5 +77,4 @@ class ArchiveExcerpt implements ExcerptInterface, ExcerptTranslatableInterface
 
         return $translation;
     }
-
 }

@@ -29,7 +29,7 @@ class SettingsController extends AbstractRestController implements ClassResource
         EntityManagerInterface $entityManager,
         ViewHandlerInterface $viewHandler,
         DomainEventCollectorInterface $domainEventCollector,
-        ?TokenStorageInterface $tokenStorage = null
+        ?TokenStorageInterface $tokenStorage = null,
     ) {
         $this->entityManager = $entityManager;
         $this->domainEventCollector = $domainEventCollector;
@@ -69,6 +69,10 @@ class SettingsController extends AbstractRestController implements ClassResource
             'toggleHeader' => $entity->getToggleHeader(),
             'toggleHero' => $entity->getToggleHero(),
             'toggleBreadcrumbs' => $entity->getToggleBreadcrumbs(),
+            'toggleTags' => $entity->getToggleTags(),
+            'toggleCategories' => $entity->getToggleCategories(),
+            'colorTags' => $entity->getColorTags(),
+            'colorCategories' => $entity->getColorCategories(),
             'pageArchive' => $entity->getPageArchive(),
             'pageArchiveDefault' => $entity->getPageArchiveDefault(),
             'pageArchiveStreets' => $entity->getPageArchiveStreets(),
@@ -100,7 +104,6 @@ class SettingsController extends AbstractRestController implements ClassResource
             'pageArchiveAudioVideoRecordings' => $entity->getPageArchiveAudioVideoRecordings(),
             'pageArchiveMembershipDirectories' => $entity->getPageArchiveMembershipDirectories(),
             'pageArchiveAssociationMagazinesDocuments' => $entity->getPageArchiveAssociationMagazinesDocuments(),
-
         ];
     }
 
@@ -109,6 +112,10 @@ class SettingsController extends AbstractRestController implements ClassResource
         $entity->setToggleHeader($data['toggleHeader']);
         $entity->setToggleHero($data['toggleHero']);
         $entity->setToggleBreadcrumbs($data['toggleBreadcrumbs']);
+        $entity->setToggleTags($data['toggleTags']);
+        $entity->setToggleCategories($data['toggleCategories']);
+        $entity->setColorTags($data['colorTags'] ?? '');
+        $entity->setColorCategories($data['colorCategories'] ?? '');
         $entity->setPageArchive($data['pageArchive']);
         $entity->setPageArchiveDefault($data['pageArchiveDefault']);
         $entity->setPageArchiveStreets($data['pageArchiveStreets']);

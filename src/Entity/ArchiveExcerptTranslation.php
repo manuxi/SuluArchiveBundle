@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Manuxi\SuluArchiveBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\ExcerptTranslationInterface;
 use Manuxi\SuluArchiveBundle\Entity\Traits\ExcerptTranslationTrait;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveExcerptTranslationRepository;
+use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\ExcerptTranslationInterface;
 
 #[ORM\Entity(repositoryClass: ArchiveExcerptTranslationRepository::class)]
 #[ORM\Table(name: 'app_archive_excerpt_translation')]
@@ -26,7 +26,8 @@ class ArchiveExcerptTranslation implements ExcerptTranslationInterface
         $this->initExcerptTranslationTrait();
     }
 
-    public function __clone(){
+    public function __clone()
+    {
         $this->id = null;
     }
 

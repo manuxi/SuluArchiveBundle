@@ -20,7 +20,6 @@ use Sulu\Bundle\TagBundle\Tag\TagInterface;
 
 trait ExcerptTranslationTrait
 {
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER)]
@@ -40,14 +39,14 @@ trait ExcerptTranslationTrait
 
     #[ManyToMany(targetEntity: Category::class)]
     #[JoinTable(name: 'app_archive_excerpt_categories')]
-    #[JoinColumn(name: "excerpt_id", referencedColumnName: "id")]
-    #[InverseJoinColumn(name: "category_id", referencedColumnName: "id")]
+    #[JoinColumn(name: 'excerpt_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'category_id', referencedColumnName: 'id')]
     private ?Collection $categories = null;
 
     #[ManyToMany(targetEntity: TagInterface::class)]
     #[JoinTable(name: 'app_archive_excerpt_tags')]
-    #[JoinColumn(name: "excerpt_id", referencedColumnName: "id")]
-    #[InverseJoinColumn(name: "tag_id", referencedColumnName: "id")]
+    #[JoinColumn(name: 'excerpt_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'tag_id', referencedColumnName: 'id')]
     private ?Collection $tags = null;
 
     /**
@@ -57,14 +56,14 @@ trait ExcerptTranslationTrait
 
     #[ManyToMany(targetEntity: MediaInterface::class)]
     #[JoinTable(name: 'app_archive_excerpt_icons')]
-    #[JoinColumn(name: "excerpt_id", referencedColumnName: "id")]
-    #[InverseJoinColumn(name: "icon_id", referencedColumnName: "id")]
+    #[JoinColumn(name: 'excerpt_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'icon_id', referencedColumnName: 'id')]
     private ?Collection $icons = null;
 
     #[ManyToMany(targetEntity: MediaInterface::class)]
     #[JoinTable(name: 'app_archive_excerpt_images')]
-    #[JoinColumn(name: "excerpt_id", referencedColumnName: "id")]
-    #[InverseJoinColumn(name: "image_id", referencedColumnName: "id")]
+    #[JoinColumn(name: 'excerpt_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'image_id', referencedColumnName: 'id')]
     private ?Collection $images = null;
 
     private function initExcerptTranslationTrait(): void
@@ -88,6 +87,7 @@ trait ExcerptTranslationTrait
     public function setLocale(string $locale): self
     {
         $this->locale = $locale;
+
         return $this;
     }
 
@@ -99,6 +99,7 @@ trait ExcerptTranslationTrait
     public function setTitle(?string $title): self
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -110,6 +111,7 @@ trait ExcerptTranslationTrait
     public function setMore(?string $more): self
     {
         $this->more = $more;
+
         return $this;
     }
 
@@ -121,6 +123,7 @@ trait ExcerptTranslationTrait
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -129,7 +132,7 @@ trait ExcerptTranslationTrait
     private function prepareCategories(): void
     {
         if (null === $this->categories) {
-            $this->categories = new ArrayCollection();;
+            $this->categories = new ArrayCollection();
         }
     }
 
@@ -137,18 +140,21 @@ trait ExcerptTranslationTrait
     {
         $this->prepareCategories();
         $this->categories[] = $category;
+
         return $this;
     }
 
     public function removeCategory(CategoryInterface $category): self
     {
         $this->categories->removeElement($category);
+
         return $this;
     }
 
     public function removeCategories(): self
     {
         $this->categories->clear();
+
         return $this;
     }
 
@@ -175,7 +181,7 @@ trait ExcerptTranslationTrait
     private function prepareTags(): void
     {
         if (null === $this->tags) {
-            $this->tags = new ArrayCollection();;
+            $this->tags = new ArrayCollection();
         }
     }
 
@@ -183,18 +189,21 @@ trait ExcerptTranslationTrait
     {
         $this->prepareTags();
         $this->tags[] = $tag;
+
         return $this;
     }
 
     public function removeTag(TagInterface $tag): self
     {
         $this->tags->removeElement($tag);
+
         return $this;
     }
 
     public function removeTags(): self
     {
         $this->tags->clear();
+
         return $this;
     }
 
@@ -229,12 +238,14 @@ trait ExcerptTranslationTrait
     {
         $this->prepareIcons();
         $this->icons[] = $media;
+
         return $this;
     }
 
     public function removeIcon(MediaInterface $media): self
     {
         $this->icons->removeElement($media);
+
         return $this;
     }
 
@@ -243,7 +254,7 @@ trait ExcerptTranslationTrait
         return $this->icons;
     }
 
-    #[Serializer\VirtualProperty(name: "icon")]
+    #[Serializer\VirtualProperty(name: 'icon')]
     public function getIconIds(): array
     {
         $icons = [];
@@ -254,12 +265,14 @@ trait ExcerptTranslationTrait
                 $icons['ids'][] = $icon->getId();
             }
         }
+
         return $icons;
     }
 
     public function removeIcons(): self
     {
         $this->icons->clear();
+
         return $this;
     }
 
@@ -276,12 +289,14 @@ trait ExcerptTranslationTrait
     {
         $this->prepareImages();
         $this->images[] = $media;
+
         return $this;
     }
 
     public function removeImage(MediaInterface $media): self
     {
         $this->images->removeElement($media);
+
         return $this;
     }
 
@@ -300,12 +315,14 @@ trait ExcerptTranslationTrait
                 $images['ids'][] = $image->getId();
             }
         }
+
         return $images;
     }
 
     public function removeImages(): self
     {
         $this->images->clear();
+
         return $this;
     }
 }
