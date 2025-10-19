@@ -169,7 +169,7 @@ trait ExcerptTranslationTrait
 
         if (null !== $this->getCategories()) {
             foreach ($this->getCategories() as $category) {
-                $categories[] = $category->getId();
+                $categories[$category->getId()] = $category;
             }
         }
 

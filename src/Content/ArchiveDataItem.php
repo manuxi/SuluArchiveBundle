@@ -8,10 +8,9 @@ use JMS\Serializer\Annotation as Serializer;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
 use Sulu\Component\SmartContent\ItemInterface;
 
-#[Serializer\ExclusionPolicy("all")]
+#[Serializer\ExclusionPolicy('all')]
 class ArchiveDataItem implements ItemInterface
 {
-
     private Archive $entity;
 
     public function __construct(Archive $entity)

@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Manuxi\SuluArchiveBundle\Entity\Models;
 
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Manuxi\SuluArchiveBundle\Entity\ArchiveExcerpt;
 use Manuxi\SuluArchiveBundle\Entity\Interfaces\ArchiveExcerptModelInterface;
-use Manuxi\SuluSharedToolsBundle\Entity\Traits\ArrayPropertyTrait;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveExcerptRepository;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\ArrayPropertyTrait;
 use Sulu\Bundle\CategoryBundle\Category\CategoryManagerInterface;
 use Sulu\Bundle\MediaBundle\Entity\MediaRepositoryInterface;
 use Sulu\Bundle\TagBundle\Tag\TagManagerInterface;
@@ -29,7 +27,7 @@ class ArchiveExcerptModel implements ArchiveExcerptModelInterface
         ArchiveExcerptRepository $archiveExcerptRepository,
         CategoryManagerInterface $categoryManager,
         TagManagerInterface $tagManager,
-        MediaRepositoryInterface $mediaRepository
+        MediaRepositoryInterface $mediaRepository,
     ) {
         $this->archiveExcerptRepository = $archiveExcerptRepository;
         $this->categoryManager = $categoryManager;
@@ -38,21 +36,16 @@ class ArchiveExcerptModel implements ArchiveExcerptModelInterface
     }
 
     /**
-     * @param ArchiveExcerpt $archiveExcerpt
-     * @param Request $request
-     * @return ArchiveExcerpt
      * @throws EntityNotFoundException
      */
     public function updateArchiveExcerpt(ArchiveExcerpt $archiveExcerpt, Request $request): ArchiveExcerpt
     {
         $archiveExcerpt = $this->mapDataToArchiveExcerpt($archiveExcerpt, $request->request->all()['ext']['excerpt']);
+
         return $this->archiveExcerptRepository->save($archiveExcerpt);
     }
 
     /**
-     * @param ArchiveExcerpt $archiveExcerpt
-     * @param array $data
-     * @return ArchiveExcerpt
      * @throws EntityNotFoundException
      */
     private function mapDataToArchiveExcerpt(ArchiveExcerpt $archiveExcerpt, array $data): ArchiveExcerpt
@@ -81,7 +74,7 @@ class ArchiveExcerptModel implements ArchiveExcerptModelInterface
         if ($categoryIds && is_array($categoryIds)) {
             $archiveExcerpt->removeCategories();
             $categories = $this->categoryManager->findByIds($categoryIds);
-            foreach($categories as $category) {
+            foreach ($categories as $category) {
                 $archiveExcerpt->addCategory($category);
             }
         }
@@ -89,7 +82,7 @@ class ArchiveExcerptModel implements ArchiveExcerptModelInterface
         $tags = $this->getProperty($data, 'tags');
         if ($tags && is_array($tags)) {
             $archiveExcerpt->removeTags();
-            foreach($tags as $tagName) {
+            foreach ($tags as $tagName) {
                 $archiveExcerpt->addTag($this->tagManager->findOrCreateByName($tagName));
             }
         }
@@ -97,8 +90,8 @@ class ArchiveExcerptModel implements ArchiveExcerptModelInterface
         $iconIds = $this->getPropertyMulti($data, ['icon', 'ids']);
         if ($iconIds && is_array($iconIds)) {
             $archiveExcerpt->removeIcons();
-            foreach($iconIds as $iconId) {
-                $icon = $this->mediaRepository->findMediaById((int)$iconId);
+            foreach ($iconIds as $iconId) {
+                $icon = $this->mediaRepository->findMediaById((int) $iconId);
                 if (!$icon) {
                     throw new EntityNotFoundException($this->mediaRepository->getClassName(), $iconId);
                 }
@@ -109,8 +102,8 @@ class ArchiveExcerptModel implements ArchiveExcerptModelInterface
         $imageIds = $this->getPropertyMulti($data, ['images', 'ids']);
         if ($imageIds && is_array($imageIds)) {
             $archiveExcerpt->removeImages();
-            foreach($imageIds as $imageId) {
-                $image = $this->mediaRepository->findMediaById((int)$imageId);
+            foreach ($imageIds as $imageId) {
+                $image = $this->mediaRepository->findMediaById((int) $imageId);
                 if (!$image) {
                     throw new EntityNotFoundException($this->mediaRepository->getClassName(), $imageId);
                 }

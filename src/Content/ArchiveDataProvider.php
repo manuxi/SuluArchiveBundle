@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Manuxi\SuluArchiveBundle\Content;
 
-use Countable;
 use Doctrine\ORM\EntityManagerInterface;
 use Manuxi\SuluArchiveBundle\Admin\ArchiveAdmin;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
@@ -25,7 +24,7 @@ class ArchiveDataProvider extends BaseDataProvider
         ArraySerializerInterface $serializer,
         private RequestStack $requestStack,
         private EntityManagerInterface $entityManager,
-        private ArchiveTypeSelect $archiveTypeSelect
+        private ArchiveTypeSelect $archiveTypeSelect,
     ) {
         parent::__construct($repository, $serializer);
     }
@@ -40,6 +39,7 @@ class ArchiveDataProvider extends BaseDataProvider
             $temp['title'] = $values['title'];
             $return[] = $temp;
         }
+
         return $return;
     }
 
@@ -77,13 +77,13 @@ class ArchiveDataProvider extends BaseDataProvider
         array $options = [],
         $limit = null,
         $page = 1,
-        $pageSize = null
-    ): DataProviderResult
-    {
+        $pageSize = null,
+    ): DataProviderResult {
         $locale = $options['locale'];
         $request = $this->requestStack->getCurrentRequest();
         $options['page'] = $request->get('p');
         $archive = $this->entityManager->getRepository(Archive::class)->findByFilters($filters, $page, $pageSize, $limit, $locale, $options);
+
         return new DataProviderResult($archive, $this->entityManager->getRepository(Archive::class)->hasNextPage($filters, $page, $pageSize, $limit, $locale, $options));
     }
 
@@ -102,13 +102,8 @@ class ArchiveDataProvider extends BaseDataProvider
      * It combines the limit/query-count with the page and page-size.
      *
      * @noinspection PhpUnusedPrivateMethodInspection
-     * @param Countable $queryResult
-     * @param int|null $limit
-     * @param int $page
-     * @param int|null $pageSize
-     * @return bool
      */
-    private function hasNextPage(Countable $queryResult, ?int $limit, int $page, ?int $pageSize): bool
+    private function hasNextPage(\Countable $queryResult, ?int $limit, int $page, ?int $pageSize): bool
     {
         $count = $queryResult->count();
 
@@ -123,5 +118,4 @@ class ArchiveDataProvider extends BaseDataProvider
 
         return $count > ($page * $pageSize);
     }
-
 }

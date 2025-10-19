@@ -21,7 +21,6 @@ class ArchiveSelectionContentType extends SimpleContentType
     }
 
     /**
-     * @param PropertyInterface $property
      * @return Archive[]
      */
     public function getContentData(PropertyInterface $property): array
@@ -36,6 +35,7 @@ class ArchiveSelectionContentType extends SimpleContentType
                 $archivelist[] = $archive;
             }
         }
+
         return $archivelist;
     }
 

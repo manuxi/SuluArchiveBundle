@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Manuxi\SuluArchiveBundle\Controller\Website;
 
-use Exception;
 use JMS\Serializer\SerializerBuilder;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveRepository;
@@ -31,40 +30,34 @@ class ArchiveController extends AbstractController
         WebspaceManagerInterface $webspaceManager,
         TranslatorInterface $translator,
         TemplateAttributeResolverInterface $templateAttributeResolver,
-        RouteRepositoryInterface $routeRepository
+        RouteRepositoryInterface $routeRepository,
     ) {
         parent::__construct($requestStack, $mediaManager);
 
-        $this->repository                = $repository;
-        $this->webspaceManager           = $webspaceManager;
-        $this->translator                = $translator;
+        $this->repository = $repository;
+        $this->webspaceManager = $webspaceManager;
+        $this->translator = $translator;
         $this->templateAttributeResolver = $templateAttributeResolver;
-        $this->routeRepository           = $routeRepository;
+        $this->routeRepository = $routeRepository;
     }
 
     /**
-     * @param Archive $archive
-     * @param string $view
-     * @param bool $preview
-     * @param bool $partial
-     * @return Response
-     * @throws Exception
+     * @throws \Exception
      */
     public function indexAction(Archive $archive, string $view = '@SuluArchive/archive', bool $preview = false, bool $partial = false): Response
     {
-
         $viewTemplate = $this->getViewTemplate($view, $this->request, $preview);
 
         $parameters = $this->templateAttributeResolver->resolve([
-            'archive'   => $archive,
+            'archive' => $archive,
             'content' => [
-                'title'    => $this->translator->trans('sulu_archive.archive'),
+                'title' => $this->translator->trans('sulu_archive.archive'),
                 'subtitle' => $archive->getTitle(),
             ],
-            'path'          => $archive->getRoutePath(),
-            'extension'     => $this->extractExtension($archive),
+            'path' => $archive->getRoutePath(),
+            'extension' => $this->extractExtension($archive),
             'localizations' => $this->getLocalizationsArrayForEntity($archive),
-            'created'       => $archive->getCreated(),
+            'created' => $archive->getCreated(),
         ]);
 
         return $this->prepareResponse($viewTemplate, $parameters, $preview, $partial);
@@ -73,12 +66,12 @@ class ArchiveController extends AbstractController
     /**
      * With the help of this method the corresponding localisations for the
      * current archive is found e.g. to be linked in the language switcher.
-     * @param Archive $archive
+     *
      * @return array<string, array>
      */
     protected function getLocalizationsArrayForEntity(Archive $archive): array
     {
-        $routes = $this->routeRepository->findAllByEntity(Archive::class, (string)$archive->getId());
+        $routes = $this->routeRepository->findAllByEntity(Archive::class, (string) $archive->getId());
 
         $localizations = [];
         foreach ($routes as $route) {
@@ -97,6 +90,7 @@ class ArchiveController extends AbstractController
     private function extractExtension(Archive $archive): array
     {
         $serializer = SerializerBuilder::create()->build();
+
         return $serializer->toArray($archive->getExt());
     }
 
@@ -105,14 +99,14 @@ class ArchiveController extends AbstractController
      */
     public static function getSubscribedServices(): array
     {
-/*        return array_merge(
-            parent::getSubscribedServices(),
-            [
-                WebspaceManagerInterface::class,
-                RouteRepositoryInterface::class,
-                TemplateAttributeResolverInterface::class,
-            ]
-        );*/
+        /*        return array_merge(
+                    parent::getSubscribedServices(),
+                    [
+                        WebspaceManagerInterface::class,
+                        RouteRepositoryInterface::class,
+                        TemplateAttributeResolverInterface::class,
+                    ]
+                );*/
         $subscribedServices = parent::getSubscribedServices();
 
         $subscribedServices['sulu_core.webspace.webspace_manager'] = WebspaceManagerInterface::class;
@@ -121,5 +115,4 @@ class ArchiveController extends AbstractController
 
         return $subscribedServices;
     }
-
 }
