@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Manuxi\SuluArchiveBundle\Entity\Models;
 
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Manuxi\SuluArchiveBundle\Domain\Event\ArchiveCopiedLanguageEvent;
 use Manuxi\SuluArchiveBundle\Domain\Event\ArchiveCreatedEvent;
 use Manuxi\SuluArchiveBundle\Domain\Event\ArchiveModifiedEvent;
@@ -15,12 +13,12 @@ use Manuxi\SuluArchiveBundle\Domain\Event\ArchiveRemovedEvent;
 use Manuxi\SuluArchiveBundle\Domain\Event\ArchiveUnpublishedEvent;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
 use Manuxi\SuluArchiveBundle\Entity\Interfaces\ArchiveModelInterface;
-use Manuxi\SuluSharedToolsBundle\Entity\Traits\ArrayPropertyTrait;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveRepository;
-use Manuxi\SuluArchiveBundle\Search\Event\ArchivePublishedEvent as SearchPublishedEvent;
-use Manuxi\SuluArchiveBundle\Search\Event\ArchiveRemovedEvent as SearchRemovedEvent;
-use Manuxi\SuluArchiveBundle\Search\Event\ArchiveSavedEvent;
-use Manuxi\SuluArchiveBundle\Search\Event\ArchiveUnpublishedEvent as SearchUnpublishedEvent;
+use Manuxi\SuluSharedToolsBundle\Entity\Traits\ArrayPropertyTrait;
+use Manuxi\SuluSharedToolsBundle\Search\Event\PersistedEvent as SearchPersistedEvent;
+use Manuxi\SuluSharedToolsBundle\Search\Event\PreUpdatedEvent as SearchPreUpdatedEvent;
+use Manuxi\SuluSharedToolsBundle\Search\Event\RemovedEvent as SearchRemovedEvent;
+use Manuxi\SuluSharedToolsBundle\Search\Event\UpdatedEvent as SearchUpdatedEvent;
 use Sulu\Bundle\ActivityBundle\Application\Collector\DomainEventCollectorInterface;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepository;
 use Sulu\Bundle\MediaBundle\Entity\MediaRepositoryInterface;
@@ -43,19 +41,18 @@ class ArchiveModel implements ArchiveModelInterface
         private readonly EntityManagerInterface $entityManager,
         private readonly DomainEventCollectorInterface $domainEventCollector,
         private readonly EventDispatcherInterface $dispatcher,
-    ) {}
+    ) {
+    }
 
     /**
-     * @param int $id
-     * @param Request|null $request
-     * @return Archive
      * @throws EntityNotFoundException
      */
-    public function getArchive(int $id, Request $request = null): Archive
+    public function getArchive(int $id, ?Request $request = null): Archive
     {
-        if(null === $request) {
+        if (null === $request) {
             return $this->findArchiveById($id);
         }
+
         return $this->findArchiveByIdAndLocale($id, $request);
     }
 
@@ -71,8 +68,6 @@ class ArchiveModel implements ArchiveModelInterface
     }
 
     /**
-     * @param Request $request
-     * @return Archive
      * @throws EntityNotFoundException
      */
     public function createArchive(Request $request): Archive
@@ -84,29 +79,26 @@ class ArchiveModel implements ArchiveModelInterface
             new ArchiveCreatedEvent($entity, $request->request->all())
         );
 
-        //need the id for updateRoutesForEntity(), so we have to persist and flush here
+        // need the id for updateRoutesForEntity(), so we have to persist and flush here
         $entity = $this->archiveRepository->save($entity);
 
         $this->updateRoutesForEntity($entity);
 
-        //explicit flush to save routes persisted by updateRoutesForEntity()
+        // explicit flush to save routes persisted by updateRoutesForEntity()
         $this->entityManager->flush();
 
-        $this->dispatcher->dispatch(new ArchiveSavedEvent($entity));
+        $this->dispatcher->dispatch(new SearchPersistedEvent($entity));
 
         return $entity;
     }
 
     /**
-     * @param int $id
-     * @param Request $request
-     * @return Archive
      * @throws EntityNotFoundException
      */
     public function updateArchive(int $id, Request $request): Archive
     {
         $entity = $this->findArchiveByIdAndLocale($id, $request);
-        $this->dispatcher->dispatch(new SearchUnpublishedEvent($entity));
+        $this->dispatcher->dispatch(new SearchPreUpdatedEvent($entity));
 
         $entity = $this->mapDataToArchive($entity, $request->request->all());
         $entity = $this->mapSettingsToArchive($entity, $request->request->all());
@@ -117,47 +109,44 @@ class ArchiveModel implements ArchiveModelInterface
         );
 
         $entity = $this->archiveRepository->save($entity);
-        $this->dispatcher->dispatch(new SearchPublishedEvent($entity));
+        $this->dispatcher->dispatch(new SearchUpdatedEvent($entity));
+
         return $entity;
     }
 
     /**
-     * @param int $id
-     * @param Request $request
-     * @return Archive
      * @throws EntityNotFoundException
      */
     public function publishArchive(int $id, Request $request): Archive
     {
         $entity = $this->findArchiveByIdAndLocale($id, $request);
-        $this->dispatcher->dispatch(new SearchUnpublishedEvent($entity));
+        $this->dispatcher->dispatch(new SearchPreUpdatedEvent($entity));
 
         $this->domainEventCollector->collect(
             new ArchivePublishedEvent($entity, $request->request->all())
         );
 
         $entity = $this->archiveRepository->publish($entity);
-        $this->dispatcher->dispatch(new SearchPublishedEvent($entity));
+        $this->dispatcher->dispatch(new SearchUpdatedEvent($entity));
+
         return $entity;
     }
 
     /**
-     * @param int $id
-     * @param Request $request
-     * @return Archive
      * @throws EntityNotFoundException
      */
     public function unpublishArchive(int $id, Request $request): Archive
     {
         $entity = $this->findArchiveByIdAndLocale($id, $request);
-        $this->dispatcher->dispatch(new SearchUnpublishedEvent($entity));
+        $this->dispatcher->dispatch(new SearchPreUpdatedEvent($entity));
         $entity = $this->archiveRepository->unpublish($entity);
 
         $this->domainEventCollector->collect(
             new ArchiveUnpublishedEvent($entity, $request->request->all())
         );
 
-        $this->dispatcher->dispatch(new SearchPublishedEvent($entity));
+        $this->dispatcher->dispatch(new SearchUpdatedEvent($entity));
+
         return $entity;
     }
 
@@ -172,7 +161,7 @@ class ArchiveModel implements ArchiveModelInterface
         $copy = $entity->copy($copy);
 
         $copy = $this->archiveRepository->save($copy);
-        $this->dispatcher->dispatch(new ArchiveSavedEvent($copy));
+        $this->dispatcher->dispatch(new SearchPersistedEvent($copy));
 
         return $copy;
     }
@@ -182,11 +171,11 @@ class ArchiveModel implements ArchiveModelInterface
         $entity = $this->findArchiveById($id);
         $entity->setLocale($srcLocale);
 
-        foreach($destLocales as $destLocale) {
+        foreach ($destLocales as $destLocale) {
             $entity = $entity->copyToLocale($destLocale);
         }
 
-        //@todo: test with more than one different locale
+        // @todo: test with more than one different locale
         $entity->setLocale($this->getLocaleFromRequest($request));
 
         $this->domainEventCollector->collect(
@@ -194,15 +183,12 @@ class ArchiveModel implements ArchiveModelInterface
         );
 
         $entity = $this->archiveRepository->save($entity);
-        $this->dispatcher->dispatch(new ArchiveSavedEvent($entity));
+        $this->dispatcher->dispatch(new SearchPersistedEvent($entity));
 
         return $entity;
     }
 
     /**
-     * @param int $id
-     * @param Request $request
-     * @return Archive
      * @throws EntityNotFoundException
      */
     private function findArchiveByIdAndLocale(int $id, Request $request): Archive
@@ -211,12 +197,11 @@ class ArchiveModel implements ArchiveModelInterface
         if (!$entity) {
             throw new EntityNotFoundException($this->archiveRepository->getClassName(), $id);
         }
+
         return $entity;
     }
 
     /**
-     * @param int $id
-     * @return Archive
      * @throws EntityNotFoundException
      */
     private function findArchiveById(int $id): Archive
@@ -225,6 +210,7 @@ class ArchiveModel implements ArchiveModelInterface
         if (!$entity) {
             throw new EntityNotFoundException($this->archiveRepository->getClassName(), $id);
         }
+
         return $entity;
     }
 
@@ -234,11 +220,8 @@ class ArchiveModel implements ArchiveModelInterface
     }
 
     /**
-     * @param Archive $entity
-     * @param array $data
-     * @return Archive
      * @throws EntityNotFoundException
-     * @throws Exception
+     * @throws \Exception
      */
     private function mapDataToArchive(Archive $entity, array $data): Archive
     {
@@ -309,15 +292,12 @@ class ArchiveModel implements ArchiveModelInterface
     }
 
     /**
-     * @param Archive $entity
-     * @param array $data
-     * @return Archive
      * @throws EntityNotFoundException
-     * @throws Exception
+     * @throws \Exception
      */
     private function mapSettingsToArchive(Archive $entity, array $data): Archive
     {
-        //settings (author, authored) changeable
+        // settings (author, authored) changeable
         $authorId = $this->getProperty($data, 'author');
         if ($authorId) {
             $author = $this->contactRepository->findById($authorId);
@@ -331,10 +311,11 @@ class ArchiveModel implements ArchiveModelInterface
 
         $authored = $this->getProperty($data, 'authored');
         if ($authored) {
-            $entity->setAuthored(new DateTime($authored));
+            $entity->setAuthored(new \DateTime($authored));
         } else {
             $entity->setAuthored(null);
         }
+
         return $entity;
     }
 

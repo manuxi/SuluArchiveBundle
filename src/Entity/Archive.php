@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveRepository;
 use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\AuditableTranslatableInterface;
+use Manuxi\SuluSharedToolsBundle\Entity\Interfaces\SearchableInterface;
 use Manuxi\SuluSharedToolsBundle\Entity\Traits\AuditableTranslatableTrait;
 use Manuxi\SuluSharedToolsBundle\Entity\Traits\DocumentTranslatableTrait;
 use Manuxi\SuluSharedToolsBundle\Entity\Traits\ImageTranslatableTrait;
@@ -23,7 +24,7 @@ use Manuxi\SuluSharedToolsBundle\Entity\Traits\TypeTrait;
 
 #[ORM\Entity(repositoryClass: ArchiveRepository::class)]
 #[ORM\Table(name: 'app_archive')]
-class Archive implements AuditableTranslatableInterface
+class Archive implements AuditableTranslatableInterface, SearchableInterface
 {
     use AuditableTranslatableTrait;
     use PublishedTranslatableTrait;

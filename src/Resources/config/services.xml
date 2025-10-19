@@ -152,12 +152,6 @@
             <tag name="sulu.link.provider" alias="archive"/>
         </service>
 
-        <!--SearchSubscriber-->
-        <service id="sulu_archive.search_subscriber" class="Manuxi\SuluArchiveBundle\Search\ArchiveSearchSubscriber">
-            <argument type="service" id="massive_search.search_manager"/>
-            <tag name="kernel.event_subscriber"/>
-        </service>
-
         <!--Sitemap-->
         <service id="sulu_archive.sitemap_provider" public="true" class="Manuxi\SuluArchiveBundle\Sitemap\ArchiveSitemapProvider">
             <argument type="service" id="sulu_archive.repository.archive"/>
