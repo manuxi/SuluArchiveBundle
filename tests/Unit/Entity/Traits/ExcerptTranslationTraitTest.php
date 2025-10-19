@@ -81,8 +81,8 @@ class ExcerptTranslationTraitTest extends SuluTestCase
 
         $ids = $this->mock->getCategoryIds();
         $this->assertIsArray($ids);
-        $this->assertTrue(\in_array(42, $ids));
-        $this->assertTrue(\in_array(43, $ids));
+        $this->assertTrue(\array_key_exists(42, $ids));
+        $this->assertTrue(\array_key_exists(43, $ids));
 
         $this->assertSame($this->mock, $this->mock->removeCategory($categoryB->reveal()));
         $this->assertSame(1, $this->mock->getCategories()->count());
