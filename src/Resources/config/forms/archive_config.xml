@@ -61,63 +61,18 @@
 
                 <property name="colorTags" type="single_select" colspan="3" visibleCondition="__parent.toggleTags == true">
                     <meta>
-                        <title lang="en">Tags Color</title>
-                        <title lang="de">Farbe Tags</title>
+                        <title lang="en">Categories Color</title>
+                        <title lang="de">Farbe Kategorien</title>
                     </meta>
                     <params>
-                        <param name="default_value" value="light"/>
-
-                        <param name="values" type="collection">
-                            <param name="primary">
-                                <meta>
-                                    <title lang="en">primary</title>
-                                    <title lang="de">primary</title>
-                                </meta>
-                            </param>
-                            <param name="secondary">
-                                <meta>
-                                    <title lang="en">secondary</title>
-                                    <title lang="de">secondary</title>
-                                </meta>
-                            </param>
-                            <param name="success">
-                                <meta>
-                                    <title lang="en">success</title>
-                                    <title lang="de">success</title>
-                                </meta>
-                            </param>
-                            <param name="danger">
-                                <meta>
-                                    <title lang="en">danger</title>
-                                    <title lang="de">danger</title>
-                                </meta>
-                            </param>
-                            <param name="warning">
-                                <meta>
-                                    <title lang="en">warning</title>
-                                    <title lang="de">warning</title>
-                                </meta>
-                            </param>
-                            <param name="info">
-                                <meta>
-                                    <title lang="en">info</title>
-                                    <title lang="de">info</title>
-                                </meta>
-                            </param>
-                            <param name="dark">
-                                <meta>
-                                    <title lang="en">dark</title>
-                                    <title lang="de">dark</title>
-                                </meta>
-                            </param>
-                            <param name="light">
-                                <meta>
-                                    <title lang="en">light</title>
-                                    <title lang="de">light</title>
-                                </meta>
-                            </param>
-
-                        </param>
+                        <param name="default_value"
+                               type="expression"
+                               value="service('sulu_shared_tools.default_color_select').getDefaultValue()"
+                        />
+                        <param name="values"
+                               type="expression"
+                               value="service('sulu_shared_tools.default_color_select').getValues()"
+                        />
                     </params>
                 </property>
 
@@ -137,59 +92,14 @@
                         <title lang="de">Farbe Kategorien</title>
                     </meta>
                     <params>
-                        <param name="default_value" value="light"/>
-
-                        <param name="values" type="collection">
-                            <param name="primary">
-                                <meta>
-                                    <title lang="en">primary</title>
-                                    <title lang="de">primary</title>
-                                </meta>
-                            </param>
-                            <param name="secondary">
-                                <meta>
-                                    <title lang="en">secondary</title>
-                                    <title lang="de">secondary</title>
-                                </meta>
-                            </param>
-                            <param name="success">
-                                <meta>
-                                    <title lang="en">success</title>
-                                    <title lang="de">success</title>
-                                </meta>
-                            </param>
-                            <param name="danger">
-                                <meta>
-                                    <title lang="en">danger</title>
-                                    <title lang="de">danger</title>
-                                </meta>
-                            </param>
-                            <param name="warning">
-                                <meta>
-                                    <title lang="en">warning</title>
-                                    <title lang="de">warning</title>
-                                </meta>
-                            </param>
-                            <param name="info">
-                                <meta>
-                                    <title lang="en">info</title>
-                                    <title lang="de">info</title>
-                                </meta>
-                            </param>
-                            <param name="dark">
-                                <meta>
-                                    <title lang="en">dark</title>
-                                    <title lang="de">dark</title>
-                                </meta>
-                            </param>
-                            <param name="light">
-                                <meta>
-                                    <title lang="en">light</title>
-                                    <title lang="de">light</title>
-                                </meta>
-                            </param>
-
-                        </param>
+                        <param name="default_value"
+                               type="expression"
+                               value="service('sulu_shared_tools.default_color_select').getDefaultValue()"
+                        />
+                        <param name="values"
+                               type="expression"
+                               value="service('sulu_shared_tools.default_color_select').getValues()"
+                        />
                     </params>
                 </property>
 
