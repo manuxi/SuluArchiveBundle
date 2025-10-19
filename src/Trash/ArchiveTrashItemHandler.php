@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Manuxi\SuluArchiveBundle\Trash;
 
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Manuxi\SuluArchiveBundle\Admin\ArchiveAdmin;
 use Manuxi\SuluArchiveBundle\Domain\Event\ArchiveRestoredEvent;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
+use Manuxi\SuluSharedToolsBundle\Search\Event\PersistedEvent as SearchPersistedEvent;
+use Manuxi\SuluSharedToolsBundle\Search\Event\RemovedEvent as SearchRemovedEvent;
 use Sulu\Bundle\ActivityBundle\Application\Collector\DomainEventCollectorInterface;
 use Sulu\Bundle\ContactBundle\Entity\ContactInterface;
 use Sulu\Bundle\MediaBundle\Entity\MediaInterface;
@@ -25,12 +26,13 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class ArchiveTrashItemHandler implements StoreTrashItemHandlerInterface, RestoreTrashItemHandlerInterface, RestoreConfigurationProviderInterface
 {
     public function __construct(
-        private readonly TrashItemRepositoryInterface   $trashItemRepository,
-        private readonly EntityManagerInterface         $entityManager,
+        private readonly TrashItemRepositoryInterface $trashItemRepository,
+        private readonly EntityManagerInterface $entityManager,
         private readonly DoctrineRestoreHelperInterface $doctrineRestoreHelper,
         private readonly DomainEventCollectorInterface $domainEventCollector,
         private readonly EventDispatcherInterface $dispatcher,
-    ) {}
+    ) {
+    }
 
     public static function getResourceKey(): string
     {
@@ -45,28 +47,31 @@ class ArchiveTrashItemHandler implements StoreTrashItemHandlerInterface, Restore
         $document = $entity->getDocument();
 
         $data = [
-            "locale" => $entity->getLocale(),
-            "type" => $entity->getType(),
-            "title" => $entity->getTitle(),
-            "subtitle" => $entity->getSubtitle(),
-            "summary" => $entity->getSummary(),
-            "text" => $entity->getText(),
-            "footer" => $entity->getFooter(),
-            "slug" => $entity->getRoutePath(),
-            "ext" => $entity->getExt(),
-            "link" => $entity->getLink(),
-            "imageId" => $image?->getId(),
-            "documentId" => $document?->getId(),
-            "published" => $entity->isPublished(),
-            "publishedAt" => $entity->getPublishedAt(),
-            "showAuthor" => $entity->getShowAuthor(),
-            "showDate" => $entity->getShowDate(),
-            "authored" => $entity->getAuthored(),
-            "author" => $entity->getAuthor(),
+            'locale' => $entity->getLocale(),
+            'type' => $entity->getType(),
+            'title' => $entity->getTitle(),
+            'subtitle' => $entity->getSubtitle(),
+            'summary' => $entity->getSummary(),
+            'text' => $entity->getText(),
+            'footer' => $entity->getFooter(),
+            'slug' => $entity->getRoutePath(),
+            'ext' => $entity->getExt(),
+            'link' => $entity->getLink(),
+            'imageId' => $image?->getId(),
+            'documentId' => $document?->getId(),
+            'published' => $entity->isPublished(),
+            'publishedAt' => $entity->getPublishedAt(),
+            'showAuthor' => $entity->getShowAuthor(),
+            'showDate' => $entity->getShowDate(),
+            'authored' => $entity->getAuthored(),
+            'author' => $entity->getAuthor(),
         ];
+
+        $this->dispatcher->dispatch(new SearchRemovedEvent($entity));
+
         return $this->trashItemRepository->create(
             Archive::RESOURCE_KEY,
-            (string)$entity->getId(),
+            (string) $entity->getId(),
             $entity->getTitle(),
             $data,
             null,
@@ -80,7 +85,7 @@ class ArchiveTrashItemHandler implements StoreTrashItemHandlerInterface, Restore
     public function restore(TrashItemInterface $trashItem, array $restoreFormData = []): object
     {
         $data = $trashItem->getRestoreData();
-        $archiveId = (int)$trashItem->getResourceId();
+        $archiveId = (int) $trashItem->getResourceId();
         $archive = new Archive();
         $archive->setLocale($data['locale']);
 
@@ -97,23 +102,23 @@ class ArchiveTrashItemHandler implements StoreTrashItemHandlerInterface, Restore
         $archive->setRoutePath($data['slug']);
         $archive->setExt($data['ext']);
 
-        $archive->setAuthored($data['authored'] ? new DateTime($data['authored']['date']) : new DateTime());
+        $archive->setAuthored($data['authored'] ? new \DateTime($data['authored']['date']) : new \DateTime());
 
         if ($data['author']) {
             $contact = $this->entityManager->find(ContactInterface::class, $data['author']);
             $archive->setAuthor($contact);
         }
 
-        if($data['link']) {
+        if ($data['link']) {
             $archive->setLink($data['link']);
         }
 
-        if($data['imageId']) {
+        if ($data['imageId']) {
             $image = $this->entityManager->find(MediaInterface::class, $data['imageId']);
             $archive->setImage($image);
         }
 
-        if($data['documentId']) {
+        if ($data['documentId']) {
             $document = $this->entityManager->find(MediaInterface::class, $data['documentId']);
             $archive->setDocument($document);
         }
@@ -125,6 +130,9 @@ class ArchiveTrashItemHandler implements StoreTrashItemHandlerInterface, Restore
         $this->doctrineRestoreHelper->persistAndFlushWithId($archive, $archiveId);
         $this->createRoute($this->entityManager, $archiveId, $data['locale'], $archive->getRoutePath(), Archive::class);
         $this->entityManager->flush();
+
+        $this->dispatcher->dispatch(new SearchPersistedEvent($archive));
+
         return $archive;
     }
 
@@ -136,8 +144,8 @@ class ArchiveTrashItemHandler implements StoreTrashItemHandlerInterface, Restore
         $route->setEntityClass($class);
         $route->setEntityId($id);
         $route->setHistory(0);
-        $route->setCreated(new DateTime());
-        $route->setChanged(new DateTime());
+        $route->setCreated(new \DateTime());
+        $route->setChanged(new \DateTime());
         $manager->persist($route);
     }
 

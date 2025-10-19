@@ -7,8 +7,8 @@ namespace Manuxi\SuluArchiveBundle\Automation;
 use Doctrine\ORM\EntityManagerInterface;
 use Manuxi\SuluArchiveBundle\Domain\Event\ArchiveUnpublishedEvent;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
-use Manuxi\SuluArchiveBundle\Search\Event\ArchivePublishedEvent as SearchPublishedEvent;
-use Manuxi\SuluArchiveBundle\Search\Event\ArchiveUnpublishedEvent as SearchUnpublishedEvent;
+use Manuxi\SuluSharedToolsBundle\Search\Event\PreUpdatedEvent as SearchPreUpdatedEvent;
+use Manuxi\SuluSharedToolsBundle\Search\Event\UpdatedEvent as SearchUpdatedEvent;
 use Sulu\Bundle\ActivityBundle\Application\Collector\DomainEventCollectorInterface;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\TaskHandler\TaskHandlerConfiguration;
@@ -36,7 +36,7 @@ class ArchiveUnpublishTaskHandler implements AutomationTaskHandlerInterface
         if ($entity === null) {
             return;
         }
-        $this->dispatcher->dispatch(new SearchUnpublishedEvent($entity));
+        $this->dispatcher->dispatch(new SearchPreUpdatedEvent($entity));
         $entity->setPublished(false);
 
         $this->domainEventCollector->collect(
@@ -44,7 +44,7 @@ class ArchiveUnpublishTaskHandler implements AutomationTaskHandlerInterface
         );
 
         $repository->save($entity);
-        $this->dispatcher->dispatch(new SearchPublishedEvent($entity));
+        $this->dispatcher->dispatch(new SearchUpdatedEvent($entity));
     }
 
     public function configureOptionsResolver(OptionsResolver $optionsResolver): OptionsResolver

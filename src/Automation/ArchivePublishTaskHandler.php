@@ -7,8 +7,8 @@ namespace Manuxi\SuluArchiveBundle\Automation;
 use Doctrine\ORM\EntityManagerInterface;
 use Manuxi\SuluArchiveBundle\Domain\Event\ArchivePublishedEvent;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
-use Manuxi\SuluArchiveBundle\Search\Event\ArchivePublishedEvent as SearchPublishedEvent;
-use Manuxi\SuluArchiveBundle\Search\Event\ArchiveUnpublishedEvent as SearchUnpublishedEvent;
+use Manuxi\SuluSharedToolsBundle\Search\Event\PreUpdatedEvent as SearchPreUpdatedEvent;
+use Manuxi\SuluSharedToolsBundle\Search\Event\UpdatedEvent as SearchUpdatedEvent;
 use Sulu\Bundle\ActivityBundle\Application\Collector\DomainEventCollectorInterface;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\TaskHandler\TaskHandlerConfiguration;
@@ -18,13 +18,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ArchivePublishTaskHandler implements AutomationTaskHandlerInterface
 {
-
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
         private readonly DomainEventCollectorInterface $domainEventCollector,
-        private readonly EventDispatcherInterface $dispatcher
-    ) {}
+        private readonly EventDispatcherInterface $dispatcher,
+    ) {
+    }
 
     public function handle($workload): void
     {
@@ -33,11 +33,11 @@ class ArchivePublishTaskHandler implements AutomationTaskHandlerInterface
         }
         $class = $workload['class'];
         $repository = $this->entityManager->getRepository($class);
-        $entity = $repository->findById((int)$workload['id'], $workload['locale']);
-        if ($entity === null) {
+        $entity = $repository->findById((int) $workload['id'], $workload['locale']);
+        if (null === $entity) {
             return;
         }
-        $this->dispatcher->dispatch(new SearchUnpublishedEvent($entity));
+        $this->dispatcher->dispatch(new SearchPreUpdatedEvent($entity));
 
         $entity->setPublished(true);
 
@@ -46,8 +46,7 @@ class ArchivePublishTaskHandler implements AutomationTaskHandlerInterface
         );
 
         $repository->save($entity);
-        $this->dispatcher->dispatch(new SearchPublishedEvent($entity));
-
+        $this->dispatcher->dispatch(new SearchUpdatedEvent($entity));
     }
 
     public function configureOptionsResolver(OptionsResolver $optionsResolver): OptionsResolver
@@ -59,11 +58,11 @@ class ArchivePublishTaskHandler implements AutomationTaskHandlerInterface
 
     public function supports(string $entityClass): bool
     {
-        return $entityClass === Archive::class || \is_subclass_of($entityClass, Archive::class);
+        return Archive::class === $entityClass || \is_subclass_of($entityClass, Archive::class);
     }
 
     public function getConfiguration(): TaskHandlerConfiguration
     {
-        return TaskHandlerConfiguration::create($this->translator->trans("sulu_archive.publish", [], 'admin'));
+        return TaskHandlerConfiguration::create($this->translator->trans('sulu_archive.publish', [], 'admin'));
     }
 }
