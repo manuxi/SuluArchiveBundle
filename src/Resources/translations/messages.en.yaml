@@ -1,0 +1,19 @@
+# English frontend translations for SuluArchiveBundle
+# Used in website templates
+
+sulu_archive:
+    archives: "Archives"
+    archive: "Archive"
+    author: "Author"
+    footer: "Footnotes"
+    published_at: "Published at"
+    by: "by"
+    action:
+        website: "Visit Website"
+        download: "Download"
+        more: "Read more"
+        back: "Back to Overview"
+    search:
+        index:
+            archives: "Archives"
+            archives_published: "Archives"

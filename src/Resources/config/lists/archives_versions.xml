@@ -1,0 +1,90 @@
+<?xml version="1.0" ?>
+<list xmlns="http://schemas.sulu.io/list-builder/list">
+    <key>archives_versions</key>
+
+    <joins name="dimensionContent">
+        <join>
+            <entity-name>dimensionContent</entity-name>
+            <field-name>Manuxi\SuluArchiveBundle\Entity\Archive.dimensionContents</field-name>
+            <method>INNER</method>
+            <condition>dimensionContent.locale = :locale AND dimensionContent.stage = 'draft' AND dimensionContent.version > 0 AND Manuxi\SuluArchiveBundle\Entity\Archive.uuid = :archiveUuid</condition>
+        </join>
+    </joins>
+
+    <joins name="author" ref="dimensionContent">
+        <join>
+            <entity-name>authorContact</entity-name>
+            <field-name>dimensionContent.author</field-name>
+            <method>LEFT</method>
+        </join>
+    </joins>
+
+    <joins name="changer">
+        <join>
+            <entity-name>%sulu.model.user.class%</entity-name>
+            <field-name>dimensionContent.changer</field-name>
+        </join>
+        <join>
+            <entity-name>%sulu.model.contact.class%</entity-name>
+            <field-name>%sulu.model.user.class%.contact</field-name>
+        </join>
+    </joins>
+
+    <properties>
+        <property name="id" translation="sulu_admin.id" visibility="never">
+            <field-name>uuid</field-name>
+            <entity-name>Manuxi\SuluArchiveBundle\Entity\Archive</entity-name>
+        </property>
+
+        <property name="title" translation="sulu_admin.title" visibility="always" sortable="false">
+            <field-name>title</field-name>
+            <entity-name>dimensionContent</entity-name>
+            <joins ref="dimensionContent"/>
+            <transformer type="title"/>
+        </property>
+
+        <property name="subtitle" translation="sulu_archive.subtitle" visibility="always" sortable="false">
+            <field-name>subtitle</field-name>
+            <entity-name>dimensionContent</entity-name>
+            <joins ref="dimensionContent"/>
+        </property>
+
+        <property name="type" translation="sulu_archive.type" visibility="always" sortable="false">
+            <field-name>type</field-name>
+            <entity-name>dimensionContent</entity-name>
+            <joins ref="dimensionContent"/>
+        </property>
+
+        <concatenation-property name="author" glue=" " translation="sulu_archive.author" visibility="always" sortable="false">
+            <field>
+                <field-name>firstName</field-name>
+                <entity-name>authorContact</entity-name>
+                <joins ref="author"/>
+            </field>
+            <field>
+                <field-name>lastName</field-name>
+                <entity-name>authorContact</entity-name>
+                <joins ref="author"/>
+            </field>
+        </concatenation-property>
+
+        <property name="version" translation="sulu_admin.published" visibility="always" sortable="false">
+            <field-name>version</field-name>
+            <entity-name>dimensionContent</entity-name>
+            <transformer type="datetime"/>
+        </property>
+
+        <concatenation-property name="changer" glue=" " translation="sulu_admin.changer" visibility="always" sortable="false">
+            <field>
+                <field-name>firstName</field-name>
+                <entity-name>%sulu.model.contact.class%</entity-name>
+                <joins ref="changer"/>
+            </field>
+            <field>
+                <field-name>lastName</field-name>
+                <entity-name>%sulu.model.contact.class%</entity-name>
+                <joins ref="changer"/>
+            </field>
+        </concatenation-property>
+    </properties>
+</list>

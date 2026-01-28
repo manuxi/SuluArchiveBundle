@@ -1,14 +1,5 @@
-app_archive_api:
-    type: rest
-    prefix: /admin/api
+app_archives_api:
     resource: Manuxi\SuluArchiveBundle\Controller\Admin\ArchiveController
-    name_prefix: sulu_archive.
-    options:
-        expose: true
-sulu_archive_settings_api:
-    type: rest
-    prefix: /admin/api
-    resource: Manuxi\SuluArchiveBundle\Controller\Admin\SettingsController
-    name_prefix: sulu_archive.
+    type: attribute
     options:
         expose: true

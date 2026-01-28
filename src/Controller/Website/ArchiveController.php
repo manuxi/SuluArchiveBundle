@@ -4,79 +4,110 @@ declare(strict_types=1);
 
 namespace Manuxi\SuluArchiveBundle\Controller\Website;
 
-use JMS\Serializer\SerializerBuilder;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
-use Manuxi\SuluArchiveBundle\Repository\ArchiveRepository;
-use Sulu\Bundle\MediaBundle\Media\Manager\MediaManagerInterface;
-use Sulu\Bundle\RouteBundle\Entity\RouteRepositoryInterface;
+use Manuxi\SuluArchiveBundle\Entity\ArchiveDimensionContent;
+use Sulu\Bundle\PreviewBundle\Preview\Preview;
 use Sulu\Bundle\WebsiteBundle\Resolver\TemplateAttributeResolverInterface;
 use Sulu\Component\Webspace\Manager\WebspaceManagerInterface;
+use Sulu\Content\Domain\Model\DimensionContentInterface;
+use Sulu\Route\Domain\Repository\RouteRepositoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
+use Twig\Environment;
 
-class ArchiveController extends AbstractController
+class ArchiveController
 {
-    private TranslatorInterface $translator;
-    private ArchiveRepository $repository;
-    private WebspaceManagerInterface $webspaceManager;
-    private TemplateAttributeResolverInterface $templateAttributeResolver;
-    private RouteRepositoryInterface $routeRepository;
-
     public function __construct(
-        RequestStack $requestStack,
-        MediaManagerInterface $mediaManager,
-        ArchiveRepository $repository,
-        WebspaceManagerInterface $webspaceManager,
-        TranslatorInterface $translator,
-        TemplateAttributeResolverInterface $templateAttributeResolver,
-        RouteRepositoryInterface $routeRepository,
+        private readonly Environment $twig,
+        private readonly TemplateAttributeResolverInterface $templateAttributeResolver,
+        private readonly RouteRepositoryInterface $routeRepository,
+        private readonly WebspaceManagerInterface $webspaceManager,
+        private readonly RequestStack $requestStack,
     ) {
-        parent::__construct($requestStack, $mediaManager);
-
-        $this->repository = $repository;
-        $this->webspaceManager = $webspaceManager;
-        $this->translator = $translator;
-        $this->templateAttributeResolver = $templateAttributeResolver;
-        $this->routeRepository = $routeRepository;
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function indexAction(Archive $archive, string $view = '@SuluArchive/archive', bool $preview = false, bool $partial = false): Response
-    {
-        $viewTemplate = $this->getViewTemplate($view, $this->request, $preview);
+    public function indexAction(
+        ArchiveDimensionContent $object,
+        string $view = '@SuluArchive/archive',
+        bool $preview = false,
+        bool $partial = false,
+    ): Response {
+        $request = $this->requestStack->getCurrentRequest();
+        $locale = $request ? $request->getLocale() : 'en';
+
+        $stage = $preview ? DimensionContentInterface::STAGE_DRAFT : DimensionContentInterface::STAGE_LIVE;
+
+        $content = $object;
+        $archive = $content->getResource();
+
+        if (!$content || !$content->getTitle()) {
+            $content = $this->findDimensionContentInCollection($archive, $locale, $stage);
+        }
+
+        if (!$content) {
+            throw new NotAcceptableHttpException(sprintf('No content found for locale "%s".', $locale));
+        }
 
         $parameters = $this->templateAttributeResolver->resolve([
-            'archive' => $archive,
-            'content' => [
-                'title' => $this->translator->trans('sulu_archive.archive'),
-                'subtitle' => $archive->getTitle(),
-            ],
-            'path' => $archive->getRoutePath(),
-            'extension' => $this->extractExtension($archive),
+            'archive' => $content,
             'localizations' => $this->getLocalizationsArrayForEntity($archive),
-            'created' => $archive->getCreated(),
         ]);
 
-        return $this->prepareResponse($viewTemplate, $parameters, $preview, $partial);
+        $viewTemplate = $view . '.html.twig';
+
+        if (!$this->twig->getLoader()->exists($viewTemplate)) {
+            throw new NotAcceptableHttpException(\sprintf('Template "%s" does not exist.', $viewTemplate));
+        }
+
+        if ($partial) {
+            $twigTemplate = $this->twig->load($viewTemplate);
+            $content = $twigTemplate->renderBlock('content', $this->twig->mergeGlobals($parameters));
+        } elseif ($preview) {
+            $parameters['previewParentTemplate'] = $viewTemplate;
+            $parameters['previewContentReplacer'] = Preview::CONTENT_REPLACER;
+            $content = $this->twig->render('@SuluWebsite/Preview/preview.html.twig', $parameters);
+        } else {
+            $content = $this->twig->render($viewTemplate, $parameters);
+        }
+
+        return new Response($content);
     }
 
     /**
-     * With the help of this method the corresponding localisations for the
-     * current archive is found e.g. to be linked in the language switcher.
-     *
-     * @return array<string, array>
+     * Fallback method to find DimensionContent in the Archive's collection.
      */
+    private function findDimensionContentInCollection(Archive $archive, string $locale, string $stage): ?ArchiveDimensionContent
+    {
+        foreach ($archive->getDimensionContents() as $dimensionContent) {
+            if ($dimensionContent->getLocale() === $locale && $dimensionContent->getStage() === $stage) {
+                return $dimensionContent;
+            }
+        }
+
+        // Try draft stage if live not found
+        if ($stage === DimensionContentInterface::STAGE_LIVE) {
+            foreach ($archive->getDimensionContents() as $dimensionContent) {
+                if ($dimensionContent->getLocale() === $locale && $dimensionContent->getStage() === DimensionContentInterface::STAGE_DRAFT) {
+                    return $dimensionContent;
+                }
+            }
+        }
+
+        return null;
+    }
+
     protected function getLocalizationsArrayForEntity(Archive $archive): array
     {
-        $routes = $this->routeRepository->findAllByEntity(Archive::class, (string) $archive->getId());
+        $routes = $this->routeRepository->findBy([
+            'resourceKey' => Archive::RESOURCE_KEY,
+            'resourceId' => (string) $archive->getId(),
+        ]);
 
         $localizations = [];
         foreach ($routes as $route) {
             $url = $this->webspaceManager->findUrlByResourceLocator(
-                $route->getPath(),
+                $route->getSlug(),
                 null,
                 $route->getLocale()
             );
@@ -85,34 +116,5 @@ class ArchiveController extends AbstractController
         }
 
         return $localizations;
-    }
-
-    private function extractExtension(Archive $archive): array
-    {
-        $serializer = SerializerBuilder::create()->build();
-
-        return $serializer->toArray($archive->getExt());
-    }
-
-    /**
-     * @return string[]
-     */
-    public static function getSubscribedServices(): array
-    {
-        /*        return array_merge(
-                    parent::getSubscribedServices(),
-                    [
-                        WebspaceManagerInterface::class,
-                        RouteRepositoryInterface::class,
-                        TemplateAttributeResolverInterface::class,
-                    ]
-                );*/
-        $subscribedServices = parent::getSubscribedServices();
-
-        $subscribedServices['sulu_core.webspace.webspace_manager'] = WebspaceManagerInterface::class;
-        $subscribedServices['sulu.repository.route'] = RouteRepositoryInterface::class;
-        $subscribedServices['sulu_website.resolver.template_attribute'] = TemplateAttributeResolverInterface::class;
-
-        return $subscribedServices;
     }
 }

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Manuxi\SuluArchiveBundle\Entity\ArchiveDimensionContent"
+            table="app_archive_dimension_content">
+
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <!-- DIMENSION CONTENT TRAIT FIELDS -->
+        <field name="stage" type="string" length="16" nullable="false" column="stage"/>
+        <field name="locale" type="string" length="5" nullable="true" column="locale"/>
+        <field name="version" type="integer" nullable="false" column="version">
+            <options>
+                <option name="default">0</option>
+            </options>
+        </field>
+        <field name="ghostLocale" type="string" length="5" nullable="true" column="ghost_locale"/>
+        <field name="availableLocales" type="json" nullable="true" column="available_locales"/>
+
+        <!-- AUDITABLE TRAIT FIELDS -->
+        <field name="created" type="datetime_immutable" nullable="false" column="created"/>
+        <field name="changed" type="datetime_immutable" nullable="false" column="changed"/>
+
+        <many-to-one field="creator" target-entity="Sulu\Bundle\SecurityBundle\Entity\User">
+            <join-columns>
+                <join-column name="creator_id" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+
+        <many-to-one field="changer" target-entity="Sulu\Bundle\SecurityBundle\Entity\User">
+            <join-columns>
+                <join-column name="changer_id" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+
+        <!-- TEMPLATE TRAIT FIELDS -->
+        <field name="templateKey" type="string" length="255" nullable="true" column="templateKey"/>
+        <field name="templateData" type="json" nullable="true" column="templateData"/>
+
+        <!-- WEBSPACE TRAIT FIELDS -->
+        <field name="mainWebspace" type="string" length="32" nullable="true" column="main_webspace"/>
+
+        <!-- SHADOW TRAIT FIELDS -->
+        <field name="shadowLocale" type="string" length="5" nullable="true" column="shadow_locale"/>
+        <field name="shadowLocales" type="json" nullable="true" column="shadowLocales"/>
+
+        <!-- LINK TRAIT FIELDS -->
+        <field name="linkData" type="json" nullable="true" column="link_data"/>
+        <field name="linkProvider" type="string" length="32" nullable="true" column="linkProvider"/>
+
+        <!-- RELATION TO ARCHIVE - UUID-based -->
+        <many-to-one field="archive" target-entity="Manuxi\SuluArchiveBundle\Entity\Archive" inversed-by="dimensionContents">
+            <join-columns>
+                <join-column name="archive_uuid" referenced-column-name="uuid" nullable="false" on-delete="CASCADE"/>
+            </join-columns>
+        </many-to-one>
+
+        <!-- ARCHIVE-SPECIFIC FIELDS -->
+        <field name="type" type="string" length="50" nullable="true" column="type"/>
+        <field name="title" type="string" length="255" nullable="true" column="title"/>
+        <field name="subtitle" type="string" length="255" nullable="true" column="subtitle"/>
+        <field name="summary" type="text" nullable="true" column="summary"/>
+        <field name="text" type="text" nullable="true" column="text"/>
+        <field name="footer" type="text" nullable="true" column="footer"/>
+
+        <many-to-one field="image" target-entity="Sulu\Bundle\MediaBundle\Entity\Media">
+            <join-columns>
+                <join-column name="image_id" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+
+        <field name="images" type="json" nullable="true" column="images"/>
+
+        <many-to-one field="document" target-entity="Sulu\Bundle\MediaBundle\Entity\Media">
+            <join-columns>
+                <join-column name="document_id" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+
+        <field name="showAuthor" type="boolean" nullable="true" column="show_author"/>
+        <field name="showDate" type="boolean" nullable="true" column="show_date"/>
+
+        <!-- AUTHOR TRAIT FIELDS -->
+        <many-to-one field="author" target-entity="Sulu\Bundle\ContactBundle\Entity\ContactInterface">
+            <join-columns>
+                <join-column name="author_id" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+
+        <field name="authored" type="datetime_immutable" nullable="true" column="authored"/>
+
+        <!-- WORKFLOW TRAIT FIELDS -->
+        <field name="workflowPlace" type="string" length="32" nullable="true" column="workflowPlace"/>
+        <field name="workflowPublished" type="datetime_immutable" nullable="true" column="workflowPublished"/>
+
+        <!-- SEO TRAIT FIELDS -->
+        <field name="seoData" type="json" nullable="true" column="seo_data"/>
+        <field name="seoNoIndex" type="boolean" nullable="false" column="seo_no_index"/>
+        <field name="seoNoFollow" type="boolean" nullable="false" column="seo_no_follow"/>
+        <field name="seoHideInSitemap" type="boolean" nullable="false" column="seo_hide_in_sitemap"/>
+
+        <!-- EXCERPT TRAIT FIELDS -->
+        <field name="excerptData" type="json" nullable="true" column="excerpt_data"/>
+
+        <!-- TAXONOMY TRAIT FIELDS -->
+        <many-to-many field="excerptCategories" target-entity="Sulu\Bundle\CategoryBundle\Entity\CategoryInterface">
+            <join-table name="app_archive_content_excerpt_categories">
+                <join-columns>
+                    <join-column name="archive_content_id" referenced-column-name="id" on-delete="CASCADE"/>
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="category_id" referenced-column-name="id" on-delete="CASCADE"/>
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+
+        <many-to-many field="excerptTags" target-entity="Sulu\Bundle\TagBundle\Tag\TagInterface">
+            <join-table name="app_archive_content_excerpt_tags">
+                <join-columns>
+                    <join-column name="archive_content_id" referenced-column-name="id" on-delete="CASCADE"/>
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="tag_id" referenced-column-name="id" on-delete="CASCADE"/>
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+
+        <field name="excerptSegment" type="string" length="255" nullable="true" column="excerpt_segment"/>
+
+        <!-- ROUTABLE TRAIT FIELDS -->
+        <many-to-one field="route" target-entity="Sulu\Route\Domain\Model\Route">
+            <join-columns>
+                <join-column name="route_id" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+
+        <field name="lastModified" type="datetime_immutable" nullable="true" column="last_modified"/>
+
+        <!-- UNIQUE CONSTRAINT FOR DIMENSIONS -->
+        <unique-constraints>
+            <unique-constraint name="unique_dimension" columns="archive_uuid,stage,locale,version"/>
+        </unique-constraints>
+    </entity>
+</doctrine-mapping>

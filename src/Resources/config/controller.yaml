@@ -1,0 +1,33 @@
+services:
+    # Admin Controllers
+    Manuxi\SuluArchiveBundle\Controller\Admin\ArchiveController:
+        class: Manuxi\SuluArchiveBundle\Controller\Admin\ArchiveController
+        arguments:
+            - '@fos_rest.view_handler.default'
+            - '@security.token_storage'
+            - '@sulu_core.list_builder.field_descriptor_factory'
+            - '@sulu_core.doctrine_list_builder_factory'
+            - '@sulu_core.rest_helper'
+            - '@sulu_content.content_manager'
+            - '@doctrine.orm.entity_manager'
+            - '@Manuxi\SuluArchiveBundle\ListBuilder\DoctrineListRepresentationFactory'
+            - '@sulu_activity.domain_event_collector'
+            - '@sulu_trash.trash_manager'
+            - '@sulu_content.content_workflow'
+        tags:
+            - { name: controller.service_arguments }
+            - { name: sulu.context, context: admin }
+        public: true
+
+    # Website Controller
+    Manuxi\SuluArchiveBundle\Controller\Website\ArchiveController:
+        class: Manuxi\SuluArchiveBundle\Controller\Website\ArchiveController
+        arguments:
+            - '@twig'
+            - '@sulu_website.resolver.template_attribute'
+            - '@sulu_route.route_repository'
+            - '@sulu_core.webspace.webspace_manager'
+            - '@request_stack'
+        tags:
+            - { name: controller.service_arguments }
+            - { name: sulu.context, context: website }

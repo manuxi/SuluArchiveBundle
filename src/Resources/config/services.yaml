@@ -1,0 +1,242 @@
+services:
+
+    # Admin Classes
+    sulu_archive.admin.archive:
+        class: Manuxi\SuluArchiveBundle\Admin\ArchiveAdmin
+        arguments:
+            - '@sulu_admin.view_builder_factory'
+            - '@sulu_content.content_view_builder_factory'
+            - '@sulu_security.security_checker'
+            - '@sulu.core.localization_manager'
+            - '@sulu_activity.activity_list_view_builder_factory'
+        tags:
+            - { name: sulu.admin }
+            - { name: sulu.context, context: admin }
+
+    # Repositories
+    Manuxi\SuluArchiveBundle\Repository\ArchiveRepository:
+        class: Manuxi\SuluArchiveBundle\Repository\ArchiveRepository
+        arguments:
+            - '@doctrine'
+            - '@sulu_content.dimension_content_query_enhancer'
+        public: true
+        tags:
+            - { name: doctrine.repository_service }
+
+    Manuxi\SuluArchiveBundle\Repository\ArchiveDimensionContentRepository:
+        class: Manuxi\SuluArchiveBundle\Repository\ArchiveDimensionContentRepository
+        arguments:
+            - '@doctrine'
+        public: true
+        tags:
+            - { name: doctrine.repository_service }
+
+    Manuxi\SuluArchiveBundle\ListBuilder\DoctrineListRepresentationFactory:
+        class: Manuxi\SuluArchiveBundle\ListBuilder\DoctrineListRepresentationFactory
+        arguments:
+            - '@sulu_core.rest_helper'
+            - '@sulu_core.list_rest_helper'
+            - '@sulu_core.doctrine_list_builder_factory'
+            - '@sulu_core.list_builder.field_descriptor_factory'
+            - '@sulu_core.webspace.webspace_manager'
+            - '@Manuxi\SuluArchiveBundle\Repository\ArchiveDimensionContentRepository'
+            - '@sulu_media.media_manager'
+            - '@sulu_archive.type_selection'
+            - '@translator.default'
+
+    # Routing
+    Manuxi\SuluArchiveBundle\Routing\ArchiveRouteDefaultsProvider:
+        class: Manuxi\SuluArchiveBundle\Routing\ArchiveRouteDefaultsProvider
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@sulu_content.content_aggregator'
+            - '@sulu_admin.metadata_provider_registry'
+            - '@sulu_http_cache.cache_lifetime.resolver'
+        public: true
+        tags:
+            - { name: sulu_route.route_defaults_provider, resource_key: archives }
+
+    # SmartContent Provider
+    sulu_archive.archive_smart_content_provider:
+        class: Manuxi\SuluArchiveBundle\Content\ArchiveSmartContentProvider
+        arguments:
+            - '@sulu_content.dimension_content_query_enhancer'
+            - '@sulu_admin.smart_content_query_enhancer'
+            - '@doctrine.orm.entity_manager'
+            - '@translator.default'
+            - '%sulu_archive.types%'
+        tags:
+            - { name: sulu_content.smart_content_provider, type: archives }
+
+    # Teaser Provider
+    sulu_archive.archive_teaser_provider:
+        class: Manuxi\SuluArchiveBundle\Teaser\ArchiveTeaserProvider
+        public: true
+        arguments:
+            - '@Manuxi\SuluArchiveBundle\Repository\ArchiveRepository'
+            - '@sulu_content.content_aggregator'
+            - '@sulu_content.content_enhancer'
+            - '@translator'
+        tags:
+            - { name: sulu.teaser.provider, alias: archives }
+
+    # Type Select Service
+    sulu_archive.type_selection:
+        class: Manuxi\SuluArchiveBundle\Service\ArchiveTypeSelect
+        arguments:
+            - '@translator'
+            - '%sulu_archive.types%'
+            - '%sulu_archive.default_type%'
+        public: true
+
+    # Property Resolvers
+    sulu_archive.property_resolver.single_archive_selection:
+        class: Manuxi\SuluArchiveBundle\Content\PropertyResolver\SingleArchiveSelectionPropertyResolver
+        tags:
+            - { name: sulu_content.property_resolver }
+
+    sulu_archive.property_resolver.archive_selection:
+        class: Manuxi\SuluArchiveBundle\Content\PropertyResolver\ArchiveSelectionPropertyResolver
+        tags:
+            - { name: sulu_content.property_resolver }
+
+    # Resource Loader
+    sulu_archive.resource_loader.archive:
+        class: Manuxi\SuluArchiveBundle\Content\ResourceLoader\ArchiveResourceLoader
+        arguments:
+            - '@Manuxi\SuluArchiveBundle\Repository\ArchiveRepository'
+        tags:
+            - { name: sulu_content.resource_loader }
+
+    # Preview Object Provider
+    sulu_archive.preview_object_provider:
+        class: Manuxi\SuluArchiveBundle\Preview\ArchiveObjectProvider
+        arguments:
+            - '@Manuxi\SuluArchiveBundle\Repository\ArchiveRepository'
+            - '@sulu_content.content_aggregator'
+        tags:
+            - { name: sulu.context, context: admin }
+            - { name: sulu_preview.object_provider, provider-key: archives }
+
+    # Reference refresher
+    Manuxi\SuluArchiveBundle\Reference\ArchiveReferenceRefresher:
+        class: Manuxi\SuluArchiveBundle\Reference\ArchiveReferenceRefresher
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@Sulu\Bundle\ReferenceBundle\Domain\Repository\ReferenceRepositoryInterface'
+            - '@sulu_content.content_view_resolver'
+            - '@sulu_content.content_merger'
+        tags:
+            - { name: sulu_reference.refresher }
+
+    # Sitemap Provider
+    sulu_archive.sitemap_provider:
+        class: Manuxi\SuluArchiveBundle\Sitemap\ArchiveSitemapProvider
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@sulu_core.webspace.webspace_manager'
+            - '%kernel.environment%'
+        tags:
+            - { name: sulu.sitemap.provider }
+
+    # Search Providers
+    sulu_archive.search.admin_provider:
+        class: Manuxi\SuluArchiveBundle\Search\ArchiveAdminSearchProvider
+        arguments:
+            - '@Manuxi\SuluArchiveBundle\Repository\ArchiveRepository'
+            - '@sulu_core.webspace.webspace_manager'
+            - '@sulu_content.content_aggregator'
+        tags:
+            - { name: cmsig_seal.reindex_provider }
+
+    sulu_archive.search.website_provider:
+        class: Manuxi\SuluArchiveBundle\Search\ArchiveWebsiteSearchProvider
+        arguments:
+            - '@Manuxi\SuluArchiveBundle\Repository\ArchiveRepository'
+            - '@sulu_core.webspace.webspace_manager'
+            - '@sulu_content.content_aggregator'
+        tags:
+            - { name: cmsig_seal.reindex_provider }
+
+    sulu_archive.search.listener:
+        class: Manuxi\SuluArchiveBundle\Search\ArchiveSearchListener
+        arguments:
+            - '@cmsig_seal.engine.default'
+            - '@sulu_core.webspace.webspace_manager'
+            - '@sulu_content.content_aggregator'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    # Link Provider
+    sulu_archive.link_provider:
+        class: Manuxi\SuluArchiveBundle\Link\LinkProvider
+        arguments:
+            - '@sulu_content.content_aggregator'
+            - '@Manuxi\SuluArchiveBundle\Repository\ArchiveRepository'
+            - '@translator.default'
+        tags:
+            - { name: sulu.link.provider, alias: archive }
+
+    # Archive Mapper
+    sulu_archive.archive_mapper:
+        class: Manuxi\SuluArchiveBundle\Application\Mapper\ArchiveMapper
+        arguments:
+            - '@sulu_content.content_manager'
+        tags:
+            - { name: sulu_archive.archive_mapper }
+
+    # Trash Handler
+    sulu_archive.trash_item_handler:
+        class: Manuxi\SuluArchiveBundle\Trash\ArchiveTrashItemHandler
+        arguments:
+            - '@sulu_trash.trash_item_repository'
+            - '@Manuxi\SuluArchiveBundle\Repository\ArchiveRepository'
+            - '@sulu_content.content_normalizer'
+            - '@sulu_content.content_merger'
+            - !tagged_iterator sulu_archive.archive_mapper
+            - '@sulu_activity.domain_event_collector'
+        tags:
+            - { name: sulu_trash.store_trash_item_handler }
+            - { name: sulu_trash.restore_trash_item_handler }
+            - { name: sulu_trash.restore_configuration_provider }
+
+    # Twig Extensions
+    sulu_archive.twig_extension:
+        class: Manuxi\SuluArchiveBundle\Twig\ArchiveTwigExtension
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@sulu_content.content_aggregator'
+            - '@sulu_content.content_resolver'
+            - '@sulu_core.webspace.request_analyzer'
+        tags:
+            - { name: twig.extension }
+
+    # Normalizer
+    sulu_archive.archive_normalizer:
+        class: Manuxi\SuluArchiveBundle\Content\Normalizer\ArchiveNormalizer
+        arguments:
+            - '@translator'
+            - '@sulu_archive.type_selection'
+        tags:
+            - { name: sulu_content.normalizer }
+
+    # DataMappers
+    sulu_archive.data_mapper.auto_author:
+        class: Manuxi\SuluArchiveBundle\Content\DataMapper\AutoAuthorDataMapper
+        arguments:
+            - '@?security.helper'
+        tags:
+            - { name: sulu_content.data_mapper, priority: 10 }
+
+    sulu_archive.data_mapper.unlocalized:
+        class: Manuxi\SuluArchiveBundle\Content\DataMapper\ArchiveUnlocalizedDataMapper
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: sulu_content.data_mapper, priority: 5 }
+
+    # Merger for unlocalized fields
+    sulu_archive.merger.unlocalized:
+        class: Manuxi\SuluArchiveBundle\Content\Merger\ArchiveUnlocalizedFieldsMerger
+        tags:
+            - { name: sulu_content.merger }

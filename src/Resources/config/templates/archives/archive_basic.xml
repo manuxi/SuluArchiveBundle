@@ -1,0 +1,107 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/template-1.0.xsd"
+>
+    <key>archive_basic</key>
+
+    <view>@SuluArchive/archive</view>
+    <controller>Manuxi\SuluArchiveBundle\Controller\Website\ArchiveController::indexAction</controller>
+    <cacheLifetime>604800</cacheLifetime>
+
+    <meta>
+        <title>sulu_archive.template.basic</title>
+    </meta>
+    <properties>
+        <section name="header_container" colspan="12">
+            <meta>
+                <title>sulu_archive.header.content</title>
+            </meta>
+            <properties>
+                <section name="image_section" colspan="4">
+                    <properties>
+                        <property name="image" type="single_media_upload" colspan="12">
+                            <params>
+                                <param name="empty_icon" value="su-image"/>
+                                <param name="image_size" value="sulu-400x400" />
+                                <param
+                                        name="collection_id"
+                                        type="expression"
+                                        value="service('sulu_media.system_collections.manager').getSystemCollection('sulu_archive.archives')"
+                                />
+                            </params>
+                        </property>
+                    </properties>
+                </section>
+
+                <section name="content_section" colspan="8">
+                    <properties>
+                        <property name="title" type="text_line" mandatory="true">
+                            <meta>
+                                <title>sulu_archive.form.title</title>
+                            </meta>
+                            <params>
+                                <param name="headline" value="true"/>
+                            </params>
+                            <tag name="sulu.rlp.part"/>
+                        </property>
+
+                        <property name="subtitle" type="text_line">
+                            <meta>
+                                <title>sulu_archive.subtitle</title>
+                            </meta>
+                        </property>
+
+                        <property name="url" type="page_tree_route" mandatory="true">
+                            <meta>
+                                <title>sulu_admin.url</title>
+                            </meta>
+                        </property>
+                    </properties>
+                </section>
+            </properties>
+        </section>
+
+        <section name="content_type">
+            <meta>
+                <title>sulu_archive.header.type</title>
+            </meta>
+            <properties>
+                <property name="type" type="single_select" mandatory="true" colspan="6">
+                    <meta>
+                        <title>sulu_archive.archive_type</title>
+                    </meta>
+                    <params>
+                        <param name="default_value"
+                               type="expression"
+                               value="service('sulu_archive.type_selection').getDefaultValue()"
+                        />
+                        <param name="values"
+                               type="expression"
+                               value="service('sulu_archive.type_selection').getValues()"
+                        />
+                    </params>
+                </property>
+            </properties>
+        </section>
+
+        <section name="content_main">
+            <meta>
+                <title>sulu_archive.header.content_main</title>
+            </meta>
+            <properties>
+                <property name="summary" type="text_area">
+                    <meta>
+                        <title>sulu_archive.abstract</title>
+                    </meta>
+                </property>
+
+                <property name="text" type="text_editor" mandatory="true">
+                    <meta>
+                        <title>sulu_archive.text</title>
+                    </meta>
+                </property>
+            </properties>
+        </section>
+    </properties>
+</template>

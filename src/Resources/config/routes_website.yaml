@@ -1,0 +1,3 @@
+sulu_archive_website:
+    resource: "@SuluArchiveBundle/Controller/Website/"
+    type: attribute

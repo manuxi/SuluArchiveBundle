@@ -6,56 +6,84 @@ namespace Manuxi\SuluArchiveBundle\Preview;
 
 use Manuxi\SuluArchiveBundle\Entity\Archive;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveRepository;
-use Sulu\Bundle\PageBundle\Admin\PageAdmin;
-use Sulu\Bundle\PreviewBundle\Preview\Object\PreviewObjectProviderInterface;
+use Sulu\Bundle\PreviewBundle\Preview\PreviewContext;
+use Sulu\Bundle\PreviewBundle\Preview\Provider\PreviewDefaultsProviderInterface;
+use Sulu\Content\Application\ContentAggregator\ContentAggregatorInterface;
+use Sulu\Content\Domain\Model\DimensionContentInterface;
 
-class ArchiveObjectProvider implements PreviewObjectProviderInterface
+class ArchiveObjectProvider implements PreviewDefaultsProviderInterface
 {
-    private ArchiveRepository $repository;
-
-    public function __construct(ArchiveRepository $repository)
-    {
-        $this->repository = $repository;
+    public function __construct(
+        private readonly ArchiveRepository $archiveRepository,
+        private readonly ContentAggregatorInterface $contentAggregator,
+    ) {
     }
 
-    public function getObject($id, $locale): Archive
+    public function getDefaults(PreviewContext $previewContext): array
     {
-        return $this->repository->findById((int)$id, $locale);
-    }
+        $archive = $this->archiveRepository->findByUuid($previewContext->getId());
 
-    public function getId($object): string
-    {
-        return $object->getId();
-    }
-
-    public function setValues($object, $locale, array $data): void
-    {
-        // TODO: Implement setValues() method.
-    }
-
-    public function setContext($object, $locale, array $context)
-    {
-        if (\array_key_exists('template', $context)) {
-            $object->setStructureType($context['template']);
+        if (!$archive) {
+            return [];
         }
 
-        return $object;
+        $dimensionContent = $this->contentAggregator->aggregate(
+            $archive,
+            [
+                'locale' => $previewContext->getLocale(),
+                'stage' => DimensionContentInterface::STAGE_DRAFT,
+            ]
+        );
+
+        if (!$dimensionContent) {
+            return [];
+        }
+
+        return [
+            '_controller' => 'Manuxi\SuluArchiveBundle\Controller\Website\ArchiveController::indexAction',
+            'archive' => $archive,
+            'object' => $dimensionContent,
+        ];
     }
 
-    public function serialize($object): string
+    public function updateValues(PreviewContext $previewContext, array $defaults, array $data): array
     {
-        return serialize($object);
+        $dimensionContent = $defaults['dimensionContent'] ?? null;
+
+        if ($dimensionContent) {
+            if (isset($data['title'])) {
+                $dimensionContent->setTitle($data['title']);
+            }
+            if (isset($data['subtitle'])) {
+                $dimensionContent->setSubtitle($data['subtitle']);
+            }
+            if (isset($data['summary'])) {
+                $dimensionContent->setSummary($data['summary']);
+            }
+            if (isset($data['text'])) {
+                $dimensionContent->setText($data['text']);
+            }
+            if (isset($data['footer'])) {
+                $dimensionContent->setFooter($data['footer']);
+            }
+        }
+
+        return $defaults;
     }
 
-    public function deserialize($serializedObject, $objectClass): object
+    public function updateContext(PreviewContext $previewContext, array $defaults, array $context): array
     {
-        return unserialize($serializedObject);
-    }
-    
-    public function getSecurityContext($id, $locale): ?string
-    {
-        $webspaceKey = $this->documentInspector->getWebspace($this->getObject($id, $locale));
+        $dimensionContent = $defaults['dimensionContent'] ?? null;
 
-        return PageAdmin::getPageSecurityContext($webspaceKey);
+        if ($dimensionContent && \array_key_exists('template', $context)) {
+            $dimensionContent->setTemplateKey($context['template']);
+        }
+
+        return $defaults;
+    }
+
+    public function getSecurityContext(PreviewContext $previewContext): ?string
+    {
+        return Archive::SECURITY_CONTEXT;
     }
 }

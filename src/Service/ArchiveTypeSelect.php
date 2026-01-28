@@ -6,71 +6,100 @@ namespace Manuxi\SuluArchiveBundle\Service;
 
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * Service for managing archive types with colors.
+ * Types are loaded from bundle/app configuration (sulu_archive.types).
+ */
 class ArchiveTypeSelect
 {
+    private array $types;
+    private string $defaultType;
 
-    private TranslatorInterface $translator;
-    private array $typesMap = [
-        'default'                   => 'sulu_archive.types.default',
-        'streets'                   => 'sulu_archive.types.streets',
-        'traffic'                   => 'sulu_archive.types.traffic',
-        'trains'                    => 'sulu_archive.types.trains',
-        'signs'                     => 'sulu_archive.types.signs',
-        'attractions'               => 'sulu_archive.types.attractions',
-        'memorials'                 => 'sulu_archive.types.memorials',
-        'buildings'                 => 'sulu_archive.types.buildings',
-        'mining'                    => 'sulu_archive.types.mining',
-        'surrounding_area'          => 'sulu_archive.types.surrounding_area',
-
-        'maps_plans'                => 'sulu_archive.types.maps_plans',
-        'aerial_shots'              => 'sulu_archive.types.aerial_shots',
-        'development_plans'         => 'sulu_archive.types.development_plans',
-        'expert_opinions_reports'   => 'sulu_archive.types.expert_opinions_reports',
-
-        'place_name_studies'        => 'sulu_archive.types.place_name_studies',
-        'local_chronicles'          => 'sulu_archive.types.local_chronicles',
-        'newspaper_articles'        => 'sulu_archive.types.newspaper_articles',
-        'advertisements'            => 'sulu_archive.types.advertisements',
-        'posters_flyers'            => 'sulu_archive.types.posters_flyers',
-        'objects_artifacts'         => 'sulu_archive.types.objects_artifacts',
-        'collections_exhibitions'   => 'sulu_archive.types.collections_exhibitions',
-
-        'genealogical_research'     => 'sulu_archive.types.genealogical_research',
-        'biographies'               => 'sulu_archive.types.biographies',
-        'correspondences'           => 'sulu_archive.types.correspondences',
-
-        'historical_documents'      => 'sulu_archive.types.historical_documents',
-        'historical_recordings'     => 'sulu_archive.types.historical_recordings',
-        'visual_material'           => 'sulu_archive.types.visual_material',
-        'audio_video_recordings'    => 'sulu_archive.types.audio_video_recordings',
-
-        'membership_directories'    => 'sulu_archive.types.membership_directories',
-        'club_journals'             => 'sulu_archive.types.club_journals',
-
-    ];
-    private string $defaultValue = 'default';
-
-    public function __construct(TranslatorInterface $translator)
-    {
-        $this->translator = $translator;
+    /**
+     * @param array  $types       Archive types from configuration (injected via %sulu_archive.types%)
+     * @param string $defaultType Default type key (injected via %sulu_archive.default_type%)
+     */
+    public function __construct(
+        private TranslatorInterface $translator,
+        array $types = [],
+        string $defaultType = 'default',
+    ) {
+        $this->types = $types;
+        $this->defaultType = $defaultType;
     }
 
+    /**
+     * Returns values in the format required by Sulu's single_select field type.
+     */
     public function getValues(): array
     {
         $values = [];
 
-        foreach ($this->typesMap as $code => $toTrans) {
+        foreach ($this->types as $key => $config) {
             $values[] = [
-                'name' => $code,
-                'title' => $this->translator->trans($toTrans, [], 'admin'),
+                'name' => $key,
+                'title' => $this->translator->trans($config['name'], [], 'admin'),
             ];
         }
 
         return $values;
     }
 
+    /**
+     * Get default value for new archives.
+     */
     public function getDefaultValue(): string
     {
-        return $this->defaultValue;
+        return $this->defaultType;
+    }
+
+    /**
+     * Get color for a specific type.
+     * Falls back to default type color if type not found.
+     */
+    public function getColor(string $type): string
+    {
+        if (isset($this->types[$type]['color'])) {
+            return $this->types[$type]['color'];
+        }
+
+        if (isset($this->types[$this->defaultType]['color'])) {
+            return $this->types[$this->defaultType]['color'];
+        }
+
+        return '#cccccc';
+    }
+
+    /**
+     * Get all configured types with their properties.
+     */
+    public function getTypes(): array
+    {
+        return $this->types;
+    }
+
+    /**
+     * Get translated name for a type.
+     * Falls back to default type if type not found.
+     */
+    public function getTypeName(string $type): string
+    {
+        if (!isset($this->types[$type])) {
+            $type = $this->defaultType;
+        }
+
+        if (!isset($this->types[$type])) {
+            return 'Default';
+        }
+
+        return $this->translator->trans($this->types[$type]['name'], [], 'admin');
+    }
+
+    /**
+     * Check if a type exists in configuration.
+     */
+    public function hasType(string $type): bool
+    {
+        return isset($this->types[$type]);
     }
 }

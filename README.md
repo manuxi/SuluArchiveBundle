@@ -3,40 +3,50 @@
 ![symfony workflow](https://github.com/manuxi/SuluArchiveBundle/actions/workflows/symfony.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/manuxi/SuluArchiveBundle/LICENSE)
 ![GitHub Tag](https://img.shields.io/github/v/tag/manuxi/SuluArchiveBundle)
-![Supports Sulu 2.6 or later](https://img.shields.io/badge/%20Sulu->=2.6-0088cc?color=00b2df)
+![Github Release](https://img.shields.io/github/v/release/manuxi/SuluArchiveBundle?color=116ea3)
+![Supports Sulu 3.0 or later](https://img.shields.io/badge/%20Sulu->=3.0-0088cc?color=00b2df)
 
-I made this bundle to have the possibility to manage archive data in my projects. 
+[🇩🇪 German Version](README.de.md)
 
-This bundle contains
-- Several filters for Archive Content Type
-- Link Provider
-- Sitemap Provider
-- Handler for Trash Items
-- Handler for Automation
-- Possibility to assign a contact as author
-- Twig Extension for resolving archive elements / get a list of archive elements
-- Events for displaying Activities
-- Search indexes
-    - refresh whenever entity is changed
-    - distinct between normal and draft
-and more...
+The SuluArchiveBundle extends Sulu CMS with comprehensive archive management.
+It enables the creation and management of archive entries with detailed information, documents, media galleries and multilingual support.
+Over 30 customizable archive types allow flexible categorization of historical documents, photos, newspaper articles and more.
 
-The archive elements and their meta information is translatable. 
+## ✨ Features
 
-It contains an example twig template. 
+### 📚 Archive Management
+- **Extensive Archive Details** - Title, subtitle, summary, text, footer/sources
+- **Document Management** - PDF attachments for downloadable documents
+- **Media Integration** - Main images and image galleries
+- **30+ Archive Types** - Streets, buildings, historical documents, photos, newspaper articles, and more
+- **SEO & Excerpt** - Full SEO and excerpt management
+- **Multilingual** - Full translation support
+- **Author Management** - Assign contacts as archive authors
+- **More** - Trash, references, sitemaps, etc.
 
-Please feel comfortable submitting feature requests. 
-This bundle is still in development. Use at own risk 🤞🏻
+### 🔄 Advanced Features
+- **Smart Content** - Usable as a content block in any Sulu page
+- **Teaser Provider** - Archives available as teasers
+- **Link Provider** - Easy linking to archives in text editors
+- **Sitemap Integration** - Automatic sitemap generation
+- **Search Integration** - Full-text search in admin and website
 
-![image](https://github.com/user-attachments/assets/9fdefdb3-26c6-41ab-97e8-d1841beec008)
+## 📋 Prerequisites
+
+- PHP 8.2 or higher
+- Sulu CMS 3.0 or higher
+- Symfony 6.2 or higher
+- MySQL 5.7+ / MariaDB 10.2+ / PostgreSQL 11+
 
 ## 👩🏻‍🏭 Installation
-Install the package with:
-```console
+
+### Step 1: Install the package
+
+```bash
 composer require manuxi/sulu-archive-bundle
 ```
-If you're *not* using Symfony Flex, you'll also
-need to add the bundle in your `config/bundles.php` file:
+
+If you are *not* using Symfony Flex, add the bundle to `config/bundles.php`:
 
 ```php
 return [
@@ -44,91 +54,75 @@ return [
     Manuxi\SuluArchiveBundle\SuluArchiveBundle::class => ['all' => true],
 ];
 ```
-Please add the following to your `routes_admin.yaml`:
+
+### Step 2: Configure routes
+
+Add to `routes_admin.yaml`:
+
 ```yaml
 SuluArchiveBundle:
     resource: '@SuluArchiveBundle/Resources/config/routes_admin.yaml'
 ```
-Don't forget fo add the index to your sulu_search.yaml:
 
-add "archives_published"!
+For website frontend, add to `routes_website.yaml`:
 
-"archives_published" is the index of published, "archives" the index of unpublished elements. Both indexes are searchable in admin.
 ```yaml
-sulu_search:
-    website:
-        indexes:
-            - archives_published
-            - ...
-``` 
-Last but not least the schema of the database needs to be updated.  
-
-Some tables will be created (prefixed with app_):  
-archive, archive_translation, archive_seo, archive_excerpt
-(plus some ManyToMany relation tables).  
-
-See the needed queries with
+SuluArchiveBundle:
+    resource: '@SuluArchiveBundle/Resources/config/routes_website.yaml'
 ```
+
+### Step 3: Update the database
+
+```bash
+# Check what will be created
 php bin/console doctrine:schema:update --dump-sql
-```  
-Update the schema by executing 
-```
-php bin/console doctrine:schema:update --force
-```  
 
-Make sure you only process the bundles schema updates!
+# Execute migration
+php bin/console doctrine:schema:update --force
+```
+
+### Step 4: Grant permissions
+
+1. Go to Sulu Admin → Settings → User Roles
+2. Find the appropriate role
+3. Enable permissions for "Archives"
+4. Reload the page
 
 ## 🎣 Usage
-First: Grant permissions for Archive. 
-After page reload you should see the archive item in the navigation. 
-Start to create archive elements.
-Use smart_content property type to show a list of archive elements, e.g.:
-```xml
-<property name="archivelist" type="smart_content">
-    <meta>
-        <title lang="en">Archive</title>
-        <title lang="de">Archiv</title>
-    </meta>
-    <params>
-        <param name="provider" value="Archive"/>
-        <param name="max_per_page" value="5"/>
-        <param name="page_parameter" value="page"/>
-    </params>
-</property>
-```
-Example of the corresponding twig template for the Archive list:
-```html
-{% for archive in archivelist %}
-    <div class="col">
-        <h2>
-            {{ archive.title }}
-        </h2>
-        <h3>
-            {{ archive.subtitle }}
-        </h3>
-        <p>
-            {{ archive.created|format_datetime('full', 'none', locale=app.request.getLocale()) }}
-        </p>
-        <p>
-            {{ archive.summary|raw }}
-        </p>
-        <p>
-            <a class="btn btn-primary" href="{{ archive.routePath }}" role="button">
-                {{ "Read more..."|trans }} <i class="fa fa-angle-double-right"></i>
-            </a>
-        </p>
-    </div>
-{% endfor %}
-```
 
-Since the seo and excerpt tabs are available in the archive editor, 
-meta information can be provided like it's done as usual when rendering your pages. 
+### Create your first archive entry
+
+1. Navigate to **Archive** in the Sulu admin navigation
+2. Click on **Add archive**
+3. Select an archive type
+4. Fill in the details (title, text, images, documents)
+5. Configure author settings (optional)
+6. Publish your archive entry
 
 ## 🧶 Configuration
-This bundle contains settings for controlling the following tasks:
-- Settings for single view - Toggle for header, default hero snippet and breadcrumbs
-- Landing pages for breadcrumbs: this can be used to configure the intermediate pages for the breadcrumbs
+
+Configuration documentation: [Settings](docs/settings.en.md)
+
+## 📖 Documentation
+
+Detailed documentation in the [docs/](docs/) directory.
+
+- [Archive Types](docs/archive-types.en.md) - Configure custom archive types
+- [Sitemap](docs/sitemap.en.md) - Sitemap integration
+- [Settings](docs/settings.en.md) - Configuration options
 
 ## 👩‍🍳 Contributing
-For the sake of simplicity this extension was kept small.
-Please feel comfortable submitting issues or pull requests. As always I'd be glad to get your feedback to improve the extension :).
+
+Contributions are welcome! Please create issues or pull requests.
+
+## 📝 License
+
+This bundle is licensed under the MIT License. See [LICENSE](LICENSE).
+
+## 🎉 Credits
+
+Created and maintained by [manuxi](https://github.com/manuxi).
+
+Thanks to the Sulu team for the great CMS and fantastic support!
+
+And thank *you* for your support and testing!

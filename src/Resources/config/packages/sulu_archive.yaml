@@ -1,0 +1,109 @@
+# Default archive types configuration
+# Matches ArchiveBundle 2.6 types
+
+sulu_archive:
+    default_type: 'default'
+    types:
+        # Basic type
+        default:
+            name: 'sulu_archive.types.default'
+            color: '#6c757d'
+
+        # Places & Infrastructure
+        streets:
+            name: 'sulu_archive.types.streets'
+            color: '#0d6efd'
+        traffic:
+            name: 'sulu_archive.types.traffic'
+            color: '#fd7e14'
+        trains:
+            name: 'sulu_archive.types.trains'
+            color: '#dc3545'
+        signs:
+            name: 'sulu_archive.types.signs'
+            color: '#20c997'
+        attractions:
+            name: 'sulu_archive.types.attractions'
+            color: '#ffc107'
+        memorials:
+            name: 'sulu_archive.types.memorials'
+            color: '#6610f2'
+        buildings:
+            name: 'sulu_archive.types.buildings'
+            color: '#17a2b8'
+        mining:
+            name: 'sulu_archive.types.mining'
+            color: '#795548'
+        surrounding_area:
+            name: 'sulu_archive.types.surrounding_area'
+            color: '#28a745'
+
+        # Maps & Plans
+        maps_plans:
+            name: 'sulu_archive.types.maps_plans'
+            color: '#2196f3'
+        aerial_shots:
+            name: 'sulu_archive.types.aerial_shots'
+            color: '#03a9f4'
+        development_plans:
+            name: 'sulu_archive.types.development_plans'
+            color: '#009688'
+        expert_opinions_reports:
+            name: 'sulu_archive.types.expert_opinions_reports'
+            color: '#607d8b'
+
+        # Written materials
+        place_name_studies:
+            name: 'sulu_archive.types.place_name_studies'
+            color: '#9c27b0'
+        local_chronicles:
+            name: 'sulu_archive.types.local_chronicles'
+            color: '#673ab7'
+        newspaper_articles:
+            name: 'sulu_archive.types.newspaper_articles'
+            color: '#3f51b5'
+        advertisements:
+            name: 'sulu_archive.types.advertisements'
+            color: '#e91e63'
+
+        # People & Families
+        genealogical_research:
+            name: 'sulu_archive.types.genealogical_research'
+            color: '#8bc34a'
+        biographies:
+            name: 'sulu_archive.types.biographies'
+            color: '#4caf50'
+        correspondences:
+            name: 'sulu_archive.types.correspondences'
+            color: '#cddc39'
+
+        # Historical media
+        historical_documents:
+            name: 'sulu_archive.types.historical_documents'
+            color: '#ff9800'
+        historical_recordings:
+            name: 'sulu_archive.types.historical_recordings'
+            color: '#ff5722'
+        visual_material:
+            name: 'sulu_archive.types.visual_material'
+            color: '#9e9e9e'
+        audio_video_recordings:
+            name: 'sulu_archive.types.audio_video_recordings'
+            color: '#f44336'
+
+        # Club & Organization materials
+        membership_directories:
+            name: 'sulu_archive.types.membership_directories'
+            color: '#00bcd4'
+        club_journals:
+            name: 'sulu_archive.types.club_journals'
+            color: '#3d5afe'
+        posters_flyers:
+            name: 'sulu_archive.types.posters_flyers'
+            color: '#d500f9'
+        objects_artifacts:
+            name: 'sulu_archive.types.objects_artifacts'
+            color: '#ffab00'
+        collections_exhibitions:
+            name: 'sulu_archive.types.collections_exhibitions'
+            color: '#00e676'

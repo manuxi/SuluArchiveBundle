@@ -1,39 +1,123 @@
-{% extends "body.html.twig" %}
+{% extends "base.html.twig" %}
 
 {% block content %}
-    <div class="container">
-        <div class="row archive-{{ archive.type }}">
+    <div class="container pt-3">
+        <div class="row">
             <div class="col-12 pb-3">
-                <div class="title">
-                    {% if archive.showDate %}
-                        <div class="overline mb-1">
-                            {{ archive.publishedAt | format_datetime('full', 'none', locale=app.request.locale) }}
-                            {% if archive.showAuthor %}
-                                {% set contact = sulu_resolve_contact(archive.author) %}
-                                {{ "by"|trans }} {{ contact.fullName }}
+                <div class="archive-container">
+                    <div class="card mb-3">
+                        {# Main Image #}
+                        {% if archive.image %}
+                            {% set archiveImage = sulu_resolve_media(archive.image.id, app.request.locale) %}
+                            {% if archiveImage %}
+                                <img src="{{ archiveImage.thumbnails['sulu-400x400'] }}"
+                                     class="card-img-top img-fluid rounded-top mb-4 w-100 object-fit-cover"
+                                     style="max-height:240px;"
+                                     alt="{{ archive.title }}">
+                            {% endif %}
+                        {% endif %}
+
+                        <div class="card-body py-0">
+                            {# Title & Subtitle #}
+                            <h1 class="h2 mb-2">{{ archive.title }}</h1>
+                            {% if archive.subtitle %}
+                                <h2 class="h4 mb-2">{{ archive.subtitle }}</h2>
+                            {% endif %}
+
+                            {# Type Badge #}
+                            {% if archive.typeName is defined %}
+                                <span class="badge mb-3" style="background-color: {{ archive.typeColor|default('#6c757d') }}">
+                                    {{ archive.typeName }}
+                                </span>
+                            {% endif %}
+
+                            {# Author & Date Info #}
+                            {% if archive.showAuthor|default(false) and archive.author %}
+                                <p class="text-muted mb-2">
+                                    {{ 'sulu_archive.by'|trans }} {{ archive.author.fullName|default(archive.author.firstName ~ ' ' ~ archive.author.lastName) }}
+                                </p>
+                            {% endif %}
+
+                            {% if archive.showDate|default(false) and archive.authored %}
+                                <p class="text-muted mb-3">
+                                    {{ 'sulu_archive.published_at'|trans }}: {{ archive.authored|format_datetime('long', 'none', locale=app.request.locale) }}
+                                </p>
+                            {% endif %}
+
+                            {# Tags & Categories #}
+                            {% if archive.excerptTags is defined and archive.excerptTags %}
+                                {% for tag in archive.excerptTags %}
+                                    <span class="badge text-bg-light shadow me-1">{{ tag }}</span>
+                                {% endfor %}
+                            {% endif %}
+
+                            {% if archive.excerptCategories is defined and archive.excerptCategories %}
+                                {% for category in archive.excerptCategories %}
+                                    <span class="badge text-bg-secondary shadow me-1">{{ category.translation|default(category.name) }}</span>
+                                {% endfor %}
+                            {% endif %}
+
+                            {# Summary #}
+                            {% if archive.summary %}
+                                <p class="mb-4 fw-bold fst-italic">{{ archive.summary }}</p>
+                            {% endif %}
+
+                            {# Main Text #}
+                            {{ archive.text|raw }}
+
+                            {# Image Gallery #}
+                            {% if archive.images is defined and archive.images|length > 0 %}
+                                <hr class="my-4">
+                                <h3 class="h5 mb-3">{{ 'sulu_archive.gallery'|trans|default('Gallery') }}</h3>
+                                <div class="row g-2">
+                                    {% for image in archive.images %}
+                                        {% set galleryImage = sulu_resolve_media(image.id, app.request.locale) %}
+                                        {% if galleryImage %}
+                                            <div class="col-6 col-md-4 col-lg-3">
+                                                <img src="{{ galleryImage.thumbnails['sulu-260x260'] }}"
+                                                     class="img-fluid rounded"
+                                                     alt="{{ galleryImage.title|default('') }}">
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            {# Document Download #}
+                            {% if archive.document %}
+                                {% set archiveDocument = sulu_resolve_media(archive.document.id, app.request.locale) %}
+                                {% if archiveDocument %}
+                                    <hr class="my-4">
+                                    <div class="document-download">
+                                        <a href="{{ archiveDocument.url }}"
+                                           target="_blank"
+                                           class="btn btn-outline-primary">
+                                            <i class="fa fa-download me-2"></i>
+                                            {{ 'sulu_archive.action.download'|trans }} ({{ archiveDocument.mimeType }})
+                                        </a>
+                                    </div>
+                                {% endif %}
                             {% endif %}
                         </div>
-                    {% endif %}
-                    <h1 class="mb-2">{{ archive.title }}</h1>
-                    {% if archive.subtitle %}
-                        <h2 class="h3 mb-4">{{ archive.subtitle }}</h2>
-                    {% endif %}
-                    {% if archive.summary %}
-                        <p class="mb-4">{{ archive.summary }}</p>
-                    {% endif %}
-                </div>
-
-                <div class="content pb-3">
-                    {{ archive.text|raw }}
-                </div>
-            </div>
-            {% if archive.footer %}
-                <div class="col-12 py-3 bg-light text-dark">
-                    <div class="footer mb-5">
-                        {{ archive.footer|raw }}
                     </div>
                 </div>
-            {% endif %}
+
+                {# Footer Section #}
+                {% if archive.footer|default %}
+                    <div class="footer-container">
+                        <div class="card mb-3 bg-light text-dark">
+                            <div class="row g-0">
+                                <div class="col-12">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ 'sulu_archive.footer'|trans }}</h5>
+                                        <p class="card-text text-muted">{{ archive.footer|raw }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}

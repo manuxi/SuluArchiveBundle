@@ -1,9 +1,0 @@
-sulu_archive:
-    archive: "Archive"
-search:
-    index:
-        archives: "Archives"
-        archives_published: "Archives"
-    icon:
-        archives: "archive"
-        archives_published: "archive"

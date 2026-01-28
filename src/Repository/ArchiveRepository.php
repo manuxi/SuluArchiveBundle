@@ -4,345 +4,327 @@ declare(strict_types=1);
 
 namespace Manuxi\SuluArchiveBundle\Repository;
 
-use Manuxi\SuluArchiveBundle\Entity\Archive;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
-use Sulu\Component\SmartContent\Orm\DataProviderRepositoryInterface;
-use Sulu\Component\SmartContent\Orm\DataProviderRepositoryTrait;
+use Manuxi\SuluArchiveBundle\Entity\Archive;
+use Manuxi\SuluArchiveBundle\Entity\ArchiveDimensionContent;
+use Sulu\Content\Domain\Model\DimensionContentInterface;
+use Sulu\Content\Domain\Model\WorkflowInterface;
+use Sulu\Content\Infrastructure\Doctrine\DimensionContentQueryEnhancer;
 
-/**
- * @method Archive|null find($id, $lockMode = null, $lockVersion = null)
- * @method Archive|null findOneBy(array $criteria, array $orderBy = null)
- * @method Archive[]    findAll()
- * @method Archive[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- *
- * @extends ServiceEntityRepository<Archive>
- */
-class ArchiveRepository extends ServiceEntityRepository implements DataProviderRepositoryInterface
+class ArchiveRepository extends ServiceEntityRepository
 {
-    use DataProviderRepositoryTrait {
-        findByFilters as protected parentFindByFilters;
-    }
+    public const GROUP_SELECT_ARCHIVE_ADMIN = 'archive_admin';
+    public const GROUP_SELECT_ARCHIVE_WEBSITE = 'archive_website';
+    public const SELECT_ARCHIVE_CONTENT = 'with-archive-content';
 
-    public function __construct(ManagerRegistry $registry)
-    {
+    private const SELECTS = [
+        self::GROUP_SELECT_ARCHIVE_ADMIN => [
+            self::SELECT_ARCHIVE_CONTENT => [
+                DimensionContentQueryEnhancer::GROUP_SELECT_CONTENT_ADMIN => true,
+            ],
+        ],
+        self::GROUP_SELECT_ARCHIVE_WEBSITE => [
+            self::SELECT_ARCHIVE_CONTENT => [
+                DimensionContentQueryEnhancer::GROUP_SELECT_CONTENT_WEBSITE => true,
+            ],
+        ],
+    ];
+
+    public function __construct(
+        ManagerRegistry $registry,
+        private DimensionContentQueryEnhancer $dimensionContentQueryEnhancer,
+    ) {
         parent::__construct($registry, Archive::class);
     }
 
-    public function create(string $locale): Archive
-    {
-        $entity = new Archive();
-        $entity->setLocale($locale);
-        $entity->setPublished(false);
-
-        return $entity;
-    }
-
-    public function remove(int $id): void
-    {
-        /** @var object $entity */
-        $entity = $this->getEntityManager()->getReference(
-            $this->getClassName(),
-            $id
-        );
-
-        $this->getEntityManager()->remove($entity);
-        $this->getEntityManager()->flush();
-    }
-
-    public function save(Archive $entity): Archive
-    {
-        $this->getEntityManager()->persist($entity);
-        $this->getEntityManager()->flush();
-        return $entity;
-    }
-
-    public function publish(Archive $entity): Archive
-    {
-        $entity->setPublished(true);
-        return $this->save($entity);
-    }
-
-    public function unpublish(Archive $entity): Archive
-    {
-        $entity->setPublished(false);
-        return $this->save($entity);
-    }
-
-    public function findById(int $id, string $locale): ?Archive
-    {
-        $entity = $this->find($id);
-
-        if (!$entity) {
-            return null;
-        }
-
-        $entity->setLocale($locale);
-
-        return $entity;
-    }
-
-    public function findAllForSitemap(string $locale, int $limit = null, int $offset = null): array
+    public function findAll(): array
     {
         $queryBuilder = $this->createQueryBuilder('archive')
-            ->leftJoin('archive.translations', 'translation')
-            ->where('translation.published = :published')
-            ->setParameter('published', true)
-            ->andWhere('translation.locale = :locale')
-            ->setParameter('locale', $locale)
-            ->orderBy('translation.authored', 'DESC')
-            ->setMaxResults($limit)
-            ->setFirstResult($offset);
+            ->leftJoin('archive.dimensionContents', 'dimensionContent')
+            ->addSelect('dimensionContent');
 
-        $this->prepareFilters($queryBuilder, []);
-
-        $archive = $queryBuilder->getQuery()->getResult();
-        if (!$archive) {
-            return [];
-        }
-        return $archive;
+        return $queryBuilder->getQuery()->getResult();
     }
 
-    public function countForSitemap(string $locale)
+    public function findByUuid(string $uuid): ?Archive
     {
-        $query = $this->createQueryBuilder('archive')
-            ->select('count(archive)')
-            ->leftJoin('archive.translations', 'translation')
-            ->where('translation.published = :published')
-            ->andWhere('translation.locale = :locale')
-            ->setParameter('published', true)
-            ->setParameter('locale', $locale);
-        return $query->getQuery()->getSingleScalarResult();
-    }
-
-    public function hasNextPage(array $filters, ?int $page, ?int $pageSize, ?int $limit, string $locale, array $options = []): bool
-    {
-        //$pageCurrent = (key_exists('page', $options)) ? (int)$options['page'] : 1;
-
         $queryBuilder = $this->createQueryBuilder('archive')
-            ->select('count(archive.id)')
-            ->leftJoin('archive.translations', 'translation')
-            ->where('translation.published = :published')
-            ->setParameter('published', true)
-            ->andWhere('translation.locale = :locale')
-            ->setParameter('locale', $locale);
+            ->leftJoin('archive.dimensionContents', 'dimensionContent')
+            ->addSelect('dimensionContent')
+            ->where('archive.uuid = :uuid')
+            ->setParameter('uuid', $uuid);
 
-        $this->prepareFilters($queryBuilder, $filters);
-
-        $archiveCount = $queryBuilder->getQuery()->getSingleScalarResult();
-
-        $pos = (int)($pageSize * $page);
-        if (null !== $limit && $limit <= $pos) {
-            return false;
-        } elseif ($pos < (int)$archiveCount) {
-            return true;
-        }
-
-        return false;
-    }
-
-    protected function appendJoins(QueryBuilder $queryBuilder, $alias, $locale): void
-    {
-
+        return $queryBuilder->getQuery()->getOneOrNullResult();
     }
 
     /**
-     * @param QueryBuilder $queryBuilder
-     * @param string $alias
-     * @param string $locale
-     * @param mixed[] $options
-     *
-     * @return string[]
+     * @param string[] $uuids
+     * @return Archive[]
      */
-    protected function append(QueryBuilder $queryBuilder, string $alias, string $locale, $options = []): array
+    public function findByUuids(array $uuids, string $locale, string $stage = DimensionContentInterface::STAGE_LIVE): array
     {
-        //$queryBuilder->andWhere($alias . '.published = true');
-        $queryBuilder->innerJoin($alias . '.translations', 'translation', Join::WITH, 'translation.locale = :locale');
-        $queryBuilder->setParameter('locale', $locale);
-        $queryBuilder->andWhere('translation.published = :published');
-        $queryBuilder->setParameter('published', true);
-        return [];
-    }
+        $filters = ['uuids' => $uuids, 'locale' => $locale, 'stage' => $stage];
 
-    public function appendCategoriesRelation(QueryBuilder $queryBuilder, $alias): string
-    {
-        return $alias . '.category';
-        //$queryBuilder->addSelect($alias.'.category');
-    }
-
-    protected function appendSortByJoins(QueryBuilder $queryBuilder, string $alias, string $locale): void
-    {
-        $queryBuilder->innerJoin($alias . '.translations', 'translation', Join::WITH, 'translation.locale = :locale');
-        $queryBuilder->setParameter('locale', $locale);
-    }
-
-    public function findByFilters($filters, $page, $pageSize, $limit, $locale, $options = []): array
-    {
-        $entities = $this->getPublishedArchives($filters, $locale, $page, $pageSize, $limit, $options);
-
-        return \array_map(
-            function (Archive $entity) use ($locale) {
-                return $entity->setLocale($locale);
-            },
-            $entities
+        $qb = $this->buildQueryBuilder(
+            $filters,
+            [],
+            [self::GROUP_SELECT_ARCHIVE_WEBSITE => true]
         );
+
+        return $qb->getQuery()->getResult();
     }
 
-    public function getPublishedArchives(array $filters, string $locale, ?int $page, $pageSize, $limit = null, array $options): array
+    public function findAllByLocale(string $locale, string $stage = DimensionContentInterface::STAGE_LIVE): array
     {
-        $queryBuilder = $this->createQueryBuilder('archive')
-            ->leftJoin('archive.translations', 'translation')
-            ->where('translation.published = :published')
-            ->andWhere('translation.locale = :locale')
+        $qb = $this->buildQueryBuilder(
+            ['locale' => $locale, 'stage' => $stage],
+            [],
+            [self::GROUP_SELECT_ARCHIVE_WEBSITE => true]
+        );
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param array{
+     *     uuid?: string,
+     *     uuids?: string[],
+     *     locale?: string|null,
+     *     stage?: string|null,
+     *     categoryIds?: int[],
+     *     categoryKeys?: string[],
+     *     categoryOperator?: 'AND'|'OR',
+     *     tagIds?: int[],
+     *     tagNames?: string[],
+     *     tagOperator?: 'AND'|'OR',
+     *     templateKeys?: string[],
+     *     types?: string[],
+     * } $filters
+     * @param array<string, string> $sortBys
+     * @param array<string, mixed> $selects
+     *
+     * @return Archive[]
+     */
+    public function findByFilters(array $filters = [], array $sortBys = [], array $selects = []): array
+    {
+        $filters = $this->normalizeFindByFilters($filters);
+        $selects = $this->normalizeSelects($selects);
+
+        $queryBuilder = $this->buildQueryBuilder($filters, $sortBys, $selects);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    /**
+     * @param array{
+     *     uuid?: string,
+     *     uuids?: string[],
+     *     locale?: string|null,
+     *     stage?: string|null,
+     *     categoryIds?: int[],
+     *     categoryKeys?: string[],
+     *     categoryOperator?: 'AND'|'OR',
+     *     tagIds?: int[],
+     *     tagNames?: string[],
+     *     tagOperator?: 'AND'|'OR',
+     *     templateKeys?: string[],
+     *     types?: string[],
+     * } $filters
+     */
+    public function countBy(array $filters = []): int
+    {
+        $filters = $this->normalizeFindByFilters($filters);
+        $selects = $this->normalizeSelects([]);
+        $queryBuilder = $this->buildQueryBuilder($filters, [], $selects);
+
+        $queryBuilder->select('COUNT(DISTINCT archive.uuid)');
+
+        return (int) $queryBuilder->getQuery()->getSingleScalarResult();
+    }
+
+    public function countAll(): int
+    {
+        return (int) $this->createQueryBuilder('a')
+            ->select('COUNT(a.uuid)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countPublished(string $locale): int
+    {
+        $qb = $this->createQueryBuilder('archive');
+
+        $qb->select('COUNT(DISTINCT archive.uuid)')
+            ->leftJoin('archive.dimensionContents', 'dc')
+            ->where('dc.locale = :locale')
+            ->andWhere('dc.stage = :stage')
+            ->andWhere('dc.workflowPlace = :published')
             ->setParameter('locale', $locale)
-            ->orderBy('translation.authored', 'DESC')
-            ->setParameter('published', 1);
+            ->setParameter('stage', DimensionContentInterface::STAGE_LIVE)
+            ->setParameter('published', WorkflowInterface::WORKFLOW_PLACE_PUBLISHED);
 
-        $this->prepareFilters($queryBuilder, $filters);
-
-        if (!$this->setOffsetResults($queryBuilder, $page, $pageSize, $limit)) {
-            return [];
-        }
-
-        $archive = $queryBuilder->getQuery()->getResult();
-
-        if (!$archive) {
-            return [];
-        }
-        return $archive;
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
-    private function setOffsetResults(QueryBuilder $queryBuilder, $page, $pageSize, $limit = null): bool {
-        if (null !== $page && $pageSize > 0) {
-
-            $pageOffset = ($page - 1) * $pageSize;
-            $restLimit = $limit - $pageOffset;
-
-            $maxResults = (null !== $limit && $pageSize > $restLimit ? $restLimit : $pageSize);
-
-            if ($maxResults <= 0) {
-                return false;
-            }
-
-            $queryBuilder->setMaxResults($maxResults);
-            $queryBuilder->setFirstResult($pageOffset);
-        } elseif (null !== $limit) {
-            $queryBuilder->setMaxResults($limit);
-        }
-        return true;
-    }
-
-    private function prepareFilters(QueryBuilder $queryBuilder, array $filters): void
+    public function add(Archive $archive): void
     {
-        if (isset($filters['sortBy'])) {
-            $queryBuilder->orderBy($filters['sortBy'], $filters['sortMethod']);
-        }
-
-        if (!empty($filters['tags']) || !empty($filters['categories'])) {
-            $queryBuilder->leftJoin('archive.archiveExcerpt', 'excerpt')
-                ->leftJoin('excerpt.translations', 'excerpt_translation');
-        }
-        $this->prepareTypesFilter($queryBuilder, $filters);
-        $this->prepareTagsFilter($queryBuilder, $filters);
-        $this->prepareCategoriesFilter($queryBuilder, $filters);
+        $this->getEntityManager()->persist($archive);
     }
 
-    private function prepareTypesFilter(QueryBuilder $queryBuilder, array $filters): void
+    public function remove(Archive $archive): void
     {
-        if(!empty($filters['types'])) {
-            $queryBuilder->andWhere("archive.type IN (:typeList)");
-            $queryBuilder->setParameter("typeList", $filters['types']);
-        }
+        $this->getEntityManager()->remove($archive);
     }
 
-    private function prepareTagsFilter(QueryBuilder $queryBuilder, array $filters): void
-    {
-        if (empty($filters['tags'])) {
-            return;
-        }
+    /**
+     * @param array<string, mixed> $filters
+     * @param array<string, string> $sortBys
+     * @param array<string, mixed> $selects
+     */
+    private function buildQueryBuilder(
+        array $filters = [],
+        array $sortBys = [],
+        array $selects = []
+    ): QueryBuilder {
+        $queryBuilder = $this->createQueryBuilder('archive');
 
-        $operator = $filters['tagOperator'] ?? 'or';
+        $this->applyContentJoin($queryBuilder, $filters, $sortBys, $selects);
+        $this->applyFilters($queryBuilder, $filters);
+        $this->applySortBys($queryBuilder, $sortBys);
+        $this->applyPagination($queryBuilder, $filters);
 
-        if ($operator === 'and') {
-            // AND: Entity must have ALL tags (multiple JOINs necessary)
-            foreach ($filters['tags'] as $i => $tag) {
-                $alias = 'tag' . $i;
-                $queryBuilder
-                    ->innerJoin('excerpt_translation.tags', $alias)
-                    ->andWhere($queryBuilder->expr()->eq($alias . '.id', ':tag' . $i))
-                    ->setParameter('tag' . $i, $tag);
-            }
-        } else {
-            // OR: Entity must at least have one of the tags
-            $queryBuilder
-                ->leftJoin('excerpt_translation.tags', 'tags')
-                ->andWhere($queryBuilder->expr()->in('tags.id', ':tags'))
-                ->setParameter('tags', $filters['tags']);
-        }
+        return $queryBuilder;
     }
 
-    private function prepareCategoriesFilter(QueryBuilder $queryBuilder, array $filters): void
+    /**
+     * @param array<string, mixed> $filters
+     *
+     * @return array<string, mixed>
+     */
+    private function normalizeFindByFilters(array $filters): array
     {
-        if (empty($filters['categories'])) {
-            return;
-        }
+        $filters['stage'] = $filters['stage'] ?? DimensionContentInterface::STAGE_DRAFT;
 
-        $queryBuilder->leftJoin('excerpt_translation.categories', 'categories');
-
-        $operator = $filters['categoryOperator'] ?? 'or';
-
-        if ($operator === 'and') {
-            // AND: Entity must have ALL categories (multiple JOINs necessary)
-            foreach ($filters['categories'] as $i => $category) {
-                $alias = 'category' . $i;
-                $queryBuilder
-                    ->leftJoin('excerpt_translation.categories', $alias)
-                    ->andWhere($alias . '.id = :category' . $i)
-                    ->setParameter('category' . $i, $category);
-            }
-        } else {
-            // OR: Entity must at least have one of the categories
-            $queryBuilder
-                ->andWhere('categories.id IN (:categories)')
-                ->setParameter('categories', $filters['categories']);
-        }
+        return $filters;
     }
 
-    private function prepareCategoriesFilterX(QueryBuilder $queryBuilder, array $filters): void
+    /**
+     * @param array<string, mixed> $selects
+     *
+     * @return array<string, mixed>
+     */
+    private function normalizeSelects(array $selects): array
     {
-        if (!empty($filters['categories'])) {
+        $normalizedSelects = [];
 
-            $queryBuilder->leftJoin('excerpt_translation.categories', 'categories');
-
-            $i = 0;
-            if ($filters['categoryOperator'] === "and") {
-                $andWhere = "";
-                foreach ($filters['categories'] as $category) {
-                    if ($i === 0) {
-                        $andWhere .= "categories = :category" . $i;
-                    } else {
-                        $andWhere .= " AND categories = :category" . $i;
-                    }
-                    $queryBuilder->setParameter("category" . $i, $category);
-                    $i++;
+        foreach (self::SELECTS as $groupKey => $groupSelects) {
+            if (true === ($selects[$groupKey] ?? false)) {
+                foreach ($groupSelects as $selectKey => $selectValue) {
+                    $normalizedSelects[$selectKey] = $selectValue;
                 }
-                $queryBuilder->andWhere($andWhere);
-            } else if ($filters['categoryOperator'] === "or") {
-                $orWhere = "";
-                foreach ($filters['categories'] as $category) {
-                    if ($i === 0) {
-                        $orWhere .= "categories = :category" . $i;
-                    } else {
-                        $orWhere .= " OR categories = :category" . $i;
-                    }
-                    $queryBuilder->setParameter("category" . $i, $category);
-                    $i++;
-                }
-                $queryBuilder->andWhere($orWhere);
+            }
+        }
+
+        foreach ($selects as $key => $value) {
+            if (\is_string($key) && \is_array($value)) {
+                $normalizedSelects[$key] = $value;
+            }
+        }
+
+        return $normalizedSelects;
+    }
+
+    /**
+     * @param array<string, mixed> $filters
+     * @param array<string, string> $sortBys
+     * @param array<string, mixed> $selects
+     */
+    private function applyContentJoin(
+        QueryBuilder $queryBuilder,
+        array $filters,
+        array $sortBys,
+        array $selects
+    ): void {
+        $locale = $filters['locale'] ?? null;
+        $stage = $filters['stage'] ?? DimensionContentInterface::STAGE_DRAFT;
+
+        $queryBuilder->leftJoin('archive.dimensionContents', 'dimensionContent');
+
+        $normalizedSelects = $this->normalizeSelects($selects);
+        if (!empty($normalizedSelects)) {
+            $this->dimensionContentQueryEnhancer->addSelects(
+                $queryBuilder,
+                ArchiveDimensionContent::class,
+                ['locale' => $locale, 'stage' => $stage],
+                $normalizedSelects
+            );
+        } else {
+            $queryBuilder->addSelect('dimensionContent');
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $filters
+     */
+    private function applyFilters(QueryBuilder $queryBuilder, array $filters): void
+    {
+        if (isset($filters['uuid'])) {
+            $queryBuilder->andWhere('archive.uuid = :uuid');
+            $queryBuilder->setParameter('uuid', $filters['uuid']);
+        }
+
+        if (isset($filters['uuids'])) {
+            $queryBuilder->andWhere('archive.uuid IN (:uuids)');
+            $queryBuilder->setParameter('uuids', $filters['uuids']);
+        }
+
+        if (isset($filters['types'])) {
+            $queryBuilder->andWhere('dimensionContent.type IN (:types)');
+            $queryBuilder->setParameter('types', $filters['types']);
+        }
+    }
+
+    /**
+     * @param array{
+     *     uuid?: 'asc'|'desc',
+     *     title?: 'asc'|'desc',
+     *     created?: 'asc'|'desc',
+     *     changed?: 'asc'|'desc',
+     * } $sortBys
+     */
+    private function applySortBys(QueryBuilder $queryBuilder, array $sortBys): void
+    {
+        foreach ($sortBys as $field => $direction) {
+            switch ($field) {
+                case 'uuid':
+                    $queryBuilder->addOrderBy('archive.uuid', $direction);
+                    break;
+                case 'title':
+                    $queryBuilder->addOrderBy('dimensionContent.title', $direction);
+                    break;
+                case 'created':
+                    $queryBuilder->addOrderBy('dimensionContent.created', $direction);
+                    break;
+                case 'changed':
+                    $queryBuilder->addOrderBy('dimensionContent.changed', $direction);
+                    break;
             }
         }
     }
 
+    /**
+     * @param array<string, mixed> $filters
+     */
+    private function applyPagination(QueryBuilder $queryBuilder, array $filters): void
+    {
+        if (isset($filters['limit'])) {
+            $queryBuilder->setMaxResults($filters['limit']);
+        }
+
+        if (isset($filters['offset'])) {
+            $queryBuilder->setFirstResult($filters['offset']);
+        }
+    }
 }

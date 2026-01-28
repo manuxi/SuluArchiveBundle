@@ -10,8 +10,9 @@ use Sulu\Bundle\PersistenceBundle\DependencyInjection\PersistenceExtensionTrait;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\Yaml\Yaml;
 
 class SuluArchiveExtension extends Extension implements PrependExtensionInterface
 {
@@ -20,76 +21,134 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
     /**
      * @throws \Exception
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.xml');
-        $loader->load('controller.xml');
+        $container->setParameter('sulu_archive.types', $config['types'] ?? []);
+        $container->setParameter('sulu_archive.default_type', $config['default_type'] ?? 'default');
 
-        if ($container->hasParameter('kernel.bundles')) {
-            /** @var string[] $bundles */
-            $bundles = $container->getParameter('kernel.bundles');
+        $container->setParameter(
+            'sulu_archive.routing.route_schema',
+            $config['routing']['route_schema']
+        );
 
-            if (\array_key_exists('SuluAutomationBundle', $bundles)) {
-                $loader->load('automation.xml');
-            }
-        }
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load('services.yaml');
+        $loader->load('controller.yaml');
 
         $this->configurePersistence($config['objects'], $container);
     }
 
     public function prepend(ContainerBuilder $container): void
     {
-        if ($container->hasExtension('sulu_search')) {
+        if ($container->hasExtension('doctrine')) {
             $container->prependExtensionConfig(
-                'sulu_search',
+                'doctrine',
                 [
-                    'indexes' => [
-                        'archives' => [
-                            'name' => 'sulu_archive.search.index.archive',
-                            'icon' => 'su-archive',
-                            'view' => [
-                                'name' => ArchiveAdmin::EDIT_FORM_VIEW,
-                                'result_to_view' => [
-                                    'id' => 'id',
-                                    'locale' => 'locale',
-                                ],
+                    'orm' => [
+                        'mappings' => [
+                            'SuluArchiveBundle' => [
+                                'type' => 'xml',
+                                'dir' => __DIR__ . '/../Resources/config/doctrine',
+                                'prefix' => 'Manuxi\SuluArchiveBundle\Entity',
+                                'alias' => 'SuluArchiveBundle',
                             ],
-                            'security_context' => Archive::SECURITY_CONTEXT,
-                        ],
-                        'archives_published' => [
-                            'name' => 'sulu_archive.search.index.archive_published',
-                            'icon' => 'su-archive',
-                            'view' => [
-                                'name' => ArchiveAdmin::EDIT_FORM_VIEW,
-                                'result_to_view' => [
-                                    'id' => 'id',
-                                    'locale' => 'locale',
-                                ],
-                            ],
-                            'security_context' => Archive::SECURITY_CONTEXT,
                         ],
                     ],
                 ]
             );
         }
 
-        if ($container->hasExtension('sulu_route')) {
+        if ($container->hasExtension('sulu_archive')) {
+            $configs = $container->getExtensionConfig('sulu_archive');
+
+            $hasProjectTypes = false;
+            foreach ($configs as $config) {
+                if (isset($config['types'])) {
+                    $hasProjectTypes = true;
+                    break;
+                }
+            }
+
+            if (!$hasProjectTypes) {
+                $defaultConfigFile = __DIR__ . '/../Resources/config/packages/sulu_archive.yaml';
+                if (file_exists($defaultConfigFile)) {
+                    $defaultConfig = Yaml::parseFile($defaultConfigFile);
+                    if (isset($defaultConfig['sulu_archive'])) {
+                        $container->prependExtensionConfig('sulu_archive', $defaultConfig['sulu_archive']);
+                    }
+                }
+            }
+        }
+
+        if ($container->hasExtension('sulu_search')) {
             $container->prependExtensionConfig(
-                'sulu_route',
+                'sulu_search',
                 [
-                    'mappings' => [
-                        Archive::class => [
-                            'generator' => 'schema',
-                            'options' => [
-                                // @TODO: works not yet as expected, does not translate correctly
-                                // see https://github.com/sulu/sulu/pull/5920
-                                'route_schema' => '/{translator.trans("sulu_archive.archive")}/{implode("-", object)}',
+                    'admin' => [
+                        'resources' => [
+                            Archive::RESOURCE_KEY => [
+                                'name' => 'sulu_archive.archives',
+                                'icon' => 'su-archive',
+                                'route' => [
+                                    'name' => ArchiveAdmin::EDIT_FORM_VIEW,
+                                    'resultToRoute' => [
+                                        'resourceId' => 'id',
+                                        'locale' => 'locale',
+                                    ],
+                                ],
+                                'securityContext' => Archive::SECURITY_CONTEXT,
                             ],
-                            'resource_key' => Archive::RESOURCE_KEY,
+                        ],
+                    ],
+                ],
+            );
+        }
+
+        if ($container->hasExtension('sulu_seo')) {
+            $container->prependExtensionConfig(
+                'sulu_seo',
+                [
+                    'content' => [
+                        'types' => [
+                            Archive::TEMPLATE_TYPE => [
+                                'template_driver' => true,
+                            ],
+                        ],
+                    ],
+                ]
+            );
+        }
+
+        if ($container->hasExtension('sulu_excerpt')) {
+            $container->prependExtensionConfig(
+                'sulu_excerpt',
+                [
+                    'content' => [
+                        'types' => [
+                            Archive::TEMPLATE_TYPE => [
+                                'template_driver' => true,
+                            ],
+                        ],
+                    ],
+                ]
+            );
+        }
+
+        if ($container->hasExtension('sulu_media')) {
+            $container->prependExtensionConfig(
+                'sulu_media',
+                [
+                    'system_collections' => [
+                        'sulu_archive' => [
+                            'meta_title' => ['en' => 'Archive', 'de' => 'Archiv'],
+                            'collections' => [
+                                'archives' => [
+                                    'meta_title' => ['en' => 'Archive', 'de' => 'Archiv'],
+                                ],
+                            ],
                         ],
                     ],
                 ]
@@ -102,18 +161,33 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
                 [
                     'lists' => [
                         'directories' => [
-                            __DIR__.'/../Resources/config/lists',
+                            __DIR__ . '/../Resources/config/lists',
                         ],
                     ],
                     'forms' => [
                         'directories' => [
-                            __DIR__.'/../Resources/config/forms',
+                            __DIR__ . '/../Resources/config/forms',
+                        ],
+                    ],
+                    'templates' => [
+                        Archive::TEMPLATE_TYPE => [
+                            'default_type' => Archive::TEMPLATE_TYPE,
+                            'directories' => [
+                                'bundle' => __DIR__ . '/../Resources/config/templates/archives',
+                                'app' => '%kernel.project_dir%/config/templates/archives',
+                            ],
                         ],
                     ],
                     'resources' => [
-                        'archive' => [
+                        'archives' => [
                             'routes' => [
-                                'list' => 'sulu_archive.get_archive',
+                                'list' => 'sulu_archive.get_archives',
+                                'detail' => 'sulu_archive.get_archive',
+                            ],
+                        ],
+                        'archives_versions' => [
+                            'routes' => [
+                                'list' => 'sulu_archive.get_archive_versions',
                                 'detail' => 'sulu_archive.get_archive',
                             ],
                         ],
@@ -137,13 +211,13 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
                                 'types' => [
                                     'list_overlay' => [
                                         'adapter' => 'table',
-                                        'list_key' => Archive::LIST_KEY,
+                                        'list_key' => Archive::LIST_KEY_PUBLISHED,
                                         'display_properties' => [
                                             'title',
                                         ],
                                         'icon' => 'su-archive',
                                         'label' => 'sulu_archive.archive_selection_label',
-                                        'overlay_title' => 'sulu_archive.select_archive',
+                                        'overlay_title' => 'sulu_archive.select_archives',
                                     ],
                                 ],
                             ],
@@ -161,7 +235,7 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
                                 'types' => [
                                     'list_overlay' => [
                                         'adapter' => 'table',
-                                        'list_key' => Archive::LIST_KEY,
+                                        'list_key' => Archive::LIST_KEY_PUBLISHED,
                                         'display_properties' => [
                                             'title',
                                         ],
@@ -185,7 +259,7 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
 
         $container->loadFromExtension('framework', [
             'default_locale' => 'en',
-            'translator' => ['paths' => [__DIR__.'/../Resources/config/translations/']],
+            'translator' => ['paths' => [__DIR__ . '/../Resources/translations/']],
         ]);
     }
 }

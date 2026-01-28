@@ -1,0 +1,168 @@
+# English translations for SuluArchiveBundle Admin
+# Based on ArchiveBundle 2.6 with cleanup
+
+sulu_archive:
+    # Basic fields
+    id: "Id"
+    name: "Name"
+    title: "Title"
+    subtitle: "Subtitle"
+    summary: "Summary Introduction"
+    text: "Text"
+    footer: "Footnotes, Source Citations..."
+    notes: "Notes"
+    image: "Image"
+    document: "Document"
+    link: "Link"
+    website: "Website"
+    gallery: "Image Gallery"
+    archives: "Archives"
+    archive: "Archive"
+    empty_list: "No archives available"
+
+    # Workflow states
+    publish: "publish"
+    unpublish: "unpublish"
+    published: "published"
+    unpublished: "unpublished"
+    published_date: "Publish Date"
+    published_at: "Published at"
+
+    # Author display settings
+    show_author: "Show Author"
+    show_date: "Show Published Date"
+    author: "Author"
+    authored: "authored"
+    displayed_author: "Displayed Author"
+    displayed_authored: "Displayed Publication Date"
+
+    # Timestamps
+    created_date: "Created at"
+    creator: "Created by"
+    changed_date: "Last Change at"
+    changer: "Last change by"
+
+    # Archive type selection
+    archive_type: "Archive Type"
+    type: "Type"
+
+    # Archive types - Places & Infrastructure
+    types:
+        default: "Default"
+        streets: "Streets and Places"
+        traffic: "Traffic"
+        trains: "Trains and Tracks"
+        signs: "Signs and Boards"
+        attractions: "Attractions"
+        memorials: "Memorials"
+        buildings: "Buildings and Architecture"
+        mining: "Mining"
+        surrounding_area: "Surrounding Area"
+
+        # Maps & Plans
+        maps_plans: "Maps and Plans"
+        aerial_shots: "Aerial Shots"
+        development_plans: "Development Plans"
+        expert_opinions_reports: "Expert Opinions and Reports"
+
+        # Written materials
+        place_name_studies: "Place Name Studies"
+        local_chronicles: "Local Chronicles"
+        newspaper_articles: "Newspaper Articles"
+        advertisements: "Advertisements"
+
+        # People & Families
+        genealogical_research: "Genealogical Research"
+        biographies: "Biographies"
+        correspondences: "Correspondences"
+
+        # Historical media
+        historical_documents: "Historical Documents"
+        historical_recordings: "Historical Recordings"
+        visual_material: "Photos and Visual Material"
+        audio_video_recordings: "Audio and Video Recordings"
+
+        # Club & Organization materials
+        membership_directories: "Membership Directories"
+        club_journals: "Association Magazines and Documents"
+        posters_flyers: "Posters and Flyers"
+        objects_artifacts: "Objects and Artifacts"
+        collections_exhibitions: "Collections and Exhibitions"
+
+    # Form section headers
+    header:
+        content: "Content"
+        content_main: "Main Content"
+        type: "Type Selection"
+        additional: "Additional Options"
+        mandatory: "Mandatory Fields"
+        optional: "Optional Fields"
+        change_author: "Modify Author Information"
+        created_changed: "Created and Modify Information"
+
+    # Form labels
+    form:
+        title: "Title"
+
+    # Hero section
+    hero:
+        image: "Hero Image"
+
+    # Template names
+    template:
+        basic: "Archive (Basic)"
+        default: "Archive (Default)"
+        detailed: "Archive (Detailed)"
+
+    # Selection dialogs
+    archive_selection_label: "{count} {count, plural, =1 {archive} other {archives}} selected"
+    select_archive: "Select archive"
+    select_archivelist: "Select archive"
+    no_archive_selected: "No archive selected"
+    empty_archivelist: "No archive element selected"
+    publish_archive: "Publish Archive"
+
+    # Webspace settings
+    webspace_settings: "Webspace Settings"
+    customize_webspace_settings: "Customize Webspace Settings"
+    main_webspace: "Main Webspace"
+    additional_webspace: "Additional Webspaces"
+    shadow_archive: "Shadow Archive"
+    enable_shadow_archive: "Enable Shadow Archive"
+
+    # Search
+    search_name: "Archive"
+    search:
+        index:
+            archive: "Archives (Draft)"
+            archive_published: "Archives"
+
+    # Settings tab
+    config:
+        tab: "Settings"
+        title:
+            navi: "Settings"
+            general: "Settings for Single View"
+            breadcrumbs: "Intermediate Pages (Breadcrumbs)"
+        properties:
+            toggle_header: "Display Header"
+            toggle_hero: "Display Default Hero"
+            toggle_breadcrumbs: "Display Breadcrumbs"
+            toggle_categories: "Show Categories"
+            toggle_tags: "Show Tags"
+
+# Activity log descriptions
+sulu_activity:
+    resource:
+        archive: "Archive"
+        archives: "Archives"
+    description:
+        archive:
+            created: "{userFullName} created the archive \"{resourceTitle}\"."
+            modified: "{userFullName} modified the archive \"{resourceTitle}\"."
+            removed: "{userFullName} deleted the archive \"{resourceTitle}\"."
+            restored: "{userFullName} restored the archive \"{resourceTitle}\"."
+            published: "{userFullName} published the archive \"{resourceTitle}\"."
+            unpublished: "{userFullName} unpublished the archive \"{resourceTitle}\"."
+        archive_settings:
+            modified: "{userFullName} modified archive settings."
