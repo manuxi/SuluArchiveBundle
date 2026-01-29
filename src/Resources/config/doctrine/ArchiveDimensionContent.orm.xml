@@ -62,6 +62,7 @@
 
         <!-- ARCHIVE-SPECIFIC FIELDS -->
         <field name="type" type="string" length="50" nullable="true" column="type"/>
+        <field name="link" type="string" length="255" nullable="true" column="link"/>
         <field name="title" type="string" length="255" nullable="true" column="title"/>
         <field name="subtitle" type="string" length="255" nullable="true" column="subtitle"/>
         <field name="summary" type="text" nullable="true" column="summary"/>

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Manuxi\SuluArchiveBundle\Search;
 
+use CmsIg\Seal\Reindex\ReindexConfig;
+use CmsIg\Seal\Reindex\ReindexProviderInterface;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
 use Manuxi\SuluArchiveBundle\Entity\ArchiveDimensionContent;
 use Manuxi\SuluArchiveBundle\Repository\ArchiveRepository;
@@ -11,59 +13,85 @@ use Sulu\Component\Webspace\Manager\WebspaceManagerInterface;
 use Sulu\Content\Application\ContentAggregator\ContentAggregatorInterface;
 use Sulu\Content\Domain\Model\DimensionContentInterface;
 
-/**
- * Website search provider for archives (placeholder - implement based on your search engine).
- */
-class ArchiveWebsiteSearchProvider
+class ArchiveWebsiteSearchProvider implements ReindexProviderInterface
 {
     public function __construct(
-        private ArchiveRepository $archiveRepository,
-        private WebspaceManagerInterface $webspaceManager,
-        private ContentAggregatorInterface $contentAggregator,
+        private readonly ArchiveRepository $archiveRepository,
+        private readonly WebspaceManagerInterface $webspaceManager,
+        private readonly ContentAggregatorInterface $contentAggregator,
     ) {
     }
 
     public static function getIndex(): string
     {
-        return 'sulu_archive_website';
+        return 'website';
     }
 
-    public function getDocuments(): \Generator
+    public function total(): ?int
     {
-        $locales = $this->webspaceManager->getAllLocales();
-        $archives = $this->archiveRepository->findAll();
+        return $this->archiveRepository->countAll();
+    }
 
-        foreach ($archives as $archive) {
-            foreach ($locales as $locale) {
-                try {
-                    /** @var ArchiveDimensionContent|null $dimensionContent */
-                    $dimensionContent = $this->contentAggregator->aggregate(
-                        $archive,
-                        [
-                            'locale' => $locale,
-                            'stage' => DimensionContentInterface::STAGE_LIVE,
-                        ]
-                    );
+    public function provide(ReindexConfig $reindexConfig): \Generator
+    {
+        $locales = $this->getLocales();
 
-                    if (null === $dimensionContent || !$dimensionContent->getTitle()) {
-                        continue;
-                    }
+        foreach ($locales as $locale) {
+            $archives = $this->archiveRepository->findAll();
 
-                    $route = $dimensionContent->getRoute();
-
-                    yield [
-                        'id' => $archive->getUuid() . '_' . $locale,
-                        'uuid' => $archive->getUuid(),
+            foreach ($archives as $archive) {
+                /** @var ArchiveDimensionContent $dimensionContent */
+                $dimensionContent = $this->contentAggregator->aggregate(
+                    $archive,
+                    [
                         'locale' => $locale,
-                        'title' => $dimensionContent->getTitle(),
-                        'description' => $dimensionContent->getSummary(),
-                        'url' => $route?->getSlug(),
-                        'resourceKey' => Archive::RESOURCE_KEY,
-                    ];
-                } catch (\Exception) {
-                    // Skip if content not found for locale
+                        'stage' => DimensionContentInterface::STAGE_LIVE,
+                        'version' => DimensionContentInterface::CURRENT_VERSION,
+                    ]
+                );
+
+                // Skip if no content for this locale
+                if (!$dimensionContent->getTitle()) {
+                    continue;
                 }
+
+                yield $this->createDocument($archive, $dimensionContent, $locale);
             }
         }
+    }
+
+    private function getLocales(): array
+    {
+        $locales = [];
+        foreach ($this->webspaceManager->getWebspaceCollection() as $webspace) {
+            foreach ($webspace->getAllLocalizations() as $localization) {
+                $locales[$localization->getLocale()] = true;
+            }
+        }
+
+        return array_keys($locales);
+    }
+
+    private function createDocument(Archive $archive, ArchiveDimensionContent $dimensionContent, string $locale): array
+    {
+        $content = array_filter([
+            $dimensionContent->getSubtitle(),
+            $dimensionContent->getSummary(),
+            $dimensionContent->getText(),
+            $dimensionContent->getFooter(),
+        ]);
+
+        return [
+            'id' => 'archive-' . $archive->getId() . '-' . $locale,
+            'resourceKey' => Archive::RESOURCE_KEY,
+            'resourceId' => (string) $archive->getId(),
+            'locale' => $locale,
+            'webspaces' => [],
+            'title' => $dimensionContent->getTitle() ?? '',
+            'url' => $dimensionContent->getRoute()?->getSlug() ?? '',
+            'content' => array_values($content),
+            'type' => $dimensionContent->getType(),
+        ];
+
     }
 }

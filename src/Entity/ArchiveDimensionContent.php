@@ -60,6 +60,7 @@ class ArchiveDimensionContent implements DimensionContentInterface, ExcerptInter
     protected Archive $archive;
 
     protected ?string $type = 'default';
+    protected ?string $link = null;
     protected ?string $title = null;
     protected ?string $subtitle = null;
     protected ?string $summary = null;
@@ -224,6 +225,19 @@ class ArchiveDimensionContent implements DimensionContentInterface, ExcerptInter
     public function setShowDate(?bool $showDate): self
     {
         $this->showDate = $showDate;
+
+        return $this;
+    }
+
+    #[Serializer\Groups(['default', 'admin', 'fullArchive', 'partialArchive'])]
+    public function getLink(): ?string
+    {
+        return $this->link;
+    }
+
+    public function setLink(?string $link): self
+    {
+        $this->link = $link;
 
         return $this;
     }

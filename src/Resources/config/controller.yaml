@@ -18,7 +18,17 @@ services:
             - { name: controller.service_arguments }
             - { name: sulu.context, context: admin }
         public: true
-
+    Manuxi\SuluArchiveBundle\Controller\Admin\SettingsController:
+        class: Manuxi\SuluArchiveBundle\Controller\Admin\SettingsController
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@fos_rest.view_handler.default'
+            - '@sulu_activity.domain_event_collector'
+            - '@security.token_storage'
+        tags:
+            - { name: controller.service_arguments }
+            - { name: sulu.context, context: admin }
+        public: true
     # Website Controller
     Manuxi\SuluArchiveBundle\Controller\Website\ArchiveController:
         class: Manuxi\SuluArchiveBundle\Controller\Website\ArchiveController

@@ -13,6 +13,16 @@ services:
             - { name: sulu.admin }
             - { name: sulu.context, context: admin }
 
+    sulu_archive.admin.settings:
+        class: Manuxi\SuluArchiveBundle\Admin\SettingsAdmin
+        arguments:
+            - '@sulu_admin.view_builder_factory'
+            - '@sulu_security.security_checker'
+        tags:
+            - { name: sulu.admin }
+            - { name: sulu.context, context: admin }
+
+
     # Repositories
     Manuxi\SuluArchiveBundle\Repository\ArchiveRepository:
         class: Manuxi\SuluArchiveBundle\Repository\ArchiveRepository
@@ -240,3 +250,11 @@ services:
         class: Manuxi\SuluArchiveBundle\Content\Merger\ArchiveUnlocalizedFieldsMerger
         tags:
             - { name: sulu_content.merger }
+
+    # Settings Twig Extension
+    sulu_archive.twig_extension.settings:
+        class: Manuxi\SuluArchiveBundle\Twig\ArchiveSettingsTwigExtension
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: twig.extension }

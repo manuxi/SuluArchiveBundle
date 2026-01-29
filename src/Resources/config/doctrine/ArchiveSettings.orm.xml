@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Manuxi\SuluArchiveBundle\Entity\ArchiveSettings"
+            table="app_archive_settings">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+        <!-- Display toggles -->
+        <field name="toggleHeader" type="boolean" column="toggle_header" nullable="true"/>
+        <field name="toggleHero" type="boolean" column="toggle_hero" nullable="true"/>
+        <field name="toggleBreadcrumbs" type="boolean" column="toggle_breadcrumbs" nullable="true"/>
+        <field name="toggleTags" type="boolean" column="toggle_tags" nullable="true"/>
+        <field name="toggleCategories" type="boolean" column="toggle_categories" nullable="true"/>
+
+        <!-- Colors -->
+        <field name="colorTags" type="string" column="color_tags" nullable="true"/>
+        <field name="colorCategories" type="string" column="color_categories" nullable="true"/>
+        <!-- Breadcrumb pages -->
+        <field name="pageArchive" type="string" column="page_archive" nullable="true"/>
+        <field name="pageArchiveDefault" type="string" column="page_archive_default" nullable="true"/>
+        <field name="pageArchiveStreets" type="string" column="page_archive_streets" nullable="true"/>
+        <field name="pageArchiveTraffic" type="string" column="page_archive_traffic" nullable="true"/>
+        <field name="pageArchiveTrains" type="string" column="page_archive_trains" nullable="true"/>
+        <field name="pageArchiveSigns" type="string" column="page_archive_signs" nullable="true"/>
+        <field name="pageArchiveAttractions" type="string" column="page_archive_attractions" nullable="true"/>
+        <field name="pageArchiveMemorials" type="string" column="page_archive_memorials" nullable="true"/>
+        <field name="pageArchiveBuildings" type="string" column="page_archive_buildings" nullable="true"/>
+        <field name="pageArchiveMining" type="string" column="page_archive_mining" nullable="true"/>
+        <field name="pageArchiveSurroundingArea" type="string" column="page_archive_surrounding_area" nullable="true"/>
+        <field name="pageArchiveMapsPlans" type="string" column="page_archive_maps_plans" nullable="true"/>
+        <field name="pageArchiveAerialShots" type="string" column="page_archive_aerial_shots" nullable="true"/>
+        <field name="pageArchiveDevelopmentPlans" type="string" column="page_archive_development_plans" nullable="true"/>
+        <field name="pageArchiveExpertOpinionsReports" type="string" column="page_archive_expert_opinions_reports" nullable="true"/>
+        <field name="pageArchivePlaceNameStudies" type="string" column="page_archive_place_name_studies" nullable="true"/>
+        <field name="pageArchiveLocalChronicles" type="string" column="page_archive_local_chronicles" nullable="true"/>
+        <field name="pageArchiveNewspaperArticles" type="string" column="page_archive_newspaper_articles" nullable="true"/>
+        <field name="pageArchiveAdvertisements" type="string" column="page_archive_advertisements" nullable="true"/>
+        <field name="pageArchivePostersFlyers" type="string" column="page_archive_posters_flyers" nullable="true"/>
+        <field name="pageArchiveObjectsArtifacts" type="string" column="page_archive_objects_artifacts" nullable="true"/>
+        <field name="pageArchiveCollectionsExhibitions" type="string" column="page_archive_collections_exhibitions" nullable="true"/>
+        <field name="pageArchiveGenealogicalResearch" type="string" column="page_archive_genealogical_research" nullable="true"/>
+        <field name="pageArchiveBiographies" type="string" column="page_archive_biographies" nullable="true"/>
+        <field name="pageArchiveCorrespondences" type="string" column="page_archive_correspondences" nullable="true"/>
+        <field name="pageArchiveHistoricalDocuments" type="string" column="page_archive_historical_documents" nullable="true"/>
+        <field name="pageArchiveHistoricalRecordings" type="string" column="page_archive_historical_recordings" nullable="true"/>
+        <field name="pageArchiveVisualMaterial" type="string" column="page_archive_visual_material" nullable="true"/>
+        <field name="pageArchiveAudioVideoRecordings" type="string" column="page_archive_audio_video_recordings" nullable="true"/>
+        <field name="pageArchiveMembershipDirectories" type="string" column="page_archive_membership_directories" nullable="true"/>
+        <field name="pageArchiveClubJournals" type="string" column="page_archive_club_journals" nullable="true"/>
+        <!-- Auditable fields -->
+        <field name="created" type="datetime_immutable" column="created" nullable="true"/>
+        <field name="changed" type="datetime_immutable" column="changed" nullable="true"/>
+        <many-to-one field="creator" target-entity="Sulu\Component\Security\Authentication\UserInterface">
+            <join-column name="idUsersCreator" referenced-column-name="id" on-delete="SET NULL"/>
+        </many-to-one>
+        <many-to-one field="changer" target-entity="Sulu\Component\Security\Authentication\UserInterface">
+            <join-column name="idUsersChanger" referenced-column-name="id" on-delete="SET NULL"/>
+        </many-to-one>
+    </entity>
+</doctrine-mapping>

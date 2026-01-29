@@ -3,3 +3,9 @@ app_archives_api:
     type: attribute
     options:
         expose: true
+
+app_archive_settings_api:
+    resource: Manuxi\SuluArchiveBundle\Controller\Admin\SettingsController
+    type: attribute
+    options:
+        expose: true

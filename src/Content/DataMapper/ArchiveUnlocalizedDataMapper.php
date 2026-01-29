@@ -36,10 +36,25 @@ class ArchiveUnlocalizedDataMapper implements DataMapperInterface
         }
 
         $this->mapType($unlocalizedDimensionContent, $localizedDimensionContent, $data);
+        $this->mapLink($unlocalizedDimensionContent, $localizedDimensionContent, $data);
         $this->mapImage($unlocalizedDimensionContent, $localizedDimensionContent, $data);
         $this->mapDocument($unlocalizedDimensionContent, $localizedDimensionContent, $data);
         $this->mapAuthor($localizedDimensionContent, $data);
         $this->mapShowFlags($unlocalizedDimensionContent, $localizedDimensionContent, $data);
+    }
+
+    private function mapLink(
+        ArchiveDimensionContent $unlocalizedContent,
+        ArchiveDimensionContent $localizedContent,
+        array $data
+    ): void {
+        if (!\array_key_exists('link', $data)) {
+            return;
+        }
+
+        $link = $data['link'];
+        $unlocalizedContent->setLink($link);
+        $localizedContent->setLink($link);
     }
 
     private function mapType(

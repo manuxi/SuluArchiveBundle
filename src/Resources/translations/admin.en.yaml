@@ -1,5 +1,5 @@
 # English translations for SuluArchiveBundle Admin
-# Based on ArchiveBundle 2.6 with cleanup
+# Complete translations including all form sections and template keys
 
 sulu_archive:
     # Basic fields
@@ -12,6 +12,7 @@ sulu_archive:
     footer: "Footnotes, Source Citations..."
     notes: "Notes"
     image: "Image"
+    images: "Image Gallery"
     document: "Document"
     link: "Link"
     website: "Website"
@@ -24,6 +25,8 @@ sulu_archive:
     publish: "publish"
     unpublish: "unpublish"
     published: "published"
+    published_state: "State"
+    not_published: "not published"
     unpublished: "unpublished"
     published_date: "Publish Date"
     published_at: "Published at"
@@ -93,6 +96,7 @@ sulu_archive:
     header:
         content: "Content"
         content_main: "Main Content"
+        content_other: "Classification"
         type: "Type Selection"
         additional: "Additional Options"
         mandatory: "Mandatory Fields"
@@ -110,6 +114,7 @@ sulu_archive:
 
     # Template names
     template:
+        archive: "Archive (Simple)"
         basic: "Archive (Basic)"
         default: "Archive (Default)"
         detailed: "Archive (Detailed)"
@@ -150,6 +155,38 @@ sulu_archive:
             toggle_breadcrumbs: "Display Breadcrumbs"
             toggle_categories: "Show Categories"
             toggle_tags: "Show Tags"
+            page_archive: "Overview All Archives"
+            page_archive_default: "Default Archives"
+            page_archive_streets: "Streets and Places"
+            page_archive_traffic: "Traffic"
+            page_archive_trains: "Trains and Tracks"
+            page_archive_signs: "Signs and Boards"
+            page_archive_attractions: "Attractions"
+            page_archive_memorials: "Memorials"
+            page_archive_buildings: "Buildings and Architecture"
+            page_archive_mining: "Mining"
+            page_archive_surrounding_area: "Surrounding Area"
+            page_archive_maps_plans: "Maps and Plans"
+            page_archive_aerial_shots: "Aerial Shots"
+            page_archive_development_plans: "Development Plans"
+            page_archive_expert_opinions_reports: "Expert Opinions and Reports"
+            page_archive_place_name_studies: "Place Name Studies"
+            page_archive_local_chronicles: "Local Chronicles"
+            page_archive_newspaper_articles: "Newspaper Articles"
+            page_archive_advertisements: "Advertisements"
+            page_archive_posters_flyers: "Posters and Flyers"
+            page_archive_objects_artifacts: "Objects and Artifacts"
+            page_archive_collections_exhibitions: "Collections and Exhibitions"
+            page_archive_genealogical_research: "Genealogical Research"
+            page_archive_biographies: "Biographies"
+            page_archive_correspondences: "Correspondences"
+            page_archive_historical_documents: "Historical Documents"
+            page_archive_historical_recordings: "Historical Recordings"
+            page_archive_visual_material: "Photos and Visual Material"
+            page_archive_audio_video_recordings: "Audio and Video Recordings"
+            page_archive_membership_directories: "Membership Directories"
+            page_archive_club_journals: "Association Magazines and Documents"
+
 
 # Activity log descriptions
 sulu_activity:
@@ -166,3 +203,6 @@ sulu_activity:
             unpublished: "{userFullName} unpublished the archive \"{resourceTitle}\"."
         archive_settings:
             modified: "{userFullName} modified archive settings."
+
+sulu_admin:
+    smart_content_label: "{count, plural, =1{# archive selected} other{# archives selected}}"

@@ -1,52 +1,55 @@
-# German translations for SuluArchiveBundle Admin
-# Based on ArchiveBundle 2.6 with cleanup and English comments
+# Deutsche Übersetzungen für SuluArchiveBundle Admin
+# Vollständige Übersetzungen inklusive aller Formularabschnitte und Template-Schlüssel
 
 sulu_archive:
-    # Basic fields
+    # Grundfelder
     id: "Id"
     name: "Name"
     title: "Titel"
     subtitle: "Untertitel"
-    summary: "Einleitung"
+    summary: "Zusammenfassung"
     text: "Text"
-    footer: "Fußnoten, Quellennachweise..."
-    notes: "Anmerkungen"
+    footer: "Fußnoten, Quellenangaben..."
+    notes: "Notizen"
     image: "Bild"
+    images: "Bildergalerie"
     document: "Dokument"
-    link: "Verlinkung"
+    link: "Link"
     website: "Webseite"
-    gallery: "Bilder-Galerie"
+    gallery: "Bildergalerie"
     archives: "Archive"
     archive: "Archiv"
-    empty_list: "Keine Archive vorhanden"
+    empty_list: "Keine Archive verfügbar"
 
-    # Workflow states
+    # Workflow-Status
     publish: "veröffentlichen"
-    unpublish: "Veröffentlichen beenden"
+    unpublish: "depublizieren"
     published: "veröffentlicht"
-    unpublished: "nicht veröffentlicht"
+    published_state: "Status"
+    not_published: "nicht veröffentlicht"
+    unpublished: "unveröffentlicht"
     published_date: "Veröffentlichungsdatum"
     published_at: "Veröffentlicht am"
 
-    # Author display settings
+    # Autor-Anzeigeeinstellungen
     show_author: "Autor anzeigen"
     show_date: "Veröffentlichungsdatum anzeigen"
-    author: "Verfasser"
+    author: "Autor"
     authored: "verfasst"
     displayed_author: "Angezeigter Autor"
-    displayed_authored: "Angezeigtes Verfassungsdatum"
+    displayed_authored: "Angezeigtes Veröffentlichungsdatum"
 
-    # Timestamps
+    # Zeitstempel
     created_date: "Erstellt am"
     creator: "Erstellt von"
     changed_date: "Letzte Änderung am"
-    changer: "Letzte Änderung von"
+    changer: "Zuletzt geändert von"
 
-    # Archive type selection
-    archive_type: "Archiv-Typ"
+    # Archivtyp-Auswahl
+    archive_type: "Archivtyp"
     type: "Typ"
 
-    # Archive types - Places & Infrastructure
+    # Archivtypen - Orte & Infrastruktur
     types:
         default: "Standard"
         streets: "Straßen und Plätze"
@@ -56,88 +59,90 @@ sulu_archive:
         attractions: "Sehenswürdigkeiten"
         memorials: "Denkmäler"
         buildings: "Gebäude und Architektur"
-        mining: "Bergbau (Gruben)"
+        mining: "Bergbau"
         surrounding_area: "Umgebung"
 
-        # Maps & Plans
+        # Karten & Pläne
         maps_plans: "Landkarten und Pläne"
         aerial_shots: "Luftaufnahmen"
         development_plans: "Bebauungspläne"
         expert_opinions_reports: "Gutachten und Berichte"
 
-        # Written materials
+        # Schriftliche Materialien
         place_name_studies: "Ortsnamenkunde"
         local_chronicles: "Ortschroniken"
         newspaper_articles: "Zeitungsartikel"
         advertisements: "Werbeanzeigen"
 
-        # People & Families
+        # Personen & Familien
         genealogical_research: "Familienforschung"
         biographies: "Biographien"
         correspondences: "Korrespondenzen"
 
-        # Historical media
+        # Historische Medien
         historical_documents: "Historische Dokumente"
         historical_recordings: "Historische Aufnahmen"
         visual_material: "Fotos und Bildmaterial"
         audio_video_recordings: "Ton- und Videoaufnahmen"
 
-        # Club & Organization materials
+        # Vereins- & Organisationsmaterialien
         membership_directories: "Mitgliederverzeichnisse"
-        club_journals: "Vereinszeitschriften und -dokumente"
+        club_journals: "Vereinszeitschriften und Dokumente"
         posters_flyers: "Plakate und Flyer"
         objects_artifacts: "Objekte und Artefakte"
         collections_exhibitions: "Sammlungen und Ausstellungen"
 
-    # Form section headers
+    # Formularabschnitt-Überschriften
     header:
         content: "Inhalt"
         content_main: "Hauptinhalt"
-        type: "Typ-Auswahl"
+        content_other: "Klassifizierung"
+        type: "Typauswahl"
         additional: "Zusätzliche Optionen"
-        mandatory: "Verpflichtende Felder"
+        mandatory: "Pflichtfelder"
         optional: "Optionale Felder"
-        change_author: "Autor-Information anpassen"
+        change_author: "Autoreninformationen bearbeiten"
         created_changed: "Erstellungs- und Änderungsinformationen"
 
-    # Form labels
+    # Formular-Labels
     form:
         title: "Titel"
 
-    # Hero section
+    # Hero-Bereich
     hero:
         image: "Hero-Bild"
 
-    # Template names
+    # Template-Namen
     template:
-        basic: "Archiv (einfach)"
+        archive: "Archiv (einfach)"
+        basic: "Archiv (Basis)"
         default: "Archiv (Standard)"
-        detailed: "Archiv (detailliert)"
+        detailed: "Archiv (Detailliert)"
 
-    # Selection dialogs
+    # Auswahldialoge
     archive_selection_label: "{count} {count, plural, =1 {Archiv} other {Archive}} ausgewählt"
     select_archive: "Archiv auswählen"
     select_archivelist: "Archiv auswählen"
     no_archive_selected: "Kein Archiv ausgewählt"
-    empty_archivelist: "Kein Archiv-Element ausgewählt"
+    empty_archivelist: "Kein Archivelement ausgewählt"
     publish_archive: "Archiv veröffentlichen"
 
-    # Webspace settings
-    webspace_settings: "Webspace Einstellungen"
-    customize_webspace_settings: "Webspace Einstellungen anpassen"
-    main_webspace: "Haupt Webspace"
+    # Webspace-Einstellungen
+    webspace_settings: "Webspace-Einstellungen"
+    customize_webspace_settings: "Webspace-Einstellungen anpassen"
+    main_webspace: "Haupt-Webspace"
     additional_webspace: "Zusätzliche Webspaces"
-    shadow_archive: "Schatten-Archiv"
-    enable_shadow_archive: "Schatten-Archiv aktivieren"
+    shadow_archive: "Schattenarchiv"
+    enable_shadow_archive: "Schattenarchiv aktivieren"
 
-    # Search
+    # Suche
     search_name: "Archiv"
     search:
         index:
             archive: "Archive (Entwurf)"
             archive_published: "Archive"
 
-    # Settings tab
+    # Einstellungen-Tab
     config:
         tab: "Einstellungen"
         title:
@@ -146,12 +151,44 @@ sulu_archive:
             breadcrumbs: "Zwischenseiten (Breadcrumbs)"
         properties:
             toggle_header: "Header anzeigen"
-            toggle_hero: "Standard Hero anzeigen"
+            toggle_hero: "Standard-Hero anzeigen"
             toggle_breadcrumbs: "Breadcrumbs anzeigen"
             toggle_categories: "Kategorien anzeigen"
             toggle_tags: "Tags anzeigen"
+            page_archive: "Übersicht alle Archive"
+            page_archive_default: "Standard-Archive"
+            page_archive_streets: "Straßen und Plätze"
+            page_archive_traffic: "Verkehr"
+            page_archive_trains: "Züge und Gleise"
+            page_archive_signs: "Schilder und Tafeln"
+            page_archive_attractions: "Sehenswürdigkeiten"
+            page_archive_memorials: "Denkmäler"
+            page_archive_buildings: "Gebäude und Architektur"
+            page_archive_mining: "Bergbau"
+            page_archive_surrounding_area: "Umgebung"
+            page_archive_maps_plans: "Landkarten und Pläne"
+            page_archive_aerial_shots: "Luftaufnahmen"
+            page_archive_development_plans: "Bebauungspläne"
+            page_archive_expert_opinions_reports: "Gutachten und Berichte"
+            page_archive_place_name_studies: "Ortsnamenkunde"
+            page_archive_local_chronicles: "Ortschroniken"
+            page_archive_newspaper_articles: "Zeitungsartikel"
+            page_archive_advertisements: "Werbeanzeigen"
+            page_archive_posters_flyers: "Plakate und Flyer"
+            page_archive_objects_artifacts: "Objekte und Artefakte"
+            page_archive_collections_exhibitions: "Sammlungen und Ausstellungen"
+            page_archive_genealogical_research: "Familienforschung"
+            page_archive_biographies: "Biographien"
+            page_archive_correspondences: "Korrespondenzen"
+            page_archive_historical_documents: "Historische Dokumente"
+            page_archive_historical_recordings: "Historische Aufnahmen"
+            page_archive_visual_material: "Fotos und Bildmaterial"
+            page_archive_audio_video_recordings: "Ton- und Videoaufnahmen"
+            page_archive_membership_directories: "Mitgliederverzeichnisse"
+            page_archive_club_journals: "Vereinszeitschriften und Dokumente"
 
-# Activity log descriptions
+
+# Aktivitätslog-Beschreibungen
 sulu_activity:
     resource:
         archive: "Archiv"
@@ -159,10 +196,13 @@ sulu_activity:
     description:
         archive:
             created: "{userFullName} hat das Archiv \"{resourceTitle}\" erstellt."
-            modified: "{userFullName} hat das Archiv \"{resourceTitle}\" geändert."
+            modified: "{userFullName} hat das Archiv \"{resourceTitle}\" bearbeitet."
             removed: "{userFullName} hat das Archiv \"{resourceTitle}\" gelöscht."
-            restored: "{userFullName} hat das Archiv \"{resourceTitle}\" wieder hergestellt."
+            restored: "{userFullName} hat das Archiv \"{resourceTitle}\" wiederhergestellt."
             published: "{userFullName} hat das Archiv \"{resourceTitle}\" veröffentlicht."
-            unpublished: "{userFullName} hat die Veröffentlichung des Archivs \"{resourceTitle}\" beendet."
+            unpublished: "{userFullName} hat das Archiv \"{resourceTitle}\" depubliziert."
         archive_settings:
-            modified: "{userFullName} hat Einstellungen für Archive geändert."
+            modified: "{userFullName} hat die Archiv-Einstellungen bearbeitet."
+
+sulu_admin:
+    smart_content_label: "{count, plural, =1{# Archiv ausgewählt} other{# Archive ausgewählt}}"
