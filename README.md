@@ -9,20 +9,24 @@
 [🇩🇪 German Version](README.de.md)
 
 The SuluArchiveBundle extends Sulu CMS with comprehensive archive management.
+
 It enables the creation and management of archive entries with detailed information, documents, media galleries and multilingual support.
+
 Over 30 customizable archive types allow flexible categorization of historical documents, photos, newspaper articles and more.
+
+![Overview](docs/img/overview.png)
 
 ## ✨ Features
 
 ### 📚 Archive Management
-- **Extensive Archive Details** - Title, subtitle, summary, text, footer/sources
+- **Extensive Archive Details** - Different templates; Title, subtitle, summary, text, footer/sources
 - **Document Management** - PDF attachments for downloadable documents
 - **Media Integration** - Main images and image galleries
 - **30+ Archive Types** - Streets, buildings, historical documents, photos, newspaper articles, and more
 - **SEO & Excerpt** - Full SEO and excerpt management
 - **Multilingual** - Full translation support
 - **Author Management** - Assign contacts as archive authors
-- **More** - Trash, references, sitemaps, etc.
+- **More** - Trash, references, sitemaps, teaser, etc.
 
 ### 🔄 Advanced Features
 - **Smart Content** - Usable as a content block in any Sulu page
