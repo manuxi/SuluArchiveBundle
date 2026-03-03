@@ -2,6 +2,8 @@
 
 Zugriff über Sulu Admin → Archiv → Einstellungen (falls implementiert)
 
+![Settings](img/settings.de.png)
+
 ## Konfiguration
 
 Die Hauptkonfiguration erfolgt in `config/packages/sulu_archive.yaml`:

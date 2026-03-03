@@ -2,6 +2,8 @@
 
 Access via Sulu Admin → Archive → Settings (if implemented)
 
+![Settings](img/settings.de.png)
+
 ## Configuration
 
 The main configuration is done in `config/packages/sulu_archive.yaml`:

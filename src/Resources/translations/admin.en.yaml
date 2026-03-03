@@ -7,6 +7,7 @@ sulu_archive:
     name: "Name"
     title: "Title"
     subtitle: "Subtitle"
+    abstract: "Abstract"
     summary: "Summary Introduction"
     text: "Text"
     footer: "Footnotes, Source Citations..."
@@ -114,7 +115,7 @@ sulu_archive:
 
     # Template names
     template:
-        archive: "Archive (Simple)"
+        archive: "Archive (Default)"
         basic: "Archive (Basic)"
         default: "Archive (Default)"
         detailed: "Archive (Detailed)"
@@ -194,7 +195,7 @@ sulu_activity:
         archive: "Archive"
         archives: "Archives"
     description:
-        archive:
+        archives:
             created: "{userFullName} created the archive \"{resourceTitle}\"."
             modified: "{userFullName} modified the archive \"{resourceTitle}\"."
             removed: "{userFullName} deleted the archive \"{resourceTitle}\"."
