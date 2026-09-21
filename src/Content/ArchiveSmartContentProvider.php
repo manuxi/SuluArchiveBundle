@@ -138,7 +138,7 @@ class ArchiveSmartContentProvider implements SmartContentProviderInterface
         );
         $this->addInternalFilters($queryBuilder, $filters, $alias);
 
-        $queryBuilder->select('COUNT(DISTINCT ' . $alias . '.id)');
+        $queryBuilder->select('COUNT(DISTINCT ' . $alias . '.uuid)');
 
         return (int) $queryBuilder->getQuery()->getSingleScalarResult();
     }
@@ -163,7 +163,7 @@ class ArchiveSmartContentProvider implements SmartContentProviderInterface
         );
         $dimensionContentAlias = $this->addInternalFilters($queryBuilder, $filters, $alias);
 
-        $queryBuilder->select('DISTINCT ' . $alias . '.id as id');
+        $queryBuilder->select('DISTINCT ' . $alias . '.uuid as id');
         $queryBuilder->addSelect($dimensionContentAlias . '.title');
         $queryBuilder->addSelect($dimensionContentAlias . '.workflowPlace');
         $queryBuilder->addSelect($dimensionContentAlias . '.workflowPublished');
