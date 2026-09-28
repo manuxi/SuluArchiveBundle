@@ -6,6 +6,8 @@ namespace Manuxi\SuluArchiveBundle\DependencyInjection;
 
 use Manuxi\SuluArchiveBundle\Admin\ArchiveAdmin;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
+use Manuxi\SuluArchiveBundle\Repository\ArchiveDimensionContentRepository;
+use Manuxi\SuluArchiveBundle\Repository\ArchiveRepository;
 use Sulu\Bundle\PersistenceBundle\DependencyInjection\PersistenceExtensionTrait;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -39,6 +41,13 @@ class SuluArchiveExtension extends Extension implements PrependExtensionInterfac
         $loader->load('controller.yaml');
 
         $this->configurePersistence($config['objects'], $container);
+
+        // PersistenceExtensionTrait creates EntityManager/ClassMetadata repositories,
+        // whereas these repositories are Doctrine repository services and require a
+        // ManagerRegistry. Keep Sulu's conventional service ids as aliases to the
+        // tagged ServiceEntityRepository services.
+        $container->setAlias('sulu.repository.archive', ArchiveRepository::class)->setPublic(true);
+        $container->setAlias('sulu.repository.archive_dimension_content', ArchiveDimensionContentRepository::class)->setPublic(true);
     }
 
     public function prepend(ContainerBuilder $container): void
