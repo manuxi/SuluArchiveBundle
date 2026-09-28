@@ -204,6 +204,3 @@ sulu_activity:
             unpublished: "{userFullName} unpublished the archive \"{resourceTitle}\"."
         archive_settings:
             modified: "{userFullName} modified archive settings."
-
-sulu_admin:
-    smart_content_label: "{count, plural, =1{# archive selected} other{# archives selected}}"
