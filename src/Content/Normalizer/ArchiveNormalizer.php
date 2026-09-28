@@ -7,6 +7,7 @@ namespace Manuxi\SuluArchiveBundle\Content\Normalizer;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
 use Manuxi\SuluArchiveBundle\Entity\ArchiveDimensionContent;
 use Manuxi\SuluArchiveBundle\Service\ArchiveTypeSelect;
+use Sulu\Bundle\MediaBundle\Media\Manager\MediaManagerInterface;
 use Sulu\Content\Application\ContentNormalizer\Normalizer\NormalizerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -15,6 +16,7 @@ class ArchiveNormalizer implements NormalizerInterface
     public function __construct(
         private TranslatorInterface $translator,
         private ArchiveTypeSelect $archiveTypeSelect,
+        private MediaManagerInterface $mediaManager,
     ) {
     }
 
@@ -61,12 +63,18 @@ class ArchiveNormalizer implements NormalizerInterface
         }
 
         // Image
+        // "single_media_upload" (unlike "single_media_selection") does not resolve the media itself from an id -
+        // it needs the full media object (url, thumbnails, mimeType) already in the value, or the form shows no
+        // preview for an already saved archive.
         $image = $object->getImage();
         if (null !== $image) {
-            if (!isset($normalizedData['image']) || !\is_array($normalizedData['image'])) {
-                $normalizedData['image'] = [];
-            }
-            $normalizedData['image']['id'] = $image->getId();
+            $apiImage = $this->mediaManager->getById($image->getId(), $object->getLocale());
+            $normalizedData['image'] = [
+                'id' => $apiImage->getId(),
+                'url' => $apiImage->getUrl(),
+                'thumbnails' => $apiImage->getFormats(),
+                'mimeType' => $apiImage->getMimeType(),
+            ];
         }
 
         // Images

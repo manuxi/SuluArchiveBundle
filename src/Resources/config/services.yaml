@@ -150,14 +150,13 @@ services:
             - { name: sulu.sitemap.provider }
 
     # Search Providers
+    # Deferred until the legacy archive rows are migrated to the Sulu 3 UUID model.
     sulu_archive.search.admin_provider:
         class: Manuxi\SuluArchiveBundle\Search\ArchiveAdminSearchProvider
         arguments:
             - '@Manuxi\SuluArchiveBundle\Repository\ArchiveRepository'
             - '@sulu_core.webspace.webspace_manager'
             - '@sulu_content.content_aggregator'
-        tags:
-            - { name: cmsig_seal.reindex_provider }
 
     sulu_archive.search.website_provider:
         class: Manuxi\SuluArchiveBundle\Search\ArchiveWebsiteSearchProvider
@@ -165,8 +164,6 @@ services:
             - '@Manuxi\SuluArchiveBundle\Repository\ArchiveRepository'
             - '@sulu_core.webspace.webspace_manager'
             - '@sulu_content.content_aggregator'
-        tags:
-            - { name: cmsig_seal.reindex_provider }
 
     sulu_archive.search.listener:
         class: Manuxi\SuluArchiveBundle\Search\ArchiveSearchListener
@@ -227,6 +224,7 @@ services:
         arguments:
             - '@translator'
             - '@sulu_archive.type_selection'
+            - '@sulu_media.media_manager'
         tags:
             - { name: sulu_content.normalizer }
 
