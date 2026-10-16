@@ -145,7 +145,7 @@ class ArchiveSearchListener implements EventSubscriberInterface
             'mediaId' => $dimensionContent->getImage()?->getId(),
             'changedAt' => $dimensionContent->getChanged()?->format('c'),
             'createdAt' => $dimensionContent->getCreated()?->format('c'),
-            'published' => WorkflowInterface::WORKFLOW_PLACE_PUBLISHED === $dimensionContent->getWorkflowPlace() ? '1' : '0',
+            'published' => $this->isPublished($dimensionContent) ? '1' : '0',
             'workflowPlace' => $dimensionContent->getWorkflowPlace(),
         ]);
     }
@@ -170,6 +170,16 @@ class ArchiveSearchListener implements EventSubscriberInterface
             'content' => $content,
             'mediaId' => $dimensionContent->getImage()?->getId(),
         ]);
+    }
+
+    /**
+     * The live dimension only exists for published content. Its workflowPlace is NULL when written by Sulu 3,
+     * so only the draft dimension can be judged by it.
+     */
+    private function isPublished(ArchiveDimensionContent $dimensionContent): bool
+    {
+        return DimensionContentInterface::STAGE_LIVE === $dimensionContent->getStage()
+            || WorkflowInterface::WORKFLOW_PLACE_PUBLISHED === $dimensionContent->getWorkflowPlace();
     }
 
     private function getDocumentId(Archive $archive, string $locale): string

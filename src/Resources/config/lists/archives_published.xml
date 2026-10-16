@@ -7,7 +7,7 @@
             <entity-name>dimensionContent</entity-name>
             <field-name>%sulu.model.archive.class%.dimensionContents</field-name>
             <condition>
-                dimensionContent.stage = 'live' AND dimensionContent.locale = :locale AND dimensionContent.version = 0 AND dimensionContent.workflowPlace = 'published'
+                dimensionContent.stage = 'live' AND dimensionContent.locale = :locale AND dimensionContent.version = 0
             </condition>
         </join>
     </joins>

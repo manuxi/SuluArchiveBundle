@@ -179,18 +179,32 @@ class ArchiveSmartContentProvider implements SmartContentProviderInterface
 
         /** @var array{id: string, title: string}[] $result */
         $result = \array_map(
-            function (array $item) {
-                return [
-                    'id' => (string) $item['id'],
-                    'title' => (string) ($item['title'] ?? ''),
-                    'publishedState' => 'published' === ($item['workflowPlace'] ?? ''),
-                    'published' => $item['workflowPublished'] ?? null,
-                ];
-            },
+            fn (array $item): array => $this->mapQueryResultItem($item, (string) ($filters['stage'] ?? DimensionContentInterface::STAGE_LIVE)),
             $queryResult
         );
 
         return $result;
+    }
+
+    /**
+     * The live dimension only exists for published content, so a live row is published. Its workflowPlace can be
+     * NULL (Sulu 3 does not write it on publish, only rows migrated from Sulu 2 carry "published"), which must not
+     * show up as draft indicator in the smart content selection.
+     *
+     * @param array<string, mixed> $item
+     *
+     * @return array<string, mixed>
+     */
+    protected function mapQueryResultItem(array $item, string $stage): array
+    {
+        return [
+            'id' => (string) $item['id'],
+            'title' => (string) ($item['title'] ?? ''),
+            'publishedState' => DimensionContentInterface::STAGE_LIVE === $stage
+                || 'published' === ($item['workflowPlace'] ?? '')
+                || null !== ($item['workflowPublished'] ?? null),
+            'published' => $item['workflowPublished'] ?? null,
+        ];
     }
 
     protected function enhanceWithDimensionAttributes(array $filters): array

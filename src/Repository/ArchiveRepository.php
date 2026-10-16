@@ -10,7 +10,6 @@ use Doctrine\Persistence\ManagerRegistry;
 use Manuxi\SuluArchiveBundle\Entity\Archive;
 use Manuxi\SuluArchiveBundle\Entity\ArchiveDimensionContent;
 use Sulu\Content\Domain\Model\DimensionContentInterface;
-use Sulu\Content\Domain\Model\WorkflowInterface;
 use Sulu\Content\Infrastructure\Doctrine\DimensionContentQueryEnhancer;
 
 class ArchiveRepository extends ServiceEntityRepository
@@ -154,16 +153,16 @@ class ArchiveRepository extends ServiceEntityRepository
 
     public function countPublished(string $locale): int
     {
+        // workflowPlace is NULL on live rows written by Sulu 3 (only rows migrated from Sulu 2 carry
+        // "published"), so having a live-stage row for the locale is itself the "published" signal.
         $qb = $this->createQueryBuilder('archive');
 
         $qb->select('COUNT(DISTINCT archive.uuid)')
             ->leftJoin('archive.dimensionContents', 'dc')
             ->where('dc.locale = :locale')
             ->andWhere('dc.stage = :stage')
-            ->andWhere('dc.workflowPlace = :published')
             ->setParameter('locale', $locale)
-            ->setParameter('stage', DimensionContentInterface::STAGE_LIVE)
-            ->setParameter('published', WorkflowInterface::WORKFLOW_PLACE_PUBLISHED);
+            ->setParameter('stage', DimensionContentInterface::STAGE_LIVE);
 
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
